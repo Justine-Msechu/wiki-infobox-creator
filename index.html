@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Infobox Creator – Wikipedia Tool</title>
+<!-- Wikipedia uses Linux Libertine for display headings -->
+<link href="https://fonts.googleapis.com/css2?family=Linux+Libertine+O&family=Linux+Biolinum+O&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════
+   WIKIPEDIA VECTOR 2022 SKIN — faithful recreation
+═══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Wikipedia's exact color tokens */
+  --color-base:            #202122;
+  --color-subtle:          #54595d;
+  --color-placeholder:     #72777d;
+  --color-disabled:        #a2a9b1;
+  --color-progressive:     #3366cc;
+  --color-progressive-hover:#2a4b8d;
+  --color-destructive:     #d33;
+  --color-warning:         #fc3;
+  --color-success:         #00af89;
+  --color-notice:          #54595d;
+  --bg-base:               #fff;
+  --bg-subtle:             #f8f9fa;
+  --bg-interactive:        #eaecf0;
+  --bg-interactive-subtle: #f8f9fa;
+  --border-color:          #a2a9b1;
+  --border-color-subtle:   #c8ccd1;
+  --border-color-interactive: #72777d;
+  --font-family-base:      -apple-system, 'Linux Biolinum O', BlinkMacSystemFont, 'Segoe UI', Roboto, Lato, Helvetica, Arial, sans-serif;
+  --font-family-heading:   'Linux Libertine O', 'Linux Libertine', Georgia, 'Times New Roman', serif;
+  --font-size-base:        0.875rem; /* 14px */
+  --line-height-base:      1.6;
+  --shadow-card:           0 1px 3px rgba(0,0,0,0.12);
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-base);
+  background: var(--bg-subtle);
+}
+
+/* ── SITE HEADER (Wikipedia top bar) ── */
+#mw-head {
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-card);
+}
+
+.mw-head-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  gap: 16px;
+}
+
+/* Wikipedia logo area */
+.mw-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.mw-logo-icon {
+  width: 32px; height: 32px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='24' fill='none' stroke='%23a2a9b1' stroke-width='2'/%3E%3Cpath d='M12 18h4l5 14 5-14h4l5 14 5-14h4' fill='none' stroke='%23202122' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.mw-logo-text {
+  font-family: var(--font-family-heading);
+  font-size: 1.1rem;
+  color: var(--color-base);
+  font-weight: normal;
+}
+
+.mw-logo-tagline {
+  font-size: 0.7rem;
+  color: var(--color-subtle);
+  display: block;
+  line-height: 1;
+}
+
+/* Header nav */
+.mw-head-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.mw-head-nav a, .mw-lang-btn {
+  font-size: 0.8rem;
+  color: var(--color-progressive);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-family-base);
+  transition: background 0.1s;
+}
+
+.mw-head-nav a:hover, .mw-lang-btn:hover { background: var(--bg-interactive); text-decoration: none; }
+.mw-lang-btn.active { background: var(--bg-interactive); font-weight: bold; color: var(--color-base); }
+
+.mw-head-sep { color: var(--border-color); font-size: 0.8rem; }
+
+/* ── PAGE LAYOUT ── */
+.mw-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 800px) { .mw-page { grid-template-columns: 1fr; } }
+
+/* ── SIDEBAR ── */
+#mw-sidebar {
+  background: var(--bg-base);
+  border: 1px solid var(--border-color);
+}
+
+.sidebar-portlet { padding: 0; }
+
+.sidebar-portlet-header {
+  background: var(--bg-interactive);
+  border-bottom: 1px solid var(--border-color);
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-subtle);
+}
+
+.sidebar-portlet ul {
+  list-style: none;
+  padding: 4px 0;
+}
+
+.sidebar-portlet ul li a {
+  display: block;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  color: var(--color-progressive);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sidebar-portlet ul li a:hover { background: var(--bg-subtle); text-decoration: underline; }
+.sidebar-portlet ul li.active a { background: var(--bg-interactive); color: var(--color-base); font-weight: bold; cursor: default; text-decoration: none; }
+
+.sidebar-portlet + .sidebar-portlet { border-top: 1px solid var(--border-color); }
+
+/* ── MAIN CONTENT ── */
+#mw-content {
+  background: var(--bg-base);
+  border: 1px solid var(--border-color);
+  padding: 20px 24px;
+  min-height: 600px;
+}
+
+/* ── PAGE TITLE (Wikipedia h1 style) ── */
+.mw-page-title-heading {
+  font-family: var(--font-family-heading);
+  font-size: 2rem;
+  font-weight: normal;
+  color: var(--color-base);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 4px;
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+/* ── CONTENT TABS (like Wikipedia's edit/view/history tabs) ── */
+.mw-content-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  gap: 0;
+}
+
+.mw-ctab {
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--color-progressive);
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: var(--bg-subtle);
+  margin-bottom: -1px;
+  text-decoration: none;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+
+.mw-ctab:hover { background: var(--bg-interactive); }
+.mw-ctab.selected {
+  background: var(--bg-base);
+  border-color: var(--border-color);
+  color: var(--color-base);
+  font-weight: normal;
+  cursor: default;
+}
+
+/* ── SECTION HEADINGS ── */
+.mw-headline {
+  font-family: var(--font-family-heading);
+  font-size: 1.2rem;
+  font-weight: normal;
+  border-bottom: 1px solid var(--border-color);
+  margin: 20px 0 10px;
+  padding-bottom: 3px;
+  color: var(--color-base);
+}
+
+.mw-headline-sub {
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 14px 0 8px;
+  color: var(--color-base);
+}
+
+/* ── NOTICE BOXES (Wikipedia hatnote / mbox style) ── */
+.mw-message-box {
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.mw-message-box-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.mw-message-box.notice { background: #eaf3fb; border-color: #36c; }
+.mw-message-box.success { background: #d5fdf4; border-color: var(--color-success); }
+.mw-message-box.warning { background: #fef6e7; border-color: #fc3; }
+.mw-message-box.error   { background: #fee7e6; border-color: var(--color-destructive); }
+.mw-message-box .mbox-text a { color: var(--color-progressive); }
+
+/* Status banner (for template check) */
+#status-banner { display: none; margin-bottom: 14px; }
+
+/* ── TWO-COLUMN LAYOUT FOR FORM + OUTPUT ── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 700px) { .tool-grid { grid-template-columns: 1fr; } }
+
+/* ── TYPE SELECTOR (styled like Wikipedia category boxes) ── */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.type-card {
+  border: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+  padding: 8px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.1s;
+  font-size: 0.79rem;
+}
+
+.type-card:hover { background: var(--bg-interactive); border-color: var(--color-progressive); }
+.type-card.selected { background: #eaf3fb; border-color: var(--color-progressive); color: var(--color-progressive); font-weight: bold; }
+.type-card .tc-em { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+
+/* ── FORM ELEMENTS ── */
+.form-field { margin-bottom: 10px; }
+
+.form-field label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--color-base);
+  margin-bottom: 3px;
+  font-weight: bold;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border-color-interactive);
+  background: var(--bg-base);
+  color: var(--color-base);
+  font-family: var(--font-family-base);
+  font-size: 0.85rem;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-field input:focus {
+  border-color: var(--color-progressive);
+  box-shadow: inset 0 0 0 1px var(--color-progressive);
+}
+
+.form-field input::placeholder { color: var(--color-placeholder); }
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--color-subtle);
+  margin-top: 2px;
+}
+
+/* Section label inside form */
+.form-section-label {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-subtle);
+  border-bottom: 1px solid var(--border-color-subtle);
+  padding-bottom: 3px;
+  margin: 14px 0 8px;
+}
+
+/* ── WIKIPEDIA-STYLE BUTTONS ── */
+.mw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-family: var(--font-family-base);
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-radius: 2px;
+  cursor: pointer;
+  border: 1px solid;
+  transition: background 0.1s, color 0.1s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mw-btn-primary {
+  background: var(--color-progressive);
+  color: #fff;
+  border-color: var(--color-progressive-hover);
+}
+.mw-btn-primary:hover { background: var(--color-progressive-hover); }
+
+.mw-btn-secondary {
+  background: var(--bg-base);
+  color: var(--color-base);
+  border-color: var(--border-color-interactive);
+}
+.mw-btn-secondary:hover { background: var(--bg-interactive); }
+
+.mw-btn-quiet {
+  background: transparent;
+  color: var(--color-progressive);
+  border-color: transparent;
+}
+.mw-btn-quiet:hover { background: var(--bg-interactive); text-decoration: underline; }
+
+.mw-btn:disabled { background: var(--bg-interactive) !important; color: var(--color-disabled) !important; border-color: var(--border-color-subtle) !important; cursor: not-allowed; }
+
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ── CODE / WIKITEXT OUTPUT BOX ── */
+.mw-code-output {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  font-family: 'Courier New', 'Lucida Console', monospace;
+  font-size: 0.77rem;
+  line-height: 1.6;
+  padding: 10px 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-base);
+}
+
+.code-ph { color: var(--color-placeholder); font-family: var(--font-family-base); font-style: italic; text-align: center; padding: 20px 0; }
+
+/* Syntax highlight colors (subtle, Wikipedia-like) */
+.tok-bracket { color: #0645ad; font-weight: bold; }
+.tok-key     { color: #00522b; }
+.tok-tmpl    { color: #0645ad; }
+.tok-pipe    { color: #555; }
+
+/* ── OUTPUT TABS ── */
+.output-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 0; }
+.out-tab { padding: 6px 12px; font-size: 0.81rem; cursor: pointer; color: var(--color-progressive); border: 1px solid transparent; border-bottom: none; background: var(--bg-subtle); margin-bottom: -1px; white-space: nowrap; }
+.out-tab:hover { background: var(--bg-interactive); }
+.out-tab.selected { background: var(--bg-base); border-color: var(--border-color); color: var(--color-base); cursor: default; font-weight: bold; }
+.out-panel { display: none; padding-top: 12px; }
+.out-panel.active { display: block; }
+
+/* ── WIKI OUTPUT LANGUAGE ── */
+.wiki-lang-label { font-size: 0.8rem; font-weight: bold; color: var(--color-base); margin-bottom: 6px; }
+.wiki-lang-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
+.wiki-lang-btn { padding: 3px 8px; font-size: 0.77rem; border: 1px solid var(--border-color); background: var(--bg-subtle); cursor: pointer; color: var(--color-progressive); border-radius: 2px; font-family: var(--font-family-base); transition: all 0.1s; }
+.wiki-lang-btn:hover { background: var(--bg-interactive); }
+.wiki-lang-btn.selected { background: var(--color-progressive); color: #fff; border-color: var(--color-progressive-hover); }
+
+/* ── AI ASSISTANT (styled as a Wikipedia talk-page thread) ── */
+.talk-box {
+  border: 1px solid var(--border-color);
+  background: var(--bg-base);
+}
+
+.talk-header {
+  background: var(--bg-interactive);
+  border-bottom: 1px solid var(--border-color);
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.talk-thread {
+  padding: 10px 12px;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.talk-ph { color: var(--color-subtle); font-style: italic; }
+
+.talk-msg { margin-bottom: 8px; padding-left: 16px; border-left: 2px solid var(--border-color-subtle); }
+.talk-msg.user { border-left-color: var(--color-progressive); }
+.talk-msg.ai   { border-left-color: var(--color-success); }
+.talk-msg .talk-sig { font-size: 0.75rem; color: var(--color-subtle); margin-bottom: 2px; }
+.talk-msg .talk-sig a { color: var(--color-progressive); }
+
+.talk-input-row {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+}
+
+.talk-input-row input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--border-color-interactive);
+  background: var(--bg-base);
+  font-family: var(--font-family-base);
+  font-size: 0.83rem;
+  border-radius: 2px;
+  outline: none;
+}
+.talk-input-row input:focus { border-color: var(--color-progressive); }
+
+/* ── INFOBOX PREVIEW (actual Wikipedia infobox style) ── */
+.infobox-preview {
+  border: 1px solid #a2a9b1;
+  background: #f8f9fa;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  float: right;
+  clear: right;
+  margin: 0 0 1em 1em;
+  max-width: 240px;
+  width: 100%;
+}
+
+.infobox-preview caption {
+  background: #cee0f2;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 5px 8px;
+  border-bottom: 1px solid #a2a9b1;
+}
+
+.infobox-preview th {
+  background: #eaecf0;
+  padding: 4px 8px;
+  text-align: right;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 45%;
+  font-weight: bold;
+  border-top: 1px solid #a2a9b1;
+  font-size: 0.78rem;
+}
+
+.infobox-preview td {
+  padding: 4px 8px;
+  border-top: 1px solid #a2a9b1;
+  vertical-align: top;
+  font-size: 0.8rem;
+}
+
+.preview-wrap { overflow: auto; max-height: 320px; }
+
+/* ── HELPER BOX (like Wikipedia's "how to" notices) ── */
+.mw-helper {
+  background: #eaf3fb;
+  border: 1px solid #72a5d8;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.mw-helper h4 { font-size: 0.88rem; font-weight: bold; margin-bottom: 6px; color: var(--color-base); }
+.mw-helper ol { padding-left: 18px; }
+.mw-helper ol li { margin-bottom: 4px; }
+.mw-helper code { background: #fff; border: 1px solid var(--border-color); padding: 1px 4px; font-size: 0.8rem; }
+
+/* ── LOADER ── */
+.mw-loader { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(0,0,0,0.15); border-top-color: var(--color-progressive); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FOOTER ── */
+#mw-footer {
+  background: var(--bg-interactive);
+  border-top: 1px solid var(--border-color);
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  color: var(--color-subtle);
+  text-align: center;
+  margin-top: 24px;
+}
+#mw-footer a { color: var(--color-progressive); text-decoration: none; }
+#mw-footer a:hover { text-decoration: underline; }
+
+/* ── SMALL UTILITIES ── */
+.mw-divider { border: none; border-top: 1px solid var(--border-color); margin: 14px 0; }
+.text-muted { color: var(--color-subtle); }
+.text-small { font-size: 0.78rem; }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div id="mw-head">
+  <div class="mw-head-inner">
+    <a class="mw-logo" href="#">
+      <div class="mw-logo-icon"></div>
+      <div>
+        <div class="mw-logo-text">Wikipedia</div>
+        <span class="mw-logo-tagline">Infobox Creator Tool</span>
+      </div>
+    </a>
+    <div class="mw-head-nav">
+      <span class="text-muted text-small" style="margin-right:4px">Language:</span>
+      <button class="mw-lang-btn active" onclick="setUI('en')">English</button>
+      <span class="mw-head-sep">|</span>
+      <button class="mw-lang-btn" onclick="setUI('sw')">Kiswahili</button>
+      <span class="mw-head-sep">|</span>
+      <button class="mw-lang-btn" onclick="setUI('fr')">Français</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE ══ -->
+<div class="mw-page">
+
+  <!-- SIDEBAR -->
+  <div id="mw-sidebar">
+
+    <div class="sidebar-portlet">
+      <div class="sidebar-portlet-header" id="sb-nav-lbl">Navigation</div>
+      <ul>
+        <li class="active"><a id="sb-create">Create infobox</a></li>
+        <li><a onclick="goTab('tbl')" id="sb-table">Use plain table</a></li>
+        <li><a onclick="goTab('tmpl')" id="sb-tmpl">Create template</a></li>
+        <li><a onclick="checkTmpl()" id="sb-check">Check template</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-portlet">
+      <div class="sidebar-portlet-header" id="sb-type-lbl">Infobox type</div>
+      <ul id="sb-type-list"></ul>
+    </div>
+
+    <div class="sidebar-portlet">
+      <div class="sidebar-portlet-header" id="sb-wiki-lbl">Target Wikipedia</div>
+      <ul id="sb-wiki-list"></ul>
+    </div>
+
+    <div class="sidebar-portlet">
+      <div class="sidebar-portlet-header" id="sb-help-lbl">Help</div>
+      <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Help:Infobox" target="_blank" id="sb-doc">Infobox documentation</a></li>
+        <li><a href="https://www.mediawiki.org/wiki/Help:Templates" target="_blank" id="sb-tmpdoc">Template help</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mw-content">
+
+    <h1 class="mw-page-title-heading" id="page-title">Infobox Creator</h1>
+
+    <div class="mw-message-box notice" id="intro-msg">
+      <span class="mw-message-box-icon">ℹ️</span>
+      <div class="mbox-text" id="intro-text">
+        Fill in the form below to generate Wikipedia infobox code. The tool will check whether the template exists on your target Wikipedia, and offer alternatives if it does not.
+      </div>
+    </div>
+
+    <!-- Status banner for template check -->
+    <div id="status-banner"></div>
+
+    <!-- MAIN TOOL GRID -->
+    <div class="tool-grid">
+
+      <!-- LEFT: Form -->
+      <div>
+        <h2 class="mw-headline" id="form-heading">1. Choose type &amp; fill details</h2>
+
+        <div class="type-grid" id="type-grid"></div>
+
+        <div id="form-area"></div>
+      </div>
+
+      <!-- RIGHT: Output -->
+      <div>
+        <h2 class="mw-headline" id="output-heading">2. Generated code</h2>
+
+        <div class="wiki-lang-label" id="wiki-lang-lbl">Target Wikipedia language:</div>
+        <div class="wiki-lang-row" id="wiki-lang-row"></div>
+
+        <!-- Output tabs -->
+        <div class="output-tabs">
+          <div class="out-tab selected" id="ot1" onclick="goTab('ib')" id="ot-ib">Infobox</div>
+          <div class="out-tab" id="ot2" onclick="goTab('tbl')">Plain table</div>
+          <div class="out-tab" id="ot3" onclick="goTab('tmpl')">Create template</div>
+          <div class="out-tab" id="ot4" onclick="goTab('pv')">Preview</div>
+        </div>
+
+        <!-- Infobox code -->
+        <div class="out-panel active" id="op-ib">
+          <div class="mw-code-output" id="c-ib">
+            <div class="code-ph" id="code-ph">Fill in the form to generate wikitext…</div>
+          </div>
+        </div>
+
+        <!-- Plain table -->
+        <div class="out-panel" id="op-tbl">
+          <div class="mw-message-box notice" style="margin-bottom:10px">
+            <span class="mw-message-box-icon">💡</span>
+            <div class="mbox-text" id="tbl-notice">This wikitable works on <strong>any</strong> Wikipedia without needing a template.</div>
+          </div>
+          <div class="mw-code-output" id="c-tbl"></div>
+        </div>
+
+        <!-- Create template -->
+        <div class="out-panel" id="op-tmpl">
+          <div class="mw-helper" id="tmpl-helper">
+            <h4 id="tmpl-h">How to create the template on your Wikipedia</h4>
+            <ol id="tmpl-steps"><li>Select a language first</li></ol>
+          </div>
+          <div style="font-size:0.79rem;font-weight:bold;color:var(--color-subtle);margin-bottom:5px" id="tmpl-code-lbl">Template definition (paste this when creating the template page):</div>
+          <div class="mw-code-output" id="c-tmpl"></div>
+        </div>
+
+        <!-- Preview -->
+        <div class="out-panel" id="op-pv">
+          <div class="preview-wrap" id="pv-wrap">
+            <div class="code-ph">Fill in the form to see a preview…</div>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:10px">
+          <button class="mw-btn mw-btn-primary" id="copy-btn" onclick="doCopy()">Copy wikitext</button>
+          <button class="mw-btn mw-btn-secondary" id="chk-btn" onclick="checkTmpl()">Check if template exists</button>
+        </div>
+
+        <!-- AI Assistant -->
+        <hr class="mw-divider" style="margin-top:18px"/>
+        <h2 class="mw-headline" id="ai-heading">3. Ask the AI assistant</h2>
+
+        <div class="talk-box">
+          <div class="talk-header">
+            <span id="ai-hdr-lbl">💬 Assistant (powered by Claude)</span>
+            <button class="mw-btn mw-btn-quiet" onclick="autoFill()" id="af-btn" style="font-size:0.78rem;padding:2px 8px">Auto-fill ✨</button>
+          </div>
+          <div class="talk-thread" id="talk-thread">
+            <div class="talk-ph" id="talk-ph">Ask anything — "What does this field mean?", "How do I write a birth date?", or just give me a name and I'll suggest values.</div>
+          </div>
+          <div class="talk-input-row">
+            <input type="text" id="ai-in" placeholder="Type your question…" onkeydown="if(event.key==='Enter')sendAI()"/>
+            <button class="mw-btn mw-btn-primary" id="send-btn" onclick="sendAI()">Post</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<div id="mw-footer">
+  This tool is not affiliated with the Wikimedia Foundation. It is an open-source helper for Wikipedia editors. •
+  <a href="https://www.mediawiki.org/wiki/Help:Templates" target="_blank">MediaWiki template docs</a> •
+  <a href="https://en.wikipedia.org/wiki/Help:Infobox" target="_blank">Infobox help</a>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════
+const TR = {
+  en: {
+    pageTitle: "Infobox Creator",
+    introText: "Fill in the form below to generate Wikipedia infobox code. The tool will check whether the template exists on your target Wikipedia, and offer alternatives if it does not.",
+    formHeading: "1. Choose type & fill details",
+    outputHeading: "2. Generated code",
+    aiHeading: "3. Ask the AI assistant",
+    wikiLangLbl: "Target Wikipedia language:",
+    ot1:"Infobox", ot2:"Plain table", ot3:"Create template", ot4:"Preview",
+    tblNotice: "This wikitable works on <strong>any</strong> Wikipedia without needing a template.",
+    tmplH: "How to create the template on your Wikipedia",
+    tmplCodeLbl: "Template definition (paste this when creating the template page):",
+    copyBtn: "Copy wikitext", copied: "Copied!",
+    chkBtn: "Check if template exists",
+    aiHdr: "💬 Assistant (powered by Claude)",
+    afBtn: "Auto-fill ✨",
+    talkPh: "Ask anything — \"What does this field mean?\", \"How do I write a birth date?\", or just give me a name and I'll suggest values.",
+    sendBtn: "Post",
+    aiInPh: "Type your question…",
+    hint: "Fill in any fields you know. Leave others blank.",
+    sB:"Basic information", sP:"Personal details", sW:"Work & career", sE:"Additional info",
+    sbNavLbl:"Navigation", sbTypeLbl:"Infobox type", sbWikiLbl:"Target Wikipedia",
+    sbHelpLbl:"Help", sbCreate:"Create infobox", sbTable:"Use plain table",
+    sbTmpl:"Create template", sbCheck:"Check template",
+    sbDoc:"Infobox documentation", sbTmpdoc:"Template help",
+    checking: "Checking for template on",
+    ok: "Template found on",
+    missing: "Template not found on",
+    missingNote: "Switched to plain table tab. Use <strong>Create template</strong> tab to set it up once for everyone.",
+    neterr: "Could not reach Wikipedia API.",
+  },
+  sw: {
+    pageTitle: "Kitengo cha Kisanduku cha Habari",
+    introText: "Jaza fomu hapa chini ili kutengeneza msimbo wa kisanduku cha habari cha Wikipedia. Chombo hiki kitakagua kama template ipo kwenye Wikipedia unayolenga.",
+    formHeading: "1. Chagua aina na ujaze maelezo",
+    outputHeading: "2. Msimbo uliotengenezwa",
+    aiHeading: "3. Uliza msaidizi wa AI",
+    wikiLangLbl: "Lugha ya Wikipedia inayolengwa:",
+    ot1:"Kisanduku", ot2:"Jedwali rahisi", ot3:"Unda template", ot4:"Hakiki",
+    tblNotice: "Jedwali hili linafanya kazi kwenye Wikipedia <strong>yoyote</strong> bila kuhitaji template.",
+    tmplH: "Jinsi ya kuunda template kwenye Wikipedia yako",
+    tmplCodeLbl: "Msimbo wa template (bandika hii unapokuunda ukurasa wa template):",
+    copyBtn: "Nakili wikitext", copied: "Imenakiliwa!",
+    chkBtn: "Angalia kama template ipo",
+    aiHdr: "💬 Msaidizi (ina nguvu na Claude)",
+    afBtn: "Jaza kiotomatiki ✨",
+    talkPh: "Uliza chochote — \"Sehemu hii inamaanisha nini?\", \"Nipishe tarehe ya kuzaliwa?\", au nipe jina nikusaidie.",
+    sendBtn: "Tuma",
+    aiInPh: "Andika swali lako…",
+    hint: "Jaza sehemu unazozijua. Nyingine unaweza kuacha.",
+    sB:"Taarifa za msingi", sP:"Maelezo binafsi", sW:"Kazi na taaluma", sE:"Taarifa za ziada",
+    sbNavLbl:"Urambazaji", sbTypeLbl:"Aina ya kisanduku", sbWikiLbl:"Wikipedia inayolengwa",
+    sbHelpLbl:"Msaada", sbCreate:"Unda kisanduku", sbTable:"Tumia jedwali rahisi",
+    sbTmpl:"Unda template", sbCheck:"Kagua template",
+    sbDoc:"Maelezo ya kisanduku cha habari", sbTmpdoc:"Msaada wa template",
+    checking: "Inakagua template kwenye",
+    ok: "Template inapatikana kwenye",
+    missing: "Template haipatikani kwenye",
+    missingNote: "Umebadilishiwa kichupo cha jedwali rahisi. Tumia kichupo cha <strong>Unda template</strong> kuianzisha mara moja kwa wote.",
+    neterr: "Haikuweza kufikia Wikipedia API.",
+  },
+  fr: {
+    pageTitle: "Créateur d'infobox",
+    introText: "Remplissez le formulaire pour générer le wikicode d'une infobox. L'outil vérifiera si le modèle existe sur votre Wikipédia cible.",
+    formHeading: "1. Choisir le type et remplir",
+    outputHeading: "2. Code généré",
+    aiHeading: "3. Demander à l'assistant IA",
+    wikiLangLbl: "Langue Wikipédia cible :",
+    ot1:"Infobox", ot2:"Tableau simple", ot3:"Créer modèle", ot4:"Aperçu",
+    tblNotice: "Ce tableau fonctionne sur <strong>n'importe quel</strong> Wikipédia sans modèle.",
+    tmplH: "Comment créer le modèle sur votre Wikipédia",
+    tmplCodeLbl: "Code de définition du modèle (collez-le lors de la création) :",
+    copyBtn: "Copier le wikicode", copied: "Copié !",
+    chkBtn: "Vérifier si le modèle existe",
+    aiHdr: "💬 Assistant (propulsé par Claude)",
+    afBtn: "Remplissage auto ✨",
+    talkPh: "Posez n'importe quelle question sur les champs ou demandez des suggestions de valeurs.",
+    sendBtn: "Envoyer",
+    aiInPh: "Tapez votre question…",
+    hint: "Remplissez les champs que vous connaissez. Laissez les autres vides.",
+    sB:"Informations de base", sP:"Détails personnels", sW:"Travail", sE:"Informations supplémentaires",
+    sbNavLbl:"Navigation", sbTypeLbl:"Type d'infobox", sbWikiLbl:"Wikipédia cible",
+    sbHelpLbl:"Aide", sbCreate:"Créer infobox", sbTable:"Utiliser tableau simple",
+    sbTmpl:"Créer modèle", sbCheck:"Vérifier modèle",
+    sbDoc:"Documentation des infobox", sbTmpdoc:"Aide modèles",
+    checking: "Vérification du modèle sur",
+    ok: "Modèle trouvé sur",
+    missing: "Modèle introuvable sur",
+    missingNote: "Basculé vers le tableau simple. Utilisez <strong>Créer modèle</strong> pour l'installer une fois pour tous.",
+    neterr: "Impossible d'accéder à l'API Wikipedia.",
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const WLANGS = [
+  {id:"en", lbl:"English",    flag:"🇬🇧", host:"en.wikipedia.org"},
+  {id:"sw", lbl:"Kiswahili",  flag:"🇹🇿", host:"sw.wikipedia.org"},
+  {id:"fr", lbl:"Français",   flag:"🇫🇷", host:"fr.wikipedia.org"},
+  {id:"ar", lbl:"العربية",    flag:"🇸🇦", host:"ar.wikipedia.org"},
+  {id:"pt", lbl:"Português",  flag:"🇵🇹", host:"pt.wikipedia.org"},
+  {id:"am", lbl:"አማርኛ",      flag:"🇪🇹", host:"am.wikipedia.org"},
+  {id:"ha", lbl:"Hausa",      flag:"🇳🇬", host:"ha.wikipedia.org"},
+  {id:"yo", lbl:"Yorùbá",     flag:"🇳🇬", host:"yo.wikipedia.org"},
+  {id:"zu", lbl:"isiZulu",    flag:"🇿🇦", host:"zu.wikipedia.org"},
+  {id:"mg", lbl:"Malagasy",   flag:"🇲🇬", host:"mg.wikipedia.org"},
+];
+
+const TNAMES = {
+  person: {en:"Infobox person",sw:"Kisanduku cha mtu",fr:"Infobox Personne",ar:"معلومات شخص",pt:"Info/Biografia",am:"Infobox person",ha:"Infobox person",yo:"Infobox eniyan",zu:"Infobox person",mg:"Infobox person"},
+  place:  {en:"Infobox settlement",sw:"Kisanduku cha makazi",fr:"Infobox Commune",ar:"معلومات تقسيم إداري",pt:"Info/Município",am:"Infobox settlement",ha:"Infobox settlement",yo:"Infobox ipinle",zu:"Infobox settlement",mg:"Infobox settlement"},
+  org:    {en:"Infobox organization",sw:"Kisanduku cha shirika",fr:"Infobox Organisation",ar:"معلومات منظمة",pt:"Info/Organização",am:"Infobox organization",ha:"Infobox organization",yo:"Infobox agbari",zu:"Infobox organization",mg:"Infobox organization"},
+  animal: {en:"Speciesbox",sw:"Kisanduku cha spishi",fr:"Taxobox",ar:"معلومات نوع",pt:"Tabela biológica",am:"Speciesbox",ha:"Speciesbox",yo:"Speciesbox",zu:"Speciesbox",mg:"Speciesbox"},
+  book:   {en:"Infobox book",sw:"Kisanduku cha kitabu",fr:"Infobox Œuvre",ar:"معلومات كتاب",pt:"Info/Livro",am:"Infobox book",ha:"Infobox book",yo:"Infobox iwe",zu:"Infobox book",mg:"Infobox book"},
+  country:{en:"Infobox country",sw:"Kisanduku cha nchi",fr:"Infobox Pays",ar:"معلومات دولة",pt:"Info/País",am:"Infobox country",ha:"Infobox country",yo:"Infobox orilẹ-èdè",zu:"Infobox country",mg:"Infobox country"},
+};
+
+const TYPES = [
+  {id:"person", em:"👤", l:{en:"Person",      sw:"Mtu",       fr:"Personne"}},
+  {id:"place",  em:"📍", l:{en:"Place",       sw:"Mahali",    fr:"Lieu"}},
+  {id:"org",    em:"🏢", l:{en:"Organization",sw:"Shirika",   fr:"Organisation"}},
+  {id:"animal", em:"🐾", l:{en:"Animal",      sw:"Mnyama",    fr:"Animal"}},
+  {id:"book",   em:"📚", l:{en:"Book / Film", sw:"Kitabu",    fr:"Livre/Film"}},
+  {id:"country",em:"🌍", l:{en:"Country",     sw:"Nchi",      fr:"Pays"}},
+];
+
+const FIELDS = {
+  person:[
+    {k:"name",       l:{en:"Full name",          sw:"Jina kamili",          fr:"Nom complet"},          s:"B", h:{en:"e.g. Amina Juma Seif",sw:"mfano: Amina Juma Seif",fr:"ex. Amina Juma Seif"}},
+    {k:"image",      l:{en:"Image filename",      sw:"Jina la faili la picha",fr:"Nom du fichier image"}, s:"B", h:{en:"Example.jpg",sw:"Mfano.jpg",fr:"Exemple.jpg"}},
+    {k:"caption",    l:{en:"Image caption",       sw:"Maelezo ya picha",     fr:"Légende image"},         s:"B"},
+    {k:"birth_date", l:{en:"Date of birth",       sw:"Tarehe ya kuzaliwa",   fr:"Date de naissance"},     s:"P", h:{en:"15 March 1990",sw:"15 Machi 1990",fr:"15 mars 1990"}},
+    {k:"birth_place",l:{en:"Place of birth",      sw:"Mahali pa kuzaliwa",   fr:"Lieu de naissance"},     s:"P", h:{en:"Nairobi, Kenya",sw:"Nairobi, Kenya",fr:"Nairobi, Kenya"}},
+    {k:"death_date", l:{en:"Date of death",       sw:"Tarehe ya kifo",       fr:"Date de décès"},         s:"P"},
+    {k:"death_place",l:{en:"Place of death",      sw:"Mahali pa kifo",       fr:"Lieu de décès"},         s:"P"},
+    {k:"nationality",l:{en:"Nationality",         sw:"Utaifa",               fr:"Nationalité"},            s:"P"},
+    {k:"education",  l:{en:"Education",           sw:"Elimu",                fr:"Éducation"},             s:"P"},
+    {k:"occupation", l:{en:"Occupation",          sw:"Kazi",                 fr:"Profession"},            s:"W", h:{en:"Teacher, politician",sw:"Mwalimu, mwanasiasa",fr:"Enseignant, politicien"}},
+    {k:"years_active",l:{en:"Years active",       sw:"Miaka ya kazi",        fr:"Années actives"},        s:"W", h:{en:"2010–present",sw:"2010–sasa",fr:"2010–présent"}},
+    {k:"title",      l:{en:"Title / Position",    sw:"Cheo / Wadhifa",       fr:"Titre / Poste"},         s:"W"},
+    {k:"employer",   l:{en:"Employer",            sw:"Mwajiri",              fr:"Employeur"},             s:"W"},
+    {k:"spouse",     l:{en:"Spouse",              sw:"Mwenzi wa ndoa",       fr:"Conjoint(e)"},           s:"E"},
+    {k:"children",   l:{en:"Children",            sw:"Watoto",               fr:"Enfants"},               s:"E"},
+    {k:"awards",     l:{en:"Awards",              sw:"Tuzo",                 fr:"Prix"},                  s:"E"},
+    {k:"website",    l:{en:"Website",             sw:"Tovuti",               fr:"Site web"},              s:"E"},
+  ],
+  place:[
+    {k:"name",        l:{en:"Place name",    sw:"Jina la mahali",  fr:"Nom du lieu"},    s:"B"},
+    {k:"image",       l:{en:"Image",         sw:"Picha",           fr:"Image"},          s:"B"},
+    {k:"country",     l:{en:"Country",       sw:"Nchi",            fr:"Pays"},           s:"B"},
+    {k:"region",      l:{en:"Region / County",sw:"Mkoa",           fr:"Région"},         s:"B"},
+    {k:"population",  l:{en:"Population",    sw:"Idadi ya watu",   fr:"Population"},     s:"B"},
+    {k:"area_km2",    l:{en:"Area (km²)",    sw:"Eneo (km²)",      fr:"Superficie km²"}, s:"B"},
+    {k:"elevation_m", l:{en:"Elevation (m)", sw:"Mwinuko (m)",     fr:"Altitude (m)"},   s:"B"},
+    {k:"timezone",    l:{en:"Time zone",     sw:"Ukanda wa saa",   fr:"Fuseau horaire"}, s:"B"},
+    {k:"coordinates", l:{en:"Coordinates",   sw:"Kuratibu",        fr:"Coordonnées"},    s:"B"},
+    {k:"website",     l:{en:"Official website",sw:"Tovuti rasmi",  fr:"Site officiel"},  s:"B"},
+  ],
+  org:[
+    {k:"name",         l:{en:"Name",              sw:"Jina",           fr:"Nom"},             s:"B"},
+    {k:"image",        l:{en:"Logo",              sw:"Nembo",          fr:"Logo"},            s:"B"},
+    {k:"founded",      l:{en:"Founded",           sw:"Ilianzishwa",    fr:"Fondée"},          s:"B"},
+    {k:"headquarters", l:{en:"Headquarters",      sw:"Makao makuu",    fr:"Siège social"},    s:"B"},
+    {k:"type",         l:{en:"Type",              sw:"Aina",           fr:"Type"},            s:"B"},
+    {k:"industry",     l:{en:"Industry / Sector", sw:"Sekta",          fr:"Secteur"},         s:"B"},
+    {k:"products",     l:{en:"Products / Services",sw:"Bidhaa/Huduma", fr:"Produits"},        s:"B"},
+    {k:"num_employees",l:{en:"Number of employees",sw:"Wafanyakazi",   fr:"Employés"},        s:"B"},
+    {k:"website",      l:{en:"Website",           sw:"Tovuti",         fr:"Site web"},        s:"B"},
+  ],
+  animal:[
+    {k:"taxon",   l:{en:"Scientific name",    sw:"Jina la kisayansi", fr:"Nom scientifique"}, s:"B"},
+    {k:"name",    l:{en:"Common name",        sw:"Jina la kawaida",   fr:"Nom commun"},       s:"B"},
+    {k:"image",   l:{en:"Image",              sw:"Picha",             fr:"Image"},            s:"B"},
+    {k:"status",  l:{en:"Conservation status",sw:"Hali ya uhifadhi",  fr:"Statut UICN"},      s:"B", h:{en:"LC / NT / VU / EN / CR",sw:"LC / NT / VU / EN / CR",fr:"LC / NT / VU / EN / CR"}},
+    {k:"kingdom", l:{en:"Kingdom",            sw:"Ufalme",            fr:"Règne"},            s:"B"},
+    {k:"phylum",  l:{en:"Phylum",             sw:"Faila",             fr:"Embranchement"},    s:"B"},
+    {k:"classis", l:{en:"Class",              sw:"Darasa",            fr:"Classe"},           s:"B"},
+    {k:"ordo",    l:{en:"Order",              sw:"Oda",               fr:"Ordre"},            s:"B"},
+    {k:"familia", l:{en:"Family",             sw:"Familia",           fr:"Famille"},          s:"B"},
+    {k:"genus",   l:{en:"Genus",              sw:"Jenasi",            fr:"Genre"},            s:"B"},
+    {k:"species", l:{en:"Species",            sw:"Spishi",            fr:"Espèce"},           s:"B"},
+  ],
+  book:[
+    {k:"name",      l:{en:"Title",           sw:"Jina",               fr:"Titre"},            s:"B"},
+    {k:"image",     l:{en:"Cover image",     sw:"Picha ya jalada",    fr:"Image de couverture"},s:"B"},
+    {k:"author",    l:{en:"Author / Director",sw:"Mwandishi",         fr:"Auteur / Réalisateur"},s:"B"},
+    {k:"genre",     l:{en:"Genre",           sw:"Aina",               fr:"Genre"},            s:"B"},
+    {k:"language",  l:{en:"Language",        sw:"Lugha",              fr:"Langue"},           s:"B"},
+    {k:"pub_date",  l:{en:"Published / Released",sw:"Ilipochapishwa", fr:"Publication"},      s:"B"},
+    {k:"publisher", l:{en:"Publisher / Studio",sw:"Mchapishaji",      fr:"Éditeur"},          s:"B"},
+    {k:"pages",     l:{en:"Pages",           sw:"Kurasa",             fr:"Pages"},            s:"B"},
+    {k:"isbn",      l:{en:"ISBN",            sw:"ISBN",               fr:"ISBN"},             s:"B"},
+    {k:"website",   l:{en:"Website",         sw:"Tovuti",             fr:"Site web"},         s:"B"},
+  ],
+  country:[
+    {k:"common_name",         l:{en:"Country name",       sw:"Jina la nchi",       fr:"Nom du pays"},          s:"B"},
+    {k:"image_flag",          l:{en:"Flag image",         sw:"Picha ya bendera",   fr:"Image du drapeau"},     s:"B"},
+    {k:"image_coat",          l:{en:"Coat of arms image", sw:"Picha ya nembo",     fr:"Image des armoiries"},  s:"B"},
+    {k:"capital",             l:{en:"Capital city",       sw:"Mji mkuu",           fr:"Capitale"},             s:"B"},
+    {k:"official_languages",  l:{en:"Official languages", sw:"Lugha rasmi",        fr:"Langues officielles"},  s:"B"},
+    {k:"population_census",   l:{en:"Population",         sw:"Idadi ya watu",      fr:"Population"},           s:"B"},
+    {k:"area_km2",            l:{en:"Area (km²)",         sw:"Eneo (km²)",         fr:"Superficie km²"},       s:"B"},
+    {k:"currency",            l:{en:"Currency",           sw:"Sarafu",             fr:"Monnaie"},              s:"B"},
+    {k:"government_type",     l:{en:"Government type",    sw:"Aina ya serikali",   fr:"Régime politique"},     s:"B"},
+    {k:"leader_name1",        l:{en:"Head of state",      sw:"Mkuu wa nchi",       fr:"Chef d'État"},          s:"B"},
+    {k:"website",             l:{en:"Official website",   sw:"Tovuti rasmi",       fr:"Site officiel"},        s:"B"},
+  ],
+};
+
+const SEC_ORDER = ["B","P","W","E"];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let uiL = "en", outL = "en", sType = "person", vals = {}, aiH = [], aTab = "ib";
+const g = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+function init() {
+  renderSidebar();
+  renderTypeGrid();
+  renderForm();
+  renderWikiLangs();
+  applyTR();
+  genAll();
+}
+
+function setUI(l) {
+  uiL = l;
+  document.querySelectorAll('.mw-lang-btn').forEach((b,i) => b.classList.toggle('active', ['en','sw','fr'][i] === l));
+  renderSidebar();
+  renderTypeGrid();
+  renderForm();
+  applyTR();
+  genAll();
+}
+
+function applyTR() {
+  const t = TR[uiL];
+  const map = {
+    'page-title':'pageTitle','intro-text':'introText','form-heading':'formHeading',
+    'output-heading':'outputHeading','ai-heading':'aiHeading',
+    'wiki-lang-lbl':'wikiLangLbl','tbl-notice':'tblNotice',
+    'tmpl-h':'tmplH','tmpl-code-lbl':'tmplCodeLbl',
+    'ot1':'ot1','ot2':'ot2','ot3':'ot3','ot4':'ot4',
+    'copy-btn':'copyBtn','chk-btn':'chkBtn',
+    'ai-hdr-lbl':'aiHdr','af-btn':'afBtn','send-btn':'sendBtn',
+  };
+  for (const [id, key] of Object.entries(map)) {
+    const el = g(id);
+    if (el && t[key] !== undefined) {
+      if (key === 'tblNotice') el.innerHTML = t[key];
+      else el.textContent = t[key];
+    }
+  }
+  const aiin = g('ai-in'); if (aiin) aiin.placeholder = t.aiInPh;
+  const tph = g('talk-ph'); if (tph) tph.textContent = t.talkPh;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════════
+function renderSidebar() {
+  const t = TR[uiL];
+  // Type list
+  const tl = g('sb-type-list'); if (!tl) return;
+  tl.innerHTML = TYPES.map(tp =>
+    `<li class="${tp.id===sType?'active':''}">
+      <a onclick="selType('${tp.id}')">${tp.em} ${tp.l[uiL]||tp.l.en}</a>
+    </li>`
+  ).join('');
+  // Wiki list
+  g('sb-wiki-list').innerHTML = WLANGS.map(l =>
+    `<li class="${l.id===outL?'active':''}">
+      <a onclick="selWikiLang('${l.id}')">${l.flag} ${l.lbl}</a>
+    </li>`
+  ).join('');
+  // Labels
+  ['sb-nav-lbl','sb-type-lbl','sb-wiki-lbl','sb-help-lbl',
+   'sb-create','sb-table','sb-tmpl','sb-check','sb-doc','sb-tmpdoc'].forEach(id => {
+    const el = g(id); if (el && t[id.replace('sb-','sb').replace(/-/g,'').replace('sbnav','sbNavLbl').replace('sbtype','sbTypeLbl').replace('sbwiki','sbWikiLbl').replace('sbhelp','sbHelpLbl').replace('sbcreate','sbCreate').replace('sbtable','sbTable').replace('sbtmpl','sbTmpl').replace('sbcheck','sbCheck').replace('sbdoc','sbDoc').replace('sbtmpdoc','sbTmpdoc')]) {
+      // simplified key mapping
+    }
+  });
+  // just set text directly
+  const pairs = [
+    ['sb-nav-lbl','sbNavLbl'],['sb-type-lbl','sbTypeLbl'],['sb-wiki-lbl','sbWikiLbl'],
+    ['sb-help-lbl','sbHelpLbl'],['sb-create','sbCreate'],['sb-table','sbTable'],
+    ['sb-tmpl','sbTmpl'],['sb-check','sbCheck'],['sb-doc','sbDoc'],['sb-tmpdoc','sbTmpdoc'],
+  ];
+  pairs.forEach(([id, key]) => { const el = g(id); if (el && t[key]) el.textContent = t[key]; });
+}
+
+function selType(id) { sType = id; vals = {}; renderSidebar(); renderTypeGrid(); renderForm(); genAll(); hideBanner(); }
+function selWikiLang(id) { outL = id; renderSidebar(); renderWikiLangs(); genAll(); hideBanner(); }
+
+// ═══════════════════════════════════════════════════════════
+// TYPE GRID
+// ═══════════════════════════════════════════════════════════
+function renderTypeGrid() {
+  const grid = g('type-grid'); grid.innerHTML = '';
+  TYPES.forEach(tp => {
+    const d = document.createElement('div');
+    d.className = 'type-card' + (tp.id === sType ? ' selected' : '');
+    d.innerHTML = `<span class="tc-em">${tp.em}</span>${tp.l[uiL]||tp.l.en}`;
+    d.onclick = () => selType(tp.id);
+    grid.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// FORM
+// ═══════════════════════════════════════════════════════════
+function renderForm() {
+  const t = TR[uiL];
+  const fields = FIELDS[sType] || [];
+  const secNames = { B: t.sB, P: t.sP, W: t.sW, E: t.sE };
+  const secs = {};
+  fields.forEach(f => (secs[f.s] = secs[f.s] || []).push(f));
+
+  let h = `<p class="text-muted text-small" style="margin-bottom:10px">${t.hint}</p>`;
+  SEC_ORDER.forEach(s => {
+    if (!secs[s] || !secs[s].length) return;
+    h += `<div class="form-section-label">${secNames[s]||s}</div>`;
+    secs[s].forEach(f => {
+      const lbl = f.l[uiL] || f.l.en;
+      const hint = f.h ? (f.h[uiL] || f.h.en) : '';
+      h += `<div class="form-field">
+        <label for="f_${f.k}">${esc(lbl)}</label>
+        <input type="text" id="f_${f.k}" value="${esc(vals[f.k]||'')}" placeholder="${esc(hint)}"
+          oninput="vals['${f.k}']=this.value;genAll()"/>
+        ${hint ? `<div class="field-hint">${esc(hint)}</div>` : ''}
+      </div>`;
+    });
+  });
+  g('form-area').innerHTML = h;
+}
+
+// ═══════════════════════════════════════════════════════════
+// WIKI LANG ROW
+// ═══════════════════════════════════════════════════════════
+function renderWikiLangs() {
+  g('wiki-lang-row').innerHTML = WLANGS.map(l =>
+    `<button class="wiki-lang-btn ${l.id===outL?'selected':''}" onclick="selWikiLang('${l.id}')">${l.flag} ${l.lbl}</button>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// GENERATE ALL
+// ═══════════════════════════════════════════════════════════
+function getTmpl()  { return (TNAMES[sType]||{})[outL] || (TNAMES[sType]||{}).en || 'Infobox person'; }
+function getFields(){ return FIELDS[sType] || []; }
+function getHost()  { return (WLANGS.find(l => l.id === outL) || WLANGS[0]).host; }
+function getLangLbl(){ return (WLANGS.find(l => l.id === outL) || WLANGS[0]).lbl; }
+
+function genAll() { genIB(); genTbl(); genTmplCode(); genPreview(); }
+
+function genIB() {
+  const fields = getFields(), tmpl = getTmpl();
+  const lines = fields.map(f => `| ${f.k.padEnd(22)} = ${vals[f.k]||''}`);
+  const code = `{{${tmpl}\n${lines.join('\n')}\n}}`;
+  g('c-ib').innerHTML = shl(code);
+}
+
+function genTbl() {
+  const fields = getFields();
+  const name = vals.name || vals.common_name || vals.taxon || 'Subject';
+  const imgFields = fields.filter(f => f.k.startsWith('image') && vals[f.k]);
+  const imgLines = imgFields.map(f => `|-\n| colspan="2" style="text-align:center" | [[File:${vals[f.k]}|200px]]\n`).join('');
+  let rows = '';
+  fields.forEach(f => {
+    const v = vals[f.k];
+    if (!v || f.k.startsWith('image')) return;
+    const lbl = f.l[uiL] || f.l.en;
+    rows += `|-\n! ${lbl}\n| ${v}\n`;
+  });
+  const code = `{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgLines}${rows}|}`;
+  g('c-tbl').innerHTML = shl(code);
+}
+
+function genTmplCode() {
+  const fields = getFields(), tmpl = getTmpl(), host = getHost();
+  // Update helper steps
+  g('tmpl-steps').innerHTML = `
+    <li>Go to <a href="https://${host}" target="_blank">${host}</a></li>
+    <li>In the search box, enter: <code>Template:${tmpl}</code></li>
+    <li>If the page shows as a <span style="color:red">red link</span> (does not exist), click to create it</li>
+    <li>Paste the code below into the editor and click <strong>Save page</strong></li>
+    <li>The template is now installed. Return to your article and use the infobox code.</li>
+    <li><em>Tip: You can also post a request on the wiki's <strong>Village pump</strong> asking an admin to create it.</em></li>
+  `;
+  const paramRows = fields.map((f, i) =>
+    `| label${i+1} = ${f.l[uiL]||f.l.en}\n| data${i+1}  = {{{${f.k}|}}}`
+  ).join('\n');
+  const code = `{{Infobox\n| title = {{{name|{{{common_name|{{{taxon|}}}}}}}}}}\n${paramRows}\n}}<noinclude>\n[[Category:Infobox templates]]\n</noinclude>`;
+  g('c-tmpl').innerHTML = shl(code);
+}
+
+function genPreview() {
+  const fields = getFields();
+  const name = vals.name || vals.common_name || vals.taxon || '—';
+  const imgFields = fields.filter(f => f.k.startsWith('image') && vals[f.k]);
+  const imgRows = imgFields.map(f =>
+    `<tr><td colspan="2" style="text-align:center;padding:6px"><div style="background:#eaecf0;height:80px;display:flex;align-items:center;justify-content:center;font-size:0.77rem;color:#72777d">📷 ${esc(vals[f.k])}</div></td></tr>`
+  ).join('');
+  let dataRows = '';
+  fields.forEach(f => {
+    const v = vals[f.k];
+    if (!v || f.k.startsWith('image')) return;
+    const lbl = f.l[uiL] || f.l.en;
+    dataRows += `<tr><th>${esc(lbl)}</th><td>${esc(v)}</td></tr>`;
+  });
+  g('pv-wrap').innerHTML = (dataRows || imgRows)
+    ? `<table class="infobox-preview"><caption>${esc(name)}</caption>${imgRows}${dataRows}</table><div style="clear:both"></div>`
+    : '<div class="code-ph">Fill in the form to see a preview…</div>';
+}
+
+function shl(code) {
+  return esc(code)
+    .replace(/(\{\{|\}\})/g, '<span class="tok-bracket">$1</span>')
+    .replace(/(\[\[|\]\])/g, '<span style="color:#0645ad">$1</span>')
+    .replace(/\|(\s*[\w_]+\s*)=/g, '<span class="tok-pipe">|</span><span class="tok-key">$1</span>=');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════
+const TAB_MAP = { ib:'ot1', tbl:'ot2', tmpl:'ot3', pv:'ot4' };
+
+function goTab(id) {
+  aTab = id;
+  ['ib','tbl','tmpl','pv'].forEach(t => {
+    g('op-'+t).classList.toggle('active', t === id);
+    g(TAB_MAP[t]).classList.toggle('selected', t === id);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// COPY
+// ═══════════════════════════════════════════════════════════
+function getRaw() {
+  const fields = getFields(), tmpl = getTmpl();
+  if (aTab === 'ib') {
+    return `{{${tmpl}\n${fields.map(f => `| ${f.k.padEnd(22)} = ${vals[f.k]||''}`).join('\n')}\n}}`;
+  }
+  if (aTab === 'tbl') {
+    const name = vals.name || vals.common_name || 'Subject';
+    let rows = '';
+    fields.forEach(f => { const v = vals[f.k]; if (!v || f.k.startsWith('image')) return; rows += `|-\n! ${f.l[uiL]||f.l.en}\n| ${v}\n`; });
+    const imgs = fields.filter(f => f.k.startsWith('image') && vals[f.k]).map(f => `|-\n| colspan="2" style="text-align:center" | [[File:${vals[f.k]}|200px]]\n`).join('');
+    return `{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgs}${rows}|}`;
+  }
+  if (aTab === 'tmpl') {
+    const pr = fields.map((f,i) => `| label${i+1} = ${f.l[uiL]||f.l.en}\n| data${i+1}  = {{{${f.k}|}}}`).join('\n');
+    return `{{Infobox\n| title = {{{name|{{{common_name|{{{taxon|}}}}}}}}}}\n${pr}\n}}<noinclude>\n[[Category:Infobox templates]]\n</noinclude>`;
+  }
+  return '';
+}
+
+function doCopy() {
+  const code = getRaw(); if (!code) return;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = g('copy-btn'), t = TR[uiL];
+    btn.textContent = t.copied;
+    setTimeout(() => { btn.textContent = t.copyBtn; }, 2200);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// TEMPLATE EXISTENCE CHECK
+// ═══════════════════════════════════════════════════════════
+async function checkTmpl() {
+  const host = getHost(), tmpl = getTmpl(), lbl = getLangLbl(), t = TR[uiL];
+  showBanner('notice', `<span class="mw-message-box-icon"><span class="mw-loader"></span></span><div class="mbox-text">${t.checking} <strong>${lbl}</strong> (${host})…</div>`);
+  g('chk-btn').disabled = true;
+
+  try {
+    const url = `https://${host}/w/api.php?action=query&titles=Template:${encodeURIComponent(tmpl)}&format=json&origin=*`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const page = data.query.pages[Object.keys(data.query.pages)[0]];
+
+    if (page.missing !== undefined) {
+      showBanner('warning',
+        `<span class="mw-message-box-icon">⚠️</span>
+         <div class="mbox-text">
+           <strong>${t.missing} ${lbl}</strong> — <code>Template:${tmpl}</code> does not exist.<br>
+           <span class="text-small">${t.missingNote}</span>
+         </div>`);
+      goTab('tbl');
+      renderSidebar();
+    } else {
+      showBanner('success',
+        `<span class="mw-message-box-icon">✅</span>
+         <div class="mbox-text">
+           <strong>${t.ok} ${lbl}</strong> — <code>Template:${tmpl}</code><br>
+           <span class="text-small">Copy the wikitext from the <strong>Infobox</strong> tab and paste it into your article.</span>
+         </div>`);
+      goTab('ib');
+    }
+  } catch(e) {
+    showBanner('error', `<span class="mw-message-box-icon">❌</span><div class="mbox-text">${t.neterr} <span class="text-small">(${e.message})</span></div>`);
+  }
+
+  g('chk-btn').disabled = false;
+  g('chk-btn').textContent = TR[uiL].chkBtn;
+}
+
+function showBanner(type, html) {
+  const b = g('status-banner');
+  b.className = 'mw-message-box ' + type;
+  b.innerHTML = html;
+  b.style.display = 'flex';
+}
+
+function hideBanner() {
+  const b = g('status-banner');
+  b.style.display = 'none';
+  b.className = '';
+}
+
+// ═══════════════════════════════════════════════════════════
+// AI ASSISTANT
+// ═══════════════════════════════════════════════════════════
+function talkAppend(role, text) {
+  const thread = g('talk-thread');
+  const ph = g('talk-ph'); if (ph) ph.style.display = 'none';
+  const d = document.createElement('div');
+  d.className = 'talk-msg ' + role;
+  const sig = role === 'user'
+    ? `<div class="talk-sig"><a>You</a></div>`
+    : `<div class="talk-sig"><a>AI assistant</a> (Claude)</div>`;
+  d.innerHTML = sig + `<div>${esc(text).replace(/\n/g,'<br>')}</div>`;
+  thread.appendChild(d);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function sysPrompt() {
+  return `You are a helpful Wikipedia infobox editor assistant.
+Current infobox type: ${sType}. UI language: ${uiL}. Target Wikipedia: ${outL} (${getHost()}).
+Template name: ${getTmpl()}. Current field values: ${JSON.stringify(vals)}.
+Help the user understand fields, suggest values, and explain template issues.
+Respond in the same language the user uses. Keep answers concise and practical.`;
+}
+
+async function sendAI() {
+  const inp = g('ai-in'), msg = inp.value.trim(); if (!msg) return;
+  inp.value = '';
+  talkAppend('user', msg);
+  aiH.push({ role: 'user', content: msg });
+  const btn = g('send-btn'); btn.disabled = true; btn.innerHTML = '<span class="mw-loader"></span>';
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: sysPrompt(), messages: aiH })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || "Sorry, no response received.";
+    aiH.push({ role: 'assistant', content: reply });
+    talkAppend('ai', reply);
+  } catch(e) {
+    talkAppend('ai', 'Connection error. Please check your internet connection.');
+  }
+  btn.disabled = false;
+  btn.textContent = TR[uiL].sendBtn;
+}
+
+async function autoFill() {
+  const btn = g('af-btn'); btn.disabled = true; btn.innerHTML = '<span class="mw-loader"></span>';
+  const fields = getFields();
+  const existing = Object.entries(vals).filter(([k,v]) => v).map(([k,v]) => `${k}: ${v}`).join('; ');
+  const prompt = `Suggest realistic Wikipedia infobox values for a ${sType}.
+${existing ? 'Known data: ' + existing : 'No data provided — create a realistic example from an African country.'}
+Field keys to fill: ${fields.map(f => f.k).join(', ')}.
+Return ONLY a flat JSON object. Skip any keys containing "image". Values must be short strings.`;
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 800,
+        system: "Return ONLY valid JSON. No markdown, no backticks, no explanation.",
+        messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await res.json();
+    const text = (data.content?.[0]?.text || '{}').replace(/```json|```/g, '').trim();
+    const sugg = JSON.parse(text);
+    Object.entries(sugg).forEach(([k, v]) => {
+      if (!vals[k]) { vals[k] = String(v); const inp = g('f_' + k); if (inp) inp.value = vals[k]; }
+    });
+    genAll();
+    talkAppend('ai', uiL === 'sw' ? 'Nimejaza maelezo ya mfano. Badilisha na taarifa halisi ya mtu/mahali halisi.' :
+      uiL === 'fr' ? 'Exemples remplis. Modifiez avec les vraies informations.' :
+      'Example values filled in. Please replace them with the real information about the subject.');
+  } catch(e) {
+    talkAppend('ai', 'Could not auto-fill. Try asking me a question instead.');
+  }
+  btn.disabled = false; btn.textContent = TR[uiL].afBtn;
+}
+
+// ═══════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
