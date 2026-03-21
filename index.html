@@ -1116,20 +1116,74 @@ function genTbl() {
   g('c-tbl').innerHTML = shl(code);
 }
 
+// Map of Wikipedia language code → which field label language to use.
+// If we have a direct translation, use it. Otherwise fall back to English.
+// This ensures sw.wikipedia.org gets Kiswahili labels, fr.wikipedia.org gets French, etc.
+function tmplLabelLang() {
+  // outL is the target wiki language. We use it as the label language if we have
+  // translations for it in our FIELDS data; otherwise fall back to English.
+  const supported = ['en','sw','fr'];
+  return supported.includes(outL) ? outL : 'en';
+}
+
+// Village pump page names per wiki language (where editors ask admins for help)
+const VILLAGE_PUMP = {
+  en: "Wikipedia:Village pump (proposals)",
+  sw: "Wikipedia:Mkutano wa kijiji",
+  fr: "Wikipédia:Le Bistro",
+  ar: "ويكيبيديا:مستودع",
+  pt: "Wikipédia:Esplanada",
+  default: "Wikipedia:Village pump",
+};
+
+// Step instructions in the target wiki's language
+const TMPL_STEPS_TEXT = {
+  en: (host, tmpl, pump) => [
+    `Go to <a href="https://${host}" target="_blank">${host}</a>`,
+    `In the search box, enter: <code>Template:${tmpl}</code>`,
+    `If the page shows as a <span style="color:red">red link</span> (does not exist), click to create it`,
+    `Paste the code below into the editor and click <strong>Save page</strong>`,
+    `The template is now installed. Return to your article and use the infobox code.`,
+    `<em>Tip: You can also post a request on <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a> asking an admin to create it.</em>`,
+  ],
+  sw: (host, tmpl, pump) => [
+    `Nenda kwenye <a href="https://${host}" target="_blank">${host}</a>`,
+    `Katika sanduku la utafutaji, andika: <code>Kielezo:${tmpl}</code>`,
+    `Ikiwa ukurasa unaonekana kama <span style="color:red">kiungo nyekundu</span> (haupo), bonyeza kuunda`,
+    `Bandika msimbo hapa chini kwenye kihariri na ubonyeze <strong>Hifadhi ukurasa</strong>`,
+    `Kiolezo kimewekwa sasa. Rudi kwenye makala yako na utumie msimbo wa kisanduku.`,
+    `<em>Kidokezo: Unaweza pia kutuma ombi kwenye <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a> kuomba msimamizi kuunda.</em>`,
+  ],
+  fr: (host, tmpl, pump) => [
+    `Allez sur <a href="https://${host}" target="_blank">${host}</a>`,
+    `Dans la barre de recherche, entrez : <code>Modèle:${tmpl}</code>`,
+    `Si la page apparaît comme un <span style="color:red">lien rouge</span> (inexistante), cliquez pour la créer`,
+    `Collez le code ci-dessous dans l'éditeur et cliquez sur <strong>Publier les modifications</strong>`,
+    `Le modèle est maintenant installé. Revenez à votre article et utilisez le code d'infobox.`,
+    `<em>Conseil : Vous pouvez aussi demander à un administrateur sur <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a>.</em>`,
+  ],
+};
+
 function genTmplCode() {
-  const fields = getFields(), tmpl = getTmpl(), host = getHost();
-  // Update helper steps
-  g('tmpl-steps').innerHTML = `
-    <li>Go to <a href="https://${host}" target="_blank">${host}</a></li>
-    <li>In the search box, enter: <code>Template:${tmpl}</code></li>
-    <li>If the page shows as a <span style="color:red">red link</span> (does not exist), click to create it</li>
-    <li>Paste the code below into the editor and click <strong>Save page</strong></li>
-    <li>The template is now installed. Return to your article and use the infobox code.</li>
-    <li><em>Tip: You can also post a request on the wiki's <strong>Village pump</strong> asking an admin to create it.</em></li>
-  `;
-  const paramRows = fields.map((f, i) =>
-    `| label${i+1} = ${f.l[uiL]||f.l.en}\n| data${i+1}  = {{{${f.k}|}}}`
-  ).join('\n');
+  const fields  = getFields();
+  const tmpl    = getTmpl();
+  const host    = getHost();
+  const lblLang = tmplLabelLang();           // language for the labels INSIDE the template
+  const pump    = VILLAGE_PUMP[outL] || VILLAGE_PUMP.default;
+
+  // ── Helper steps in the UI language (what the user reads) ──
+  const stepsFn = TMPL_STEPS_TEXT[uiL] || TMPL_STEPS_TEXT.en;
+  g('tmpl-steps').innerHTML = stepsFn(host, tmpl, pump)
+    .map(s => `<li>${s}</li>`).join('');
+
+  // ── Template definition: labels in the TARGET wiki's language ──
+  const paramRows = fields.map((f, i) => {
+    const label = f.l[lblLang] || f.l.en;   // ← use target wiki language here
+    return `| label${i+1} = ${label}\n| data${i+1}  = {{{${f.k}|}}}`;
+  }).join('\n');
+
+  // Title param: try the target language's word for "name" field label
+  const titleLabel = fields.find(f => f.k === 'name' || f.k === 'common_name' || f.k === 'taxon');
   const code = `{{Infobox\n| title = {{{name|{{{common_name|{{{taxon|}}}}}}}}}}\n${paramRows}\n}}<noinclude>\n[[Category:Infobox templates]]\n</noinclude>`;
   g('c-tmpl').innerHTML = shl(code);
 }
