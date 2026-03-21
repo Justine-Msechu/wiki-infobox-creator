@@ -1176,15 +1176,46 @@ function genTmplCode() {
   g('tmpl-steps').innerHTML = stepsFn(host, tmpl, pump)
     .map(s => `<li>${s}</li>`).join('');
 
-  // ── Template definition: labels in the TARGET wiki's language ──
-  const paramRows = fields.map((f, i) => {
-    const label = f.l[lblLang] || f.l.en;   // ← use target wiki language here
-    return `| label${i+1} = ${label}\n| data${i+1}  = {{{${f.k}|}}}`;
-  }).join('\n');
+  // ── Template definition: fully self-contained wikitable ──
+  // We do NOT use {{Infobox}} as a base because on many wikis (e.g. sw.wikipedia.org)
+  // {{Infobox}} does not exist, which causes "Template loop detected" errors.
+  // This pure wikitable has ZERO external dependencies and works on any MediaWiki wiki.
 
-  // Title param: try the target language's word for "name" field label
-  const titleLabel = fields.find(f => f.k === 'name' || f.k === 'common_name' || f.k === 'taxon');
-  const code = `{{Infobox\n| title = {{{name|{{{common_name|{{{taxon|}}}}}}}}}}\n${paramRows}\n}}<noinclude>\n[[Category:Infobox templates]]\n</noinclude>`;
+  const imgField = fields.find(f => f.k === 'image' || f.k === 'image_flag');
+  const imgRow = imgField
+    ? `|-\n| colspan="2" style="text-align:center; padding:4px;" | {{#if:{{{${imgField.k}|}}}|[[File:{{{${imgField.k}}|}}}|220px|center|{{{caption|}}}}]}}\n`
+    : '';
+
+  // Only show a row when the parameter is actually provided ({{#if:}})
+  const dataRows = fields
+    .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
+    .map(f => {
+      const label = f.l[lblLang] || f.l.en;
+      return `{{#if:{{{${f.k}|}}}\n|{{!}}-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap;" {{!}} ${label}\n{{!}} style="padding:4px 6px; font-size:88%;" {{!}} {{{${f.k}}}}}}`;
+    }).join('\n');
+
+  // Category name in the target language
+  const categoryName = outL === 'sw' ? 'Violezo vya kisanduku cha habari'
+    : outL === 'fr' ? 'Modèle d\'infobox'
+    : 'Infobox templates';
+
+  // Usage example in the target language
+  const usageHeading = outL === 'sw' ? 'Matumizi' : outL === 'fr' ? 'Utilisation' : 'Usage';
+
+  const code = `<includeonly>{| class="infobox" style="border:1px solid #a2a9b1; background:#f8f9fa; width:22em; float:right; clear:right; margin:0 0 1em 1em; border-collapse:collapse; font-size:88%;"
+|+ style="background:#cee0f2; font-weight:bold; padding:6px; text-align:center;" | {{{name|{{{common_name|{{{taxon|}}}}}}}}}
+${imgRow}${dataRows}
+|}</includeonly><noinclude>
+== ${usageHeading} ==
+<pre>
+{{${tmpl}
+${fields.map(f => `| ${f.k.padEnd(20)} = `).join('\n')}
+}}
+</pre>
+
+[[Category:${categoryName}]]
+</noinclude>`;
+
   g('c-tmpl').innerHTML = shl(code);
 }
 
@@ -1243,8 +1274,21 @@ function getRaw() {
     return `{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgs}${rows}|}`;
   }
   if (aTab === 'tmpl') {
-    const pr = fields.map((f,i) => `| label${i+1} = ${f.l[uiL]||f.l.en}\n| data${i+1}  = {{{${f.k}|}}}`).join('\n');
-    return `{{Infobox\n| title = {{{name|{{{common_name|{{{taxon|}}}}}}}}}}\n${pr}\n}}<noinclude>\n[[Category:Infobox templates]]\n</noinclude>`;
+    const lblLang = ['en','sw','fr'].includes(outL) ? outL : 'en';
+    const imgField = fields.find(f => f.k === 'image' || f.k === 'image_flag');
+    const imgRow = imgField
+      ? `|-\n| colspan="2" style="text-align:center; padding:4px;" | {{#if:{{{${imgField.k}|}}}|[[File:{{{${imgField.k}}|}}}|220px|center|{{{caption|}}}]]}}\n`
+      : '';
+    const dataRows = fields
+      .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
+      .map(f => {
+        const label = f.l[lblLang] || f.l.en;
+        return `{{#if:{{{${f.k}|}}}\n|{{!}}-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap;" {{!}} ${label}\n{{!}} style="padding:4px 6px; font-size:88%;" {{!}} {{{${f.k}}}}}}`;
+      }).join('\n');
+    const cat = outL === 'sw' ? 'Violezo vya kisanduku cha habari' : outL === 'fr' ? "Modèle d'infobox" : 'Infobox templates';
+    const usage = outL === 'sw' ? 'Matumizi' : outL === 'fr' ? 'Utilisation' : 'Usage';
+    const usagePre = fields.map(f => `| ${f.k.padEnd(20)} = `).join('\n');
+    return `<includeonly>{| class="infobox" style="border:1px solid #a2a9b1; background:#f8f9fa; width:22em; float:right; clear:right; margin:0 0 1em 1em; border-collapse:collapse; font-size:88%;"\n|+ style="background:#cee0f2; font-weight:bold; padding:6px; text-align:center;" | {{{name|{{{common_name|{{{taxon|}}}}}}}}}\n${imgRow}${dataRows}\n|}</includeonly><noinclude>\n== ${usage} ==\n<pre>\n{{${tmpl}\n${usagePre}\n}}\n</pre>\n\n[[Category:${cat}]]\n</noinclude>`;
   }
   return '';
 }
