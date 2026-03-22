@@ -1205,7 +1205,7 @@ function genTmplCode() {
   // Image row: only render [[File:...]] when the image param is not empty
   // {{#if:}} here is OUTSIDE any table cell so no {{!}} needed — plain | works
   const imgRow = imgPk
-    ? `|-\n| colspan="2" style="text-align:center; padding:6px;" | {{#if:{{{${imgPk}|}}}|[[File:{{{${imgPk}}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`
+    ? `|-\n| colspan="2" style="text-align:center; padding:6px;" | {{#if:{{{${imgPk}|}}}|[[File:{{{${imgPk}|}}}{{!}}220px{{!}}center{{!}}{{{${captPk}|}}}]]}}\n`
     : '';
 
   // All other rows — unconditional, simple wikitable syntax
@@ -1307,7 +1307,7 @@ function getRaw() {
     const imgPk     = imgField  ? fkey(imgField)  : null;
     const captPk    = captField ? fkey(captField) : (outL==='sw'?'maelezo':outL==='fr'?'legende':'caption');
     const imgRow    = imgPk
-      ? `|-\n| colspan="2" style="text-align:center; padding:6px;" | {{#if:{{{${imgPk}|}}}|[[File:{{{${imgPk}}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`
+      ? `|-\n| colspan="2" style="text-align:center; padding:6px;" | {{#if:{{{${imgPk}|}}}|[[File:{{{${imgPk}|}}}{{!}}220px{{!}}center{{!}}{{{${captPk}|}}}]]}}\n`
       : '';
     const dataRows = fields
       .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
