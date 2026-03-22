@@ -7,9 +7,6 @@
 <!-- Wikipedia uses Linux Libertine for display headings -->
 <link href="https://fonts.googleapis.com/css2?family=Linux+Libertine+O&family=Linux+Biolinum+O&display=swap" rel="stylesheet"/>
 <style>
-/* ═══════════════════════════════════════════════════
-   WIKIPEDIA VECTOR 2022 SKIN — faithful recreation
-═══════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -46,7 +43,7 @@ body {
   background: var(--bg-subtle);
 }
 
-/* ── SITE HEADER (Wikipedia top bar) ── */
+/*SITE HEADER*/
 #mw-head {
   background: var(--bg-base);
   border-bottom: 1px solid var(--border-color);
@@ -67,7 +64,7 @@ body {
   gap: 16px;
 }
 
-/* Wikipedia logo area */
+/*logo area */
 .mw-logo {
   display: flex;
   align-items: center;
@@ -121,7 +118,7 @@ body {
 
 .mw-head-sep { color: var(--border-color); font-size: 0.8rem; }
 
-/* ── PAGE LAYOUT ── */
+/*PAGE LAYOUT*/
 .mw-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -134,7 +131,7 @@ body {
 
 @media (max-width: 800px) { .mw-page { grid-template-columns: 1fr; } }
 
-/* ── SIDEBAR ── */
+/*SIDEBAR*/
 #mw-sidebar {
   background: var(--bg-base);
   border: 1px solid var(--border-color);
@@ -172,7 +169,7 @@ body {
 
 .sidebar-portlet + .sidebar-portlet { border-top: 1px solid var(--border-color); }
 
-/* ── MAIN CONTENT ── */
+/* MAIN CONTEN */
 #mw-content {
   background: var(--bg-base);
   border: 1px solid var(--border-color);
@@ -180,7 +177,7 @@ body {
   min-height: 600px;
 }
 
-/* ── PAGE TITLE (Wikipedia h1 style) ── */
+/*  PAGE TITLE  */
 .mw-page-title-heading {
   font-family: var(--font-family-heading);
   font-size: 2rem;
@@ -192,7 +189,7 @@ body {
   line-height: 1.3;
 }
 
-/* ── CONTENT TABS (like Wikipedia's edit/view/history tabs) ── */
+/* CONTENT TABS */
 .mw-content-tabs {
   display: flex;
   border-bottom: 1px solid var(--border-color);
@@ -223,7 +220,7 @@ body {
   cursor: default;
 }
 
-/* ── SECTION HEADINGS ── */
+/*  SECTION HEADINGS */
 .mw-headline {
   font-family: var(--font-family-heading);
   font-size: 1.2rem;
@@ -242,7 +239,7 @@ body {
   color: var(--color-base);
 }
 
-/* ── NOTICE BOXES (Wikipedia hatnote / mbox style) ── */
+/*  NOTICE BOXES  */
 .mw-message-box {
   border: 1px solid var(--border-color);
   padding: 8px 12px;
@@ -264,7 +261,7 @@ body {
 /* Status banner (for template check) */
 #status-banner { display: none; margin-bottom: 14px; }
 
-/* ── TWO-COLUMN LAYOUT FOR FORM + OUTPUT ── */
+/* TWO-COLUMN LAYOUT FOR FORM + OUTPUT  */
 .tool-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -274,7 +271,7 @@ body {
 
 @media (max-width: 700px) { .tool-grid { grid-template-columns: 1fr; } }
 
-/* ── TYPE SELECTOR (styled like Wikipedia category boxes) ── */
+/* TYPE SELECTOR  */
 .type-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -296,7 +293,7 @@ body {
 .type-card.selected { background: #eaf3fb; border-color: var(--color-progressive); color: var(--color-progressive); font-weight: bold; }
 .type-card .tc-em { display: block; font-size: 1.2rem; margin-bottom: 2px; }
 
-/* ── FORM ELEMENTS ── */
+/* FORM ELEMENTS */
 .form-field { margin-bottom: 10px; }
 
 .form-field label {
@@ -345,7 +342,7 @@ body {
   margin: 14px 0 8px;
 }
 
-/* ── WIKIPEDIA-STYLE BUTTONS ── */
+/*  BUTTONS  */
 .mw-btn {
   display: inline-flex;
   align-items: center;
@@ -387,7 +384,7 @@ body {
 
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
-/* ── CODE / WIKITEXT OUTPUT BOX ── */
+/*  CODE / WIKITEXT OUTPUT BOX  */
 .mw-code-output {
   background: var(--bg-subtle);
   border: 1px solid var(--border-color);
@@ -404,13 +401,13 @@ body {
 
 .code-ph { color: var(--color-placeholder); font-family: var(--font-family-base); font-style: italic; text-align: center; padding: 20px 0; }
 
-/* Syntax highlight colors (subtle, Wikipedia-like) */
+/* Syntax highlight colors  */
 .tok-bracket { color: #0645ad; font-weight: bold; }
 .tok-key     { color: #00522b; }
 .tok-tmpl    { color: #0645ad; }
 .tok-pipe    { color: #555; }
 
-/* ── OUTPUT TABS ── */
+/*  OUTPUT TABS */
 .output-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 0; }
 .out-tab { padding: 6px 12px; font-size: 0.81rem; cursor: pointer; color: var(--color-progressive); border: 1px solid transparent; border-bottom: none; background: var(--bg-subtle); margin-bottom: -1px; white-space: nowrap; }
 .out-tab:hover { background: var(--bg-interactive); }
@@ -424,61 +421,8 @@ body {
 .wiki-lang-btn { padding: 3px 8px; font-size: 0.77rem; border: 1px solid var(--border-color); background: var(--bg-subtle); cursor: pointer; color: var(--color-progressive); border-radius: 2px; font-family: var(--font-family-base); transition: all 0.1s; }
 .wiki-lang-btn:hover { background: var(--bg-interactive); }
 .wiki-lang-btn.selected { background: var(--color-progressive); color: #fff; border-color: var(--color-progressive-hover); }
-
-/* ── AI ASSISTANT (styled as a Wikipedia talk-page thread) ── */
-.talk-box {
-  border: 1px solid var(--border-color);
-  background: var(--bg-base);
-}
-
-.talk-header {
-  background: var(--bg-interactive);
-  border-bottom: 1px solid var(--border-color);
-  padding: 6px 12px;
-  font-size: 0.82rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.talk-thread {
-  padding: 10px 12px;
-  max-height: 180px;
-  overflow-y: auto;
-  font-size: 0.83rem;
-  line-height: 1.55;
-}
-
-.talk-ph { color: var(--color-subtle); font-style: italic; }
-
-.talk-msg { margin-bottom: 8px; padding-left: 16px; border-left: 2px solid var(--border-color-subtle); }
-.talk-msg.user { border-left-color: var(--color-progressive); }
-.talk-msg.ai   { border-left-color: var(--color-success); }
-.talk-msg .talk-sig { font-size: 0.75rem; color: var(--color-subtle); margin-bottom: 2px; }
-.talk-msg .talk-sig a { color: var(--color-progressive); }
-
-.talk-input-row {
-  display: flex;
-  gap: 6px;
-  padding: 8px 12px;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-subtle);
-}
-
-.talk-input-row input {
-  flex: 1;
-  padding: 5px 8px;
-  border: 1px solid var(--border-color-interactive);
-  background: var(--bg-base);
-  font-family: var(--font-family-base);
-  font-size: 0.83rem;
-  border-radius: 2px;
-  outline: none;
-}
-.talk-input-row input:focus { border-color: var(--color-progressive); }
-
-/* ── INFOBOX PREVIEW (actual Wikipedia infobox style) ── */
+   
+/* INFOBOX PREVIEW  */
 .infobox-preview {
   border: 1px solid #a2a9b1;
   background: #f8f9fa;
@@ -521,7 +465,7 @@ body {
 
 .preview-wrap { overflow: auto; max-height: 320px; }
 
-/* ── HELPER BOX (like Wikipedia's "how to" notices) ── */
+/* HELPER BOX  */
 .mw-helper {
   background: #eaf3fb;
   border: 1px solid #72a5d8;
@@ -535,11 +479,11 @@ body {
 .mw-helper ol li { margin-bottom: 4px; }
 .mw-helper code { background: #fff; border: 1px solid var(--border-color); padding: 1px 4px; font-size: 0.8rem; }
 
-/* ── LOADER ── */
+/* LOADER  */
 .mw-loader { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(0,0,0,0.15); border-top-color: var(--color-progressive); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── FOOTER ── */
+/* FOOTER  */
 #mw-footer {
   background: var(--bg-interactive);
   border-top: 1px solid var(--border-color);
@@ -552,7 +496,7 @@ body {
 #mw-footer a { color: var(--color-progressive); text-decoration: none; }
 #mw-footer a:hover { text-decoration: underline; }
 
-/* ── SMALL UTILITIES ── */
+/* SMALL UTILITIES */
 .mw-divider { border: none; border-top: 1px solid var(--border-color); margin: 14px 0; }
 .text-muted { color: var(--color-subtle); }
 .text-small { font-size: 0.78rem; }
@@ -560,7 +504,7 @@ body {
 </head>
 <body>
 
-<!-- ══ HEADER ══ -->
+<!-- HEADER -->
 <div id="mw-head">
   <div class="mw-head-inner">
     <a class="mw-logo" href="#">
@@ -581,7 +525,7 @@ body {
   </div>
 </div>
 
-<!-- ══ PAGE ══ -->
+<!-- PAGE -->
 <div class="mw-page">
 
   <!-- SIDEBAR -->
@@ -696,25 +640,6 @@ body {
           <button class="mw-btn mw-btn-primary" id="copy-btn" onclick="doCopy()">Copy wikitext</button>
           <button class="mw-btn mw-btn-secondary" id="chk-btn" onclick="checkTmpl()">Check if template exists</button>
         </div>
-
-        <!-- AI Assistant -->
-        <hr class="mw-divider" style="margin-top:18px"/>
-        <h2 class="mw-headline" id="ai-heading">3. Ask the AI assistant</h2>
-
-        <div class="talk-box">
-          <div class="talk-header">
-            <span id="ai-hdr-lbl">💬 Assistant (powered by Claude)</span>
-            <button class="mw-btn mw-btn-quiet" onclick="autoFill()" id="af-btn" style="font-size:0.78rem;padding:2px 8px">Auto-fill ✨</button>
-          </div>
-          <div class="talk-thread" id="talk-thread">
-            <div class="talk-ph" id="talk-ph">Ask anything — "What does this field mean?", "How do I write a birth date?", or just give me a name and I'll suggest values.</div>
-          </div>
-          <div class="talk-input-row">
-            <input type="text" id="ai-in" placeholder="Type your question…" onkeydown="if(event.key==='Enter')sendAI()"/>
-            <button class="mw-btn mw-btn-primary" id="send-btn" onclick="sendAI()">Post</button>
-          </div>
-        </div>
-
       </div>
     </div>
 
@@ -729,9 +654,7 @@ body {
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-// TRANSLATIONS
-// ═══════════════════════════════════════════════════════════
+//Translation:
 const TR = {
   en: {
     pageTitle: "Infobox Creator",
@@ -825,9 +748,7 @@ const TR = {
   }
 };
 
-// ═══════════════════════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════════════════════
+//Language:
 const WLANGS = [
   {id:"en", lbl:"English",    flag:"🇬🇧", host:"en.wikipedia.org"},
   {id:"sw", lbl:"Kiswahili",  flag:"🇹🇿", host:"sw.wikipedia.org"},
@@ -949,9 +870,7 @@ const FIELDS = {
 }
 const SEC_ORDER = ["B","P","W","E"];
 
-// ═══════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════
+//State:
 let uiL = "en", outL = "en", sType = "person", vals = {}, aiH = [], aTab = "ib";
 const g = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -963,9 +882,7 @@ const fkey = f => (f.kw && (f.kw[outL] || f.kw.en)) || f.k;
 // flabel: returns the field label in the TARGET wiki language (for inside template code)
 const flabel = f => { const ll = ['en','sw','fr'].includes(outL) ? outL : 'en'; return f.l[ll] || f.l.en; };
 
-// ═══════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════
+//Init function:
 function init() {
   renderSidebar();
   renderTypeGrid();
@@ -1007,9 +924,7 @@ function applyTR() {
   const tph = g('talk-ph'); if (tph) tph.textContent = t.talkPh;
 }
 
-// ═══════════════════════════════════════════════════════════
-// SIDEBAR
-// ═══════════════════════════════════════════════════════════
+//Slider:
 function renderSidebar() {
   const t = TR[uiL];
   // Type list
@@ -1058,9 +973,7 @@ function renderTypeGrid() {
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-// FORM
-// ═══════════════════════════════════════════════════════════
+//Form:
 function renderForm() {
   const t = TR[uiL];
   const fields = FIELDS[sType] || [];
@@ -1090,18 +1003,14 @@ function renderForm() {
   g('form-area').innerHTML = h;
 }
 
-// ═══════════════════════════════════════════════════════════
-// WIKI LANG ROW
-// ═══════════════════════════════════════════════════════════
+//Language row
 function renderWikiLangs() {
   g('wiki-lang-row').innerHTML = WLANGS.map(l =>
     `<button class="wiki-lang-btn ${l.id===outL?'selected':''}" onclick="selWikiLang('${l.id}')">${l.flag} ${l.lbl}</button>`
   ).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
-// GENERATE ALL
-// ═══════════════════════════════════════════════════════════
+//Info generator
 function getTmpl()  { return (TNAMES[sType]||{})[outL] || (TNAMES[sType]||{}).en || 'Infobox person'; }
 function getFields(){ return FIELDS[sType] || []; }
 function getHost()  { return (WLANGS.find(l => l.id === outL) || WLANGS[0]).host; }
@@ -1133,12 +1042,12 @@ function genTbl() {
   g('c-tbl').innerHTML = shl(code);
 }
 
-// Map of Wikipedia language code → which field label language to use.
-// If we have a direct translation, use it. Otherwise fall back to English.
+// Map of Wikipedia language code, which field label language to use.
+// If we have a direct translation, use it. Otherwise, fall back to English.
 // This ensures sw.wikipedia.org gets Kiswahili labels, fr.wikipedia.org gets French, etc.
 function tmplLabelLang() {
   // outL is the target wiki language. We use it as the label language if we have
-  // translations for it in our FIELDS data; otherwise fall back to English.
+  // translations for it in our FIELDS data; otherwise, fall back to English.
   const supported = ['en','sw','fr'];
   return supported.includes(outL) ? outL : 'en';
 }
