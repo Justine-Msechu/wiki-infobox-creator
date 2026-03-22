@@ -7,13 +7,11 @@
 <!-- Wikipedia uses Linux Libertine for display headings -->
 <link href="https://fonts.googleapis.com/css2?family=Linux+Libertine+O&family=Linux+Biolinum+O&display=swap" rel="stylesheet"/>
 <style>
-/* ═══════════════════════════════════════════════════
-   WIKIPEDIA VECTOR 2022 SKIN — faithful recreation
-═══════════════════════════════════════════════════ */
+
+/*Wikipedia Theme*/
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Wikipedia's exact color tokens */
   --color-base:            #202122;
   --color-subtle:          #54595d;
   --color-placeholder:     #72777d;
@@ -46,7 +44,7 @@ body {
   background: var(--bg-subtle);
 }
 
-/* ── SITE HEADER (Wikipedia top bar) ── */
+/*Header*/
 #mw-head {
   background: var(--bg-base);
   border-bottom: 1px solid var(--border-color);
@@ -67,7 +65,7 @@ body {
   gap: 16px;
 }
 
-/* Wikipedia logo area */
+/* logo*/
 .mw-logo {
   display: flex;
   align-items: center;
@@ -121,7 +119,7 @@ body {
 
 .mw-head-sep { color: var(--border-color); font-size: 0.8rem; }
 
-/* ── PAGE LAYOUT ── */
+/*PAGE LAYOUT*/
 .mw-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -134,7 +132,7 @@ body {
 
 @media (max-width: 800px) { .mw-page { grid-template-columns: 1fr; } }
 
-/* ── SIDEBAR ── */
+/*SIDEBAR*/
 #mw-sidebar {
   background: var(--bg-base);
   border: 1px solid var(--border-color);
@@ -172,7 +170,7 @@ body {
 
 .sidebar-portlet + .sidebar-portlet { border-top: 1px solid var(--border-color); }
 
-/* ── MAIN CONTENT ── */
+/*MAIN CONTENT*/
 #mw-content {
   background: var(--bg-base);
   border: 1px solid var(--border-color);
@@ -180,7 +178,7 @@ body {
   min-height: 600px;
 }
 
-/* ── PAGE TITLE (Wikipedia h1 style) ── */
+/*PAGE TITLE*/
 .mw-page-title-heading {
   font-family: var(--font-family-heading);
   font-size: 2rem;
@@ -860,88 +858,93 @@ const TYPES = [
 ];
 
 const FIELDS = {
+  // Each field has:
+  //   k   = internal storage key (always English, used in vals{})
+  //   kw  = localized parameter key per wiki language (what goes in the wikitext)
+  //   l   = display label shown in the form (UI language)
+  //   s   = section B/P/W/E
+  //   h   = placeholder hint
   person:[
-    {k:"name",       l:{en:"Full name",          sw:"Jina kamili",          fr:"Nom complet"},          s:"B", h:{en:"e.g. Amina Juma Seif",sw:"mfano: Amina Juma Seif",fr:"ex. Amina Juma Seif"}},
-    {k:"image",      l:{en:"Image filename",      sw:"Jina la faili la picha",fr:"Nom du fichier image"}, s:"B", h:{en:"Example.jpg",sw:"Mfano.jpg",fr:"Exemple.jpg"}},
-    {k:"caption",    l:{en:"Image caption",       sw:"Maelezo ya picha",     fr:"Légende image"},         s:"B"},
-    {k:"birth_date", l:{en:"Date of birth",       sw:"Tarehe ya kuzaliwa",   fr:"Date de naissance"},     s:"P", h:{en:"15 March 1990",sw:"15 Machi 1990",fr:"15 mars 1990"}},
-    {k:"birth_place",l:{en:"Place of birth",      sw:"Mahali pa kuzaliwa",   fr:"Lieu de naissance"},     s:"P", h:{en:"Nairobi, Kenya",sw:"Nairobi, Kenya",fr:"Nairobi, Kenya"}},
-    {k:"death_date", l:{en:"Date of death",       sw:"Tarehe ya kifo",       fr:"Date de décès"},         s:"P"},
-    {k:"death_place",l:{en:"Place of death",      sw:"Mahali pa kifo",       fr:"Lieu de décès"},         s:"P"},
-    {k:"nationality",l:{en:"Nationality",         sw:"Utaifa",               fr:"Nationalité"},            s:"P"},
-    {k:"education",  l:{en:"Education",           sw:"Elimu",                fr:"Éducation"},             s:"P"},
-    {k:"occupation", l:{en:"Occupation",          sw:"Kazi",                 fr:"Profession"},            s:"W", h:{en:"Teacher, politician",sw:"Mwalimu, mwanasiasa",fr:"Enseignant, politicien"}},
-    {k:"years_active",l:{en:"Years active",       sw:"Miaka ya kazi",        fr:"Années actives"},        s:"W", h:{en:"2010–present",sw:"2010–sasa",fr:"2010–présent"}},
-    {k:"title",      l:{en:"Title / Position",    sw:"Cheo / Wadhifa",       fr:"Titre / Poste"},         s:"W"},
-    {k:"employer",   l:{en:"Employer",            sw:"Mwajiri",              fr:"Employeur"},             s:"W"},
-    {k:"spouse",     l:{en:"Spouse",              sw:"Mwenzi wa ndoa",       fr:"Conjoint(e)"},           s:"E"},
-    {k:"children",   l:{en:"Children",            sw:"Watoto",               fr:"Enfants"},               s:"E"},
-    {k:"awards",     l:{en:"Awards",              sw:"Tuzo",                 fr:"Prix"},                  s:"E"},
-    {k:"website",    l:{en:"Website",             sw:"Tovuti",               fr:"Site web"},              s:"E"},
+    {k:"name",        kw:{en:"name",         sw:"jina",                  fr:"nom"},              l:{en:"Full name",          sw:"Jina kamili",          fr:"Nom complet"},          s:"B", h:{en:"e.g. Amina Juma Seif",sw:"mfano: Amina Juma Seif",fr:"ex. Amina Juma Seif"}},
+    {k:"image",       kw:{en:"image",        sw:"picha",                 fr:"image"},             l:{en:"Image filename",     sw:"Jina la faili la picha",fr:"Nom du fichier image"}, s:"B", h:{en:"Example.jpg",sw:"Mfano.jpg",fr:"Exemple.jpg"}},
+    {k:"caption",     kw:{en:"caption",      sw:"maelezo",               fr:"legende"},           l:{en:"Image caption",      sw:"Maelezo ya picha",     fr:"Légende image"},         s:"B"},
+    {k:"birth_date",  kw:{en:"birth_date",   sw:"tarehe_ya_kuzaliwa",    fr:"date_de_naissance"}, l:{en:"Date of birth",      sw:"Tarehe ya kuzaliwa",   fr:"Date de naissance"},     s:"P", h:{en:"15 March 1990",sw:"15 Machi 1990",fr:"15 mars 1990"}},
+    {k:"birth_place", kw:{en:"birth_place",  sw:"mahali_pa_kuzaliwa",    fr:"lieu_de_naissance"}, l:{en:"Place of birth",     sw:"Mahali pa kuzaliwa",   fr:"Lieu de naissance"},     s:"P", h:{en:"Nairobi, Kenya",sw:"Nairobi, Kenya",fr:"Nairobi, Kenya"}},
+    {k:"death_date",  kw:{en:"death_date",   sw:"tarehe_ya_kifo",        fr:"date_de_deces"},     l:{en:"Date of death",      sw:"Tarehe ya kifo",       fr:"Date de décès"},         s:"P"},
+    {k:"death_place", kw:{en:"death_place",  sw:"mahali_pa_kifo",        fr:"lieu_de_deces"},     l:{en:"Place of death",     sw:"Mahali pa kifo",       fr:"Lieu de décès"},         s:"P"},
+    {k:"nationality", kw:{en:"nationality",  sw:"utaifa",                fr:"nationalite"},        l:{en:"Nationality",        sw:"Utaifa",               fr:"Nationalité"},            s:"P"},
+    {k:"education",   kw:{en:"education",    sw:"elimu",                 fr:"education"},          l:{en:"Education",          sw:"Elimu",                fr:"Éducation"},             s:"P"},
+    {k:"occupation",  kw:{en:"occupation",   sw:"kazi",                  fr:"profession"},         l:{en:"Occupation",         sw:"Kazi",                 fr:"Profession"},            s:"W", h:{en:"Teacher, politician",sw:"Mwalimu, mwanasiasa",fr:"Enseignant, politicien"}},
+    {k:"years_active",kw:{en:"years_active", sw:"miaka_ya_kazi",         fr:"annees_actives"},     l:{en:"Years active",       sw:"Miaka ya kazi",        fr:"Années actives"},        s:"W", h:{en:"2010–present",sw:"2010–sasa",fr:"2010–présent"}},
+    {k:"title",       kw:{en:"title",        sw:"cheo",                  fr:"titre"},              l:{en:"Title / Position",   sw:"Cheo / Wadhifa",       fr:"Titre / Poste"},         s:"W"},
+    {k:"employer",    kw:{en:"employer",     sw:"mwajiri",               fr:"employeur"},          l:{en:"Employer",           sw:"Mwajiri",              fr:"Employeur"},             s:"W"},
+    {k:"spouse",      kw:{en:"spouse",       sw:"mwenzi",                fr:"conjoint"},           l:{en:"Spouse",             sw:"Mwenzi wa ndoa",       fr:"Conjoint(e)"},           s:"E"},
+    {k:"children",    kw:{en:"children",     sw:"watoto",                fr:"enfants"},            l:{en:"Children",           sw:"Watoto",               fr:"Enfants"},               s:"E"},
+    {k:"awards",      kw:{en:"awards",       sw:"tuzo",                  fr:"prix"},               l:{en:"Awards",             sw:"Tuzo",                 fr:"Prix"},                  s:"E"},
+    {k:"website",     kw:{en:"website",      sw:"tovuti",                fr:"site_web"},           l:{en:"Website",            sw:"Tovuti",               fr:"Site web"},              s:"E"},
   ],
   place:[
-    {k:"name",        l:{en:"Place name",    sw:"Jina la mahali",  fr:"Nom du lieu"},    s:"B"},
-    {k:"image",       l:{en:"Image",         sw:"Picha",           fr:"Image"},          s:"B"},
-    {k:"country",     l:{en:"Country",       sw:"Nchi",            fr:"Pays"},           s:"B"},
-    {k:"region",      l:{en:"Region / County",sw:"Mkoa",           fr:"Région"},         s:"B"},
-    {k:"population",  l:{en:"Population",    sw:"Idadi ya watu",   fr:"Population"},     s:"B"},
-    {k:"area_km2",    l:{en:"Area (km²)",    sw:"Eneo (km²)",      fr:"Superficie km²"}, s:"B"},
-    {k:"elevation_m", l:{en:"Elevation (m)", sw:"Mwinuko (m)",     fr:"Altitude (m)"},   s:"B"},
-    {k:"timezone",    l:{en:"Time zone",     sw:"Ukanda wa saa",   fr:"Fuseau horaire"}, s:"B"},
-    {k:"coordinates", l:{en:"Coordinates",   sw:"Kuratibu",        fr:"Coordonnées"},    s:"B"},
-    {k:"website",     l:{en:"Official website",sw:"Tovuti rasmi",  fr:"Site officiel"},  s:"B"},
+    {k:"name",        kw:{en:"name",         sw:"jina",                  fr:"nom"},              l:{en:"Place name",          sw:"Jina la mahali",  fr:"Nom du lieu"},    s:"B"},
+    {k:"image",       kw:{en:"image",        sw:"picha",                 fr:"image"},            l:{en:"Image",               sw:"Picha",           fr:"Image"},          s:"B"},
+    {k:"country",     kw:{en:"country",      sw:"nchi",                  fr:"pays"},             l:{en:"Country",             sw:"Nchi",            fr:"Pays"},           s:"B"},
+    {k:"region",      kw:{en:"region",       sw:"mkoa",                  fr:"region"},           l:{en:"Region / County",     sw:"Mkoa",            fr:"Région"},         s:"B"},
+    {k:"population",  kw:{en:"population",   sw:"idadi_ya_watu",         fr:"population"},       l:{en:"Population",          sw:"Idadi ya watu",   fr:"Population"},     s:"B"},
+    {k:"area_km2",    kw:{en:"area_km2",     sw:"eneo_km2",              fr:"superficie_km2"},   l:{en:"Area (km²)",          sw:"Eneo (km²)",      fr:"Superficie km²"}, s:"B"},
+    {k:"elevation_m", kw:{en:"elevation_m",  sw:"mwinuko_m",             fr:"altitude_m"},       l:{en:"Elevation (m)",       sw:"Mwinuko (m)",     fr:"Altitude (m)"},   s:"B"},
+    {k:"timezone",    kw:{en:"timezone",     sw:"ukanda_wa_saa",         fr:"fuseau_horaire"},   l:{en:"Time zone",           sw:"Ukanda wa saa",   fr:"Fuseau horaire"}, s:"B"},
+    {k:"coordinates", kw:{en:"coordinates",  sw:"kuratibu",              fr:"coordonnees"},      l:{en:"Coordinates",         sw:"Kuratibu",        fr:"Coordonnées"},    s:"B"},
+    {k:"website",     kw:{en:"website",      sw:"tovuti",                fr:"site_officiel"},    l:{en:"Official website",    sw:"Tovuti rasmi",    fr:"Site officiel"},  s:"B"},
   ],
   org:[
-    {k:"name",         l:{en:"Name",              sw:"Jina",           fr:"Nom"},             s:"B"},
-    {k:"image",        l:{en:"Logo",              sw:"Nembo",          fr:"Logo"},            s:"B"},
-    {k:"founded",      l:{en:"Founded",           sw:"Ilianzishwa",    fr:"Fondée"},          s:"B"},
-    {k:"headquarters", l:{en:"Headquarters",      sw:"Makao makuu",    fr:"Siège social"},    s:"B"},
-    {k:"type",         l:{en:"Type",              sw:"Aina",           fr:"Type"},            s:"B"},
-    {k:"industry",     l:{en:"Industry / Sector", sw:"Sekta",          fr:"Secteur"},         s:"B"},
-    {k:"products",     l:{en:"Products / Services",sw:"Bidhaa/Huduma", fr:"Produits"},        s:"B"},
-    {k:"num_employees",l:{en:"Number of employees",sw:"Wafanyakazi",   fr:"Employés"},        s:"B"},
-    {k:"website",      l:{en:"Website",           sw:"Tovuti",         fr:"Site web"},        s:"B"},
+    {k:"name",          kw:{en:"name",         sw:"jina",              fr:"nom"},             l:{en:"Name",              sw:"Jina",           fr:"Nom"},             s:"B"},
+    {k:"image",         kw:{en:"image",        sw:"nembo",             fr:"logo"},            l:{en:"Logo",              sw:"Nembo",          fr:"Logo"},            s:"B"},
+    {k:"founded",       kw:{en:"founded",      sw:"ilianzishwa",       fr:"fondee"},          l:{en:"Founded",           sw:"Ilianzishwa",    fr:"Fondée"},          s:"B"},
+    {k:"headquarters",  kw:{en:"headquarters", sw:"makao_makuu",       fr:"siege_social"},    l:{en:"Headquarters",      sw:"Makao makuu",    fr:"Siège social"},    s:"B"},
+    {k:"type",          kw:{en:"type",         sw:"aina",              fr:"type"},            l:{en:"Type",              sw:"Aina",           fr:"Type"},            s:"B"},
+    {k:"industry",      kw:{en:"industry",     sw:"sekta",             fr:"secteur"},         l:{en:"Industry / Sector", sw:"Sekta",          fr:"Secteur"},         s:"B"},
+    {k:"products",      kw:{en:"products",     sw:"bidhaa",            fr:"produits"},        l:{en:"Products / Services",sw:"Bidhaa/Huduma", fr:"Produits"},        s:"B"},
+    {k:"num_employees", kw:{en:"num_employees",sw:"wafanyakazi",       fr:"employes"},        l:{en:"Employees",         sw:"Wafanyakazi",    fr:"Employés"},        s:"B"},
+    {k:"website",       kw:{en:"website",      sw:"tovuti",            fr:"site_web"},        l:{en:"Website",           sw:"Tovuti",         fr:"Site web"},        s:"B"},
   ],
   animal:[
-    {k:"taxon",   l:{en:"Scientific name",    sw:"Jina la kisayansi", fr:"Nom scientifique"}, s:"B"},
-    {k:"name",    l:{en:"Common name",        sw:"Jina la kawaida",   fr:"Nom commun"},       s:"B"},
-    {k:"image",   l:{en:"Image",              sw:"Picha",             fr:"Image"},            s:"B"},
-    {k:"status",  l:{en:"Conservation status",sw:"Hali ya uhifadhi",  fr:"Statut UICN"},      s:"B", h:{en:"LC / NT / VU / EN / CR",sw:"LC / NT / VU / EN / CR",fr:"LC / NT / VU / EN / CR"}},
-    {k:"kingdom", l:{en:"Kingdom",            sw:"Ufalme",            fr:"Règne"},            s:"B"},
-    {k:"phylum",  l:{en:"Phylum",             sw:"Faila",             fr:"Embranchement"},    s:"B"},
-    {k:"classis", l:{en:"Class",              sw:"Darasa",            fr:"Classe"},           s:"B"},
-    {k:"ordo",    l:{en:"Order",              sw:"Oda",               fr:"Ordre"},            s:"B"},
-    {k:"familia", l:{en:"Family",             sw:"Familia",           fr:"Famille"},          s:"B"},
-    {k:"genus",   l:{en:"Genus",              sw:"Jenasi",            fr:"Genre"},            s:"B"},
-    {k:"species", l:{en:"Species",            sw:"Spishi",            fr:"Espèce"},           s:"B"},
+    {k:"taxon",   kw:{en:"taxon",   sw:"jina_la_kisayansi", fr:"taxon"},      l:{en:"Scientific name",    sw:"Jina la kisayansi", fr:"Nom scientifique"}, s:"B"},
+    {k:"name",    kw:{en:"name",    sw:"jina",              fr:"nom_commun"},  l:{en:"Common name",        sw:"Jina la kawaida",   fr:"Nom commun"},       s:"B"},
+    {k:"image",   kw:{en:"image",   sw:"picha",             fr:"image"},       l:{en:"Image",              sw:"Picha",             fr:"Image"},            s:"B"},
+    {k:"status",  kw:{en:"status",  sw:"hali_ya_uhifadhi",  fr:"statut"},      l:{en:"Conservation status",sw:"Hali ya uhifadhi",  fr:"Statut UICN"},      s:"B", h:{en:"LC / NT / VU / EN / CR",sw:"LC / NT / VU / EN / CR",fr:"LC / NT / VU / EN / CR"}},
+    {k:"kingdom", kw:{en:"kingdom", sw:"ufalme",            fr:"regne"},       l:{en:"Kingdom",            sw:"Ufalme",            fr:"Règne"},            s:"B"},
+    {k:"phylum",  kw:{en:"phylum",  sw:"faila",             fr:"embranchement"},l:{en:"Phylum",            sw:"Faila",             fr:"Embranchement"},    s:"B"},
+    {k:"classis", kw:{en:"classis", sw:"darasa",            fr:"classe"},      l:{en:"Class",              sw:"Darasa",            fr:"Classe"},           s:"B"},
+    {k:"ordo",    kw:{en:"ordo",    sw:"oda",               fr:"ordre"},       l:{en:"Order",              sw:"Oda",               fr:"Ordre"},            s:"B"},
+    {k:"familia", kw:{en:"familia", sw:"familia",           fr:"famille"},     l:{en:"Family",             sw:"Familia",           fr:"Famille"},          s:"B"},
+    {k:"genus",   kw:{en:"genus",   sw:"jenasi",            fr:"genre"},       l:{en:"Genus",              sw:"Jenasi",            fr:"Genre"},            s:"B"},
+    {k:"species", kw:{en:"species", sw:"spishi",            fr:"espece"},      l:{en:"Species",            sw:"Spishi",            fr:"Espèce"},           s:"B"},
   ],
   book:[
-    {k:"name",      l:{en:"Title",           sw:"Jina",               fr:"Titre"},            s:"B"},
-    {k:"image",     l:{en:"Cover image",     sw:"Picha ya jalada",    fr:"Image de couverture"},s:"B"},
-    {k:"author",    l:{en:"Author / Director",sw:"Mwandishi",         fr:"Auteur / Réalisateur"},s:"B"},
-    {k:"genre",     l:{en:"Genre",           sw:"Aina",               fr:"Genre"},            s:"B"},
-    {k:"language",  l:{en:"Language",        sw:"Lugha",              fr:"Langue"},           s:"B"},
-    {k:"pub_date",  l:{en:"Published / Released",sw:"Ilipochapishwa", fr:"Publication"},      s:"B"},
-    {k:"publisher", l:{en:"Publisher / Studio",sw:"Mchapishaji",      fr:"Éditeur"},          s:"B"},
-    {k:"pages",     l:{en:"Pages",           sw:"Kurasa",             fr:"Pages"},            s:"B"},
-    {k:"isbn",      l:{en:"ISBN",            sw:"ISBN",               fr:"ISBN"},             s:"B"},
-    {k:"website",   l:{en:"Website",         sw:"Tovuti",             fr:"Site web"},         s:"B"},
+    {k:"name",      kw:{en:"name",      sw:"jina",                    fr:"titre"},             l:{en:"Title",              sw:"Jina",               fr:"Titre"},            s:"B"},
+    {k:"image",     kw:{en:"image",     sw:"picha",                   fr:"image"},             l:{en:"Cover image",        sw:"Picha ya jalada",    fr:"Image de couverture"},s:"B"},
+    {k:"author",    kw:{en:"author",    sw:"mwandishi",               fr:"auteur"},            l:{en:"Author / Director",  sw:"Mwandishi",          fr:"Auteur / Réalisateur"},s:"B"},
+    {k:"genre",     kw:{en:"genre",     sw:"aina",                    fr:"genre"},             l:{en:"Genre",              sw:"Aina",               fr:"Genre"},            s:"B"},
+    {k:"language",  kw:{en:"language",  sw:"lugha",                   fr:"langue"},            l:{en:"Language",           sw:"Lugha",              fr:"Langue"},           s:"B"},
+    {k:"pub_date",  kw:{en:"pub_date",  sw:"tarehe_ya_kuchapishwa",   fr:"date_de_parution"},  l:{en:"Published / Released",sw:"Ilipochapishwa",    fr:"Publication"},      s:"B"},
+    {k:"publisher", kw:{en:"publisher", sw:"mchapishaji",             fr:"editeur"},           l:{en:"Publisher / Studio", sw:"Mchapishaji",        fr:"Éditeur"},          s:"B"},
+    {k:"pages",     kw:{en:"pages",     sw:"kurasa",                  fr:"pages"},             l:{en:"Pages",              sw:"Kurasa",             fr:"Pages"},            s:"B"},
+    {k:"isbn",      kw:{en:"isbn",      sw:"isbn",                    fr:"isbn"},              l:{en:"ISBN",               sw:"ISBN",               fr:"ISBN"},             s:"B"},
+    {k:"website",   kw:{en:"website",   sw:"tovuti",                  fr:"site_web"},          l:{en:"Website",            sw:"Tovuti",             fr:"Site web"},         s:"B"},
   ],
   country:[
-    {k:"common_name",         l:{en:"Country name",       sw:"Jina la nchi",       fr:"Nom du pays"},          s:"B"},
-    {k:"image_flag",          l:{en:"Flag image",         sw:"Picha ya bendera",   fr:"Image du drapeau"},     s:"B"},
-    {k:"image_coat",          l:{en:"Coat of arms image", sw:"Picha ya nembo",     fr:"Image des armoiries"},  s:"B"},
-    {k:"capital",             l:{en:"Capital city",       sw:"Mji mkuu",           fr:"Capitale"},             s:"B"},
-    {k:"official_languages",  l:{en:"Official languages", sw:"Lugha rasmi",        fr:"Langues officielles"},  s:"B"},
-    {k:"population_census",   l:{en:"Population",         sw:"Idadi ya watu",      fr:"Population"},           s:"B"},
-    {k:"area_km2",            l:{en:"Area (km²)",         sw:"Eneo (km²)",         fr:"Superficie km²"},       s:"B"},
-    {k:"currency",            l:{en:"Currency",           sw:"Sarafu",             fr:"Monnaie"},              s:"B"},
-    {k:"government_type",     l:{en:"Government type",    sw:"Aina ya serikali",   fr:"Régime politique"},     s:"B"},
-    {k:"leader_name1",        l:{en:"Head of state",      sw:"Mkuu wa nchi",       fr:"Chef d'État"},          s:"B"},
-    {k:"website",             l:{en:"Official website",   sw:"Tovuti rasmi",       fr:"Site officiel"},        s:"B"},
+    {k:"common_name",        kw:{en:"common_name",        sw:"jina",                  fr:"nom_commun"},        l:{en:"Country name",       sw:"Jina la nchi",       fr:"Nom du pays"},          s:"B"},
+    {k:"image_flag",         kw:{en:"image_flag",         sw:"picha_bendera",         fr:"image_drapeau"},     l:{en:"Flag image",         sw:"Picha ya bendera",   fr:"Image du drapeau"},     s:"B"},
+    {k:"image_coat",         kw:{en:"image_coat",         sw:"picha_nembo",           fr:"image_armoiries"},   l:{en:"Coat of arms image", sw:"Picha ya nembo",     fr:"Image des armoiries"},  s:"B"},
+    {k:"capital",            kw:{en:"capital",            sw:"mji_mkuu",              fr:"capitale"},          l:{en:"Capital city",       sw:"Mji mkuu",           fr:"Capitale"},             s:"B"},
+    {k:"official_languages", kw:{en:"official_languages", sw:"lugha_rasmi",           fr:"langues_officielles"},l:{en:"Official languages", sw:"Lugha rasmi",        fr:"Langues officielles"},  s:"B"},
+    {k:"population_census",  kw:{en:"population_census",  sw:"idadi_ya_watu",         fr:"population"},        l:{en:"Population",         sw:"Idadi ya watu",      fr:"Population"},           s:"B"},
+    {k:"area_km2",           kw:{en:"area_km2",           sw:"eneo_km2",              fr:"superficie_km2"},    l:{en:"Area (km²)",         sw:"Eneo (km²)",         fr:"Superficie km²"},       s:"B"},
+    {k:"currency",           kw:{en:"currency",           sw:"sarafu",                fr:"monnaie"},           l:{en:"Currency",           sw:"Sarafu",             fr:"Monnaie"},              s:"B"},
+    {k:"government_type",    kw:{en:"government_type",    sw:"aina_ya_serikali",      fr:"regime_politique"},  l:{en:"Government type",    sw:"Aina ya serikali",   fr:"Régime politique"},     s:"B"},
+    {k:"leader_name1",       kw:{en:"leader_name1",       sw:"mkuu_wa_nchi",          fr:"chef_etat"},         l:{en:"Head of state",      sw:"Mkuu wa nchi",       fr:"Chef d'État"},          s:"B"},
+    {k:"website",            kw:{en:"website",            sw:"tovuti_rasmi",          fr:"site_officiel"},     l:{en:"Official website",   sw:"Tovuti rasmi",       fr:"Site officiel"},        s:"B"},
   ],
-};
-
+}
 const SEC_ORDER = ["B","P","W","E"];
 
 // ═══════════════════════════════════════════════════════════
@@ -950,6 +953,13 @@ const SEC_ORDER = ["B","P","W","E"];
 let uiL = "en", outL = "en", sType = "person", vals = {}, aiH = [], aTab = "ib";
 const g = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// fkey: returns the localized parameter key for the TARGET wiki language
+// e.g. book field "author" → sw:"mwandishi", fr:"auteur", ha:"author" (fallback)
+const fkey = f => (f.kw && (f.kw[outL] || f.kw.en)) || f.k;
+
+// flabel: returns the field label in the TARGET wiki language (for inside template code)
+const flabel = f => { const ll = ['en','sw','fr'].includes(outL) ? outL : 'en'; return f.l[ll] || f.l.en; };
 
 // ═══════════════════════════════════════════════════════════
 // INIT
@@ -1095,7 +1105,8 @@ function genAll() { genIB(); genTbl(); genTmplCode(); genPreview(); }
 
 function genIB() {
   const fields = getFields(), tmpl = getTmpl();
-  const lines = fields.map(f => `| ${f.k.padEnd(22)} = ${vals[f.k]||''}`);
+  // fkey(f) = localized parameter name; vals[f.k] = value stored by internal English key
+  const lines = fields.map(f => `| ${fkey(f).padEnd(24)} = ${vals[f.k]||''}`);
   const code = `{{${tmpl}\n${lines.join('\n')}\n}}`;
   g('c-ib').innerHTML = shl(code);
 }
@@ -1109,7 +1120,7 @@ function genTbl() {
   fields.forEach(f => {
     const v = vals[f.k];
     if (!v || f.k.startsWith('image')) return;
-    const lbl = f.l[uiL] || f.l.en;
+    const lbl = flabel(f); // use target wiki language for table headers
     rows += `|-\n! ${lbl}\n| ${v}\n`;
   });
   const code = `{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgLines}${rows}|}`;
@@ -1190,8 +1201,9 @@ function genTmplCode() {
   const dataRows = fields
     .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
     .map(f => {
-      const label = f.l[lblLang] || f.l.en;
-      return `{{#if:{{{${f.k}|}}}\n|{{!}}-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap;" {{!}} ${label}\n{{!}} style="padding:4px 6px; font-size:88%;" {{!}} {{{${f.k}}}}}}`;
+      const pk = fkey(f);    // localized param key for target wiki
+      const lbl = flabel(f); // localized label for target wiki
+      return `{{#if:{{{${pk}|}}}\n|{{!}}-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap;" {{!}} ${lbl}\n{{!}} style="padding:4px 6px; font-size:88%;" {{!}} {{{${pk}}}}}}`;
     }).join('\n');
 
   // Category name in the target language
@@ -1209,7 +1221,7 @@ ${imgRow}${dataRows}
 == ${usageHeading} ==
 <pre>
 {{${tmpl}
-${fields.map(f => `| ${f.k.padEnd(20)} = `).join('\n')}
+${fields.map(f => `| ${fkey(f).padEnd(24)} = `).join('\n')}
 }}
 </pre>
 
@@ -1264,30 +1276,32 @@ function goTab(id) {
 function getRaw() {
   const fields = getFields(), tmpl = getTmpl();
   if (aTab === 'ib') {
-    return `{{${tmpl}\n${fields.map(f => `| ${f.k.padEnd(22)} = ${vals[f.k]||''}`).join('\n')}\n}}`;
+    return `{{${tmpl}\n${fields.map(f => `| ${fkey(f).padEnd(24)} = ${vals[f.k]||''}`).join('\n')}\n}}`;
   }
   if (aTab === 'tbl') {
     const name = vals.name || vals.common_name || 'Subject';
     let rows = '';
-    fields.forEach(f => { const v = vals[f.k]; if (!v || f.k.startsWith('image')) return; rows += `|-\n! ${f.l[uiL]||f.l.en}\n| ${v}\n`; });
+    fields.forEach(f => { const v = vals[f.k]; if (!v || f.k.startsWith('image')) return; rows += `|-\n! ${flabel(f)}\n| ${v}\n`; });
     const imgs = fields.filter(f => f.k.startsWith('image') && vals[f.k]).map(f => `|-\n| colspan="2" style="text-align:center" | [[File:${vals[f.k]}|200px]]\n`).join('');
     return `{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgs}${rows}|}`;
   }
   if (aTab === 'tmpl') {
-    const lblLang = ['en','sw','fr'].includes(outL) ? outL : 'en';
+    // use fkey/flabel helpers for consistent localization
     const imgField = fields.find(f => f.k === 'image' || f.k === 'image_flag');
+    const imgKey = imgField ? fkey(imgField) : null;
+    const captionKey = (() => { const cf = fields.find(f => f.k === 'caption'); return cf ? fkey(cf) : 'caption'; })();
     const imgRow = imgField
-      ? `|-\n| colspan="2" style="text-align:center; padding:4px;" | {{#if:{{{${imgField.k}|}}}|[[File:{{{${imgField.k}}|}}}|220px|center|{{{caption|}}}]]}}\n`
+      ? `|-\n| colspan="2" style="text-align:center; padding:4px;" | {{#if:{{{${imgKey}|}}}|[[File:{{{${imgKey}}|}}}|220px|center|{{{${captionKey}|}}}]]}}\n`
       : '';
     const dataRows = fields
       .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
       .map(f => {
-        const label = f.l[lblLang] || f.l.en;
-        return `{{#if:{{{${f.k}|}}}\n|{{!}}-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap;" {{!}} ${label}\n{{!}} style="padding:4px 6px; font-size:88%;" {{!}} {{{${f.k}}}}}}`;
+        const pk = fkey(f); const lbl = flabel(f);
+        return `{{#if:{{{${pk}|}}}\n|{{!}}-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap;" {{!}} ${lbl}\n{{!}} style="padding:4px 6px; font-size:88%;" {{!}} {{{${pk}}}}}}`;
       }).join('\n');
     const cat = outL === 'sw' ? 'Violezo vya kisanduku cha habari' : outL === 'fr' ? "Modèle d'infobox" : 'Infobox templates';
     const usage = outL === 'sw' ? 'Matumizi' : outL === 'fr' ? 'Utilisation' : 'Usage';
-    const usagePre = fields.map(f => `| ${f.k.padEnd(20)} = `).join('\n');
+    const usagePre = fields.map(f => `| ${fkey(f).padEnd(24)} = `).join('\n');
     return `<includeonly>{| class="infobox" style="border:1px solid #a2a9b1; background:#f8f9fa; width:22em; float:right; clear:right; margin:0 0 1em 1em; border-collapse:collapse; font-size:88%;"\n|+ style="background:#cee0f2; font-weight:bold; padding:6px; text-align:center;" | {{{name|{{{common_name|{{{taxon|}}}}}}}}}\n${imgRow}${dataRows}\n|}</includeonly><noinclude>\n== ${usage} ==\n<pre>\n{{${tmpl}\n${usagePre}\n}}\n</pre>\n\n[[Category:${cat}]]\n</noinclude>`;
   }
   return '';
