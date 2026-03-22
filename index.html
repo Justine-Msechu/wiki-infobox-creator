@@ -695,24 +695,6 @@ body {
           <button class="mw-btn mw-btn-secondary" id="chk-btn" onclick="checkTmpl()">Check if template exists</button>
         </div>
 
-        <!-- AI Assistant -->
-        <hr class="mw-divider" style="margin-top:18px"/>
-        <h2 class="mw-headline" id="ai-heading">3. Ask the AI assistant</h2>
-
-        <div class="talk-box">
-          <div class="talk-header">
-            <span id="ai-hdr-lbl">💬 Assistant (powered by Claude)</span>
-            <button class="mw-btn mw-btn-quiet" onclick="autoFill()" id="af-btn" style="font-size:0.78rem;padding:2px 8px">Auto-fill ✨</button>
-          </div>
-          <div class="talk-thread" id="talk-thread">
-            <div class="talk-ph" id="talk-ph">Ask anything — "What does this field mean?", "How do I write a birth date?", or just give me a name and I'll suggest values.</div>
-          </div>
-          <div class="talk-input-row">
-            <input type="text" id="ai-in" placeholder="Type your question…" onkeydown="if(event.key==='Enter')sendAI()"/>
-            <button class="mw-btn mw-btn-primary" id="send-btn" onclick="sendAI()">Post</button>
-          </div>
-        </div>
-
       </div>
     </div>
 
