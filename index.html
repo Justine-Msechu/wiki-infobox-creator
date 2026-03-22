@@ -1075,11 +1075,15 @@ function renderForm() {
     secs[s].forEach(f => {
       const lbl = f.l[uiL] || f.l.en;
       const hint = f.h ? (f.h[uiL] || f.h.en) : '';
+      const isImg = f.k === 'image' || f.k === 'image_flag' || f.k === 'image_coat';
+      const imgCheck = isImg ? ` onchange="checkImage(this.value,'${f.k}')"` : '';
+      const imgNotice = isImg ? `<div id="img-notice-${f.k}" style="display:none"></div>` : '';
       h += `<div class="form-field">
         <label for="f_${f.k}">${esc(lbl)}</label>
         <input type="text" id="f_${f.k}" value="${esc(vals[f.k]||'')}" placeholder="${esc(hint)}"
-          oninput="vals['${f.k}']=this.value;genAll()"/>
+          oninput="vals['${f.k}']=this.value;genAll()"${imgCheck}/>
         ${hint ? `<div class="field-hint">${esc(hint)}</div>` : ''}
+        ${imgNotice}
       </div>`;
     });
   });
@@ -1205,7 +1209,7 @@ function genTmplCode() {
   // Image row: only render [[File:...]] when the image param is not empty
   // {{#if:}} here is OUTSIDE any table cell so no {{!}} needed — plain | works
   const imgRow = imgPk
-    ? `|-\n| colspan="2" style="text-align:center; padding:6px;" | {{#if:{{{${imgPk}|}}}|[[File:{{{${imgPk}|}}}{{!}}220px{{!}}center{{!}}{{{${captPk}|}}}]]}}\n`
+    ? `{{#if:{{{${imgPk}|}}}|{{!}}-\n{{!}} colspan="2" style="text-align:center; padding:6px;" {{!}} [[File:{{{${imgPk}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`
     : '';
 
   // All other rows — unconditional, simple wikitable syntax
@@ -1288,6 +1292,117 @@ function goTab(id) {
 // ═══════════════════════════════════════════════════════════
 // COPY
 // ═══════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+// IMAGE EXISTENCE CHECK
+// ═══════════════════════════════════════════════════════════
+// Checks both Wikimedia Commons and the target wiki for the image file.
+// Book covers, movie posters etc. are copyrighted — Commons won't have them.
+// They must be uploaded directly to the target wiki under fair use.
+
+const IMG_MSGS = {
+  checking: { en: "⏳ Checking image…",                        sw: "⏳ Inakagua picha…",                       fr: "⏳ Vérification de l'image…" },
+  commons:  { en: "✅ Found on Wikimedia Commons — will display on any Wikipedia.",
+              sw: "✅ Inapatikana kwenye Wikimedia Commons — itaonyeshwa kwenye Wikipedia yoyote.",
+              fr: "✅ Trouvée sur Wikimedia Commons — s'affichera sur tous les Wikipédias." },
+  targetok: { en: "✅ Found on {wiki} — will display on that wiki.",
+              sw: "✅ Inapatikana kwenye {wiki} — itaonyeshwa huko.",
+              fr: "✅ Trouvée sur {wiki} — s'affichera sur ce wiki." },
+  missing:  { en: "⚠️ Image not found on Wikimedia Commons or {wiki}.",
+              sw: "⚠️ Picha haipatikani kwenye Wikimedia Commons wala {wiki}.",
+              fr: "⚠️ Image introuvable sur Wikimedia Commons ou {wiki}." },
+  upload_free: {
+    en: `<strong>This looks like a free image.</strong> Upload it to <a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank">Wikimedia Commons</a> and it will work on every Wikipedia automatically.`,
+    sw: `<strong>Picha hii inaonekana huru.</strong> Ipakia kwenye <a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank">Wikimedia Commons</a> na itafanya kazi kwenye Wikipedia zote moja kwa moja.`,
+    fr: `<strong>Cette image semble libre.</strong> Téléversez-la sur <a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank">Wikimedia Commons</a> et elle fonctionnera sur tous les Wikipédias.`,
+  },
+  upload_fairuse: {
+    en: `<strong>Copyrighted images (book covers, movie posters, logos)</strong> cannot go on Wikimedia Commons — Commons only accepts freely licensed content.<br><br>
+         You must upload it <strong>directly to {wiki}</strong> with a fair-use rationale:<br>
+         👉 <a href="https://{host}/wiki/Special:Upload" target="_blank">Upload to {wiki}</a><br><br>
+         When uploading, choose a <strong>fair use</strong> license and explain why the image is needed (e.g. "Book cover used for identification in the article about the book").`,
+    sw: `<strong>Picha zenye hakimiliki (jalada la kitabu, bango la filamu, nembo)</strong> haziruhusiwi kwenye Wikimedia Commons — Commons inakubali tu maudhui ya leseni huru.<br><br>
+         Lazima uipakiee <strong>moja kwa moja kwenye {wiki}</strong> na sababu ya matumizi ya haki:<br>
+         👉 <a href="https://{host}/wiki/Special:Upload" target="_blank">Pakia kwenye {wiki}</a><br><br>
+         Unapopakia, chagua leseni ya <strong>matumizi ya haki</strong> na eleza kwa nini picha inahitajika.`,
+    fr: `<strong>Les images protégées par le droit d'auteur (couvertures, affiches, logos)</strong> ne peuvent pas aller sur Wikimedia Commons — Commons n'accepte que les contenus libres.<br><br>
+         Vous devez la téléverser <strong>directement sur {wiki}</strong> avec une justification d'usage loyal :<br>
+         👉 <a href="https://{host}/wiki/Special:Upload" target="_blank">Téléverser sur {wiki}</a>`,
+  },
+};
+
+// Simple heuristic: if filename contains words like "cover", "poster", "logo",
+// or common book/film extensions, flag as likely copyrighted.
+function likelyCopyrighted(filename) {
+  const f = filename.toLowerCase();
+  return /cover|poster|logo|jacket|sleeve|front|album|dvd|blu.?ray|box.?art|official/.test(f);
+}
+
+async function checkImage(filename, fieldKey) {
+  const noticeEl = document.getElementById('img-notice-' + fieldKey);
+  if (!noticeEl) return;
+  filename = filename.trim();
+  if (!filename) { noticeEl.style.display = 'none'; return; }
+
+  const host = getHost();
+  const wikiName = getLangLbl();
+  const t = uiL;
+  const msg = m => (IMG_MSGS[m][t] || IMG_MSGS[m].en).replace(/{wiki}/g, wikiName).replace(/{host}/g, host);
+
+  noticeEl.style.display = 'block';
+  noticeEl.className = 'mw-message-box notice';
+  noticeEl.innerHTML = `<span class="mw-message-box-icon">⏳</span><div class="mbox-text">${msg('checking')}</div>`;
+
+  // Normalise: prepend "File:" if not present
+  const fileTitle = filename.startsWith('File:') ? filename : 'File:' + filename;
+
+  try {
+    // Check Wikimedia Commons first
+    const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&format=json&origin=*`;
+    const commonsRes = await fetch(commonsUrl);
+    const commonsData = await commonsRes.json();
+    const commonsPage = commonsData.query.pages[Object.keys(commonsData.query.pages)[0]];
+    const onCommons = commonsPage.missing === undefined;
+
+    if (onCommons) {
+      noticeEl.className = 'mw-message-box success';
+      noticeEl.innerHTML = `<span class="mw-message-box-icon">✅</span><div class="mbox-text">${msg('commons')}</div>`;
+      return;
+    }
+
+    // Not on Commons — check the target wiki
+    const targetUrl = `https://${host}/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&format=json&origin=*`;
+    const targetRes = await fetch(targetUrl);
+    const targetData = await targetRes.json();
+    const targetPage = targetData.query.pages[Object.keys(targetData.query.pages)[0]];
+    const onTarget = targetPage.missing === undefined;
+
+    if (onTarget) {
+      noticeEl.className = 'mw-message-box success';
+      noticeEl.innerHTML = `<span class="mw-message-box-icon">✅</span><div class="mbox-text">${msg('targetok')}</div>`;
+      return;
+    }
+
+    // Not found anywhere — give upload guidance
+    const isCR = likelyCopyrighted(filename);
+    noticeEl.className = 'mw-message-box warning';
+    noticeEl.innerHTML = `
+      <span class="mw-message-box-icon">⚠️</span>
+      <div class="mbox-text">
+        <strong>${msg('missing')}</strong><br><br>
+        ${isCR ? msg('upload_fairuse') : msg('upload_free')}
+        <br><br>
+        <span style="font-size:0.8rem;color:var(--color-subtle)">
+          Not sure? Book covers and movie posters are almost always copyrighted → upload to ${wikiName} directly.
+          Nature photos, maps, and historical images are often free → upload to Commons.
+        </span>
+      </div>`;
+  } catch(e) {
+    noticeEl.className = 'mw-message-box notice';
+    noticeEl.innerHTML = `<span class="mw-message-box-icon">ℹ️</span><div class="mbox-text">Could not check image. Paste the filename and verify manually on <a href="https://commons.wikimedia.org/wiki/${encodeURIComponent(fileTitle)}" target="_blank">Commons</a>.</div>`;
+  }
+}
+
 function getRaw() {
   const fields = getFields(), tmpl = getTmpl();
   if (aTab === 'ib') {
@@ -1307,7 +1422,7 @@ function getRaw() {
     const imgPk     = imgField  ? fkey(imgField)  : null;
     const captPk    = captField ? fkey(captField) : (outL==='sw'?'maelezo':outL==='fr'?'legende':'caption');
     const imgRow    = imgPk
-      ? `|-\n| colspan="2" style="text-align:center; padding:6px;" | {{#if:{{{${imgPk}|}}}|[[File:{{{${imgPk}|}}}{{!}}220px{{!}}center{{!}}{{{${captPk}|}}}]]}}\n`
+      ? `{{#if:{{{${imgPk}|}}}|{{!}}-\n{{!}} colspan="2" style="text-align:center; padding:6px;" {{!}} [[File:{{{${imgPk}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`
       : '';
     const dataRows = fields
       .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
