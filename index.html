@@ -4,535 +4,173 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Infobox Creator – Wikipedia Tool</title>
-<!-- Wikipedia uses Linux Libertine for display headings -->
 <link href="https://fonts.googleapis.com/css2?family=Linux+Libertine+O&family=Linux+Biolinum+O&display=swap" rel="stylesheet"/>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  /* Wikipedia's exact color tokens */
-  --color-base:            #202122;
-  --color-subtle:          #54595d;
-  --color-placeholder:     #72777d;
-  --color-disabled:        #a2a9b1;
-  --color-progressive:     #3366cc;
-  --color-progressive-hover:#2a4b8d;
-  --color-destructive:     #d33;
-  --color-warning:         #fc3;
-  --color-success:         #00af89;
-  --color-notice:          #54595d;
-  --bg-base:               #fff;
-  --bg-subtle:             #f8f9fa;
-  --bg-interactive:        #eaecf0;
-  --bg-interactive-subtle: #f8f9fa;
-  --border-color:          #a2a9b1;
-  --border-color-subtle:   #c8ccd1;
-  --border-color-interactive: #72777d;
-  --font-family-base:      -apple-system, 'Linux Biolinum O', BlinkMacSystemFont, 'Segoe UI', Roboto, Lato, Helvetica, Arial, sans-serif;
-  --font-family-heading:   'Linux Libertine O', 'Linux Libertine', Georgia, 'Times New Roman', serif;
-  --font-size-base:        0.875rem; /* 14px */
-  --line-height-base:      1.6;
-  --shadow-card:           0 1px 3px rgba(0,0,0,0.12);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cp:#3366cc; --cph:#2a4b8d; --cb:#202122; --cs:#54595d; --cpla:#72777d;
+  --cd:#a2a9b1; --cok:#00af89; --cw:#b45309;
+  --bg:#fff; --bgs:#f8f9fa; --bgi:#eaecf0; --bgis:#f8f9fa;
+  --bc:#a2a9b1; --bcs:#c8ccd1; --bci:#72777d;
+  --ff:-apple-system,'Linux Biolinum O',BlinkMacSystemFont,'Segoe UI',Roboto,Lato,sans-serif;
+  --ffh:'Linux Libertine O','Linux Libertine',Georgia,'Times New Roman',serif;
+  --sh:0 1px 3px rgba(0,0,0,0.12);
 }
+body{font-family:var(--ff);font-size:.875rem;line-height:1.6;color:var(--cb);background:var(--bgs)}
 
-body {
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
-  color: var(--color-base);
-  background: var(--bg-subtle);
-}
+/* HEAD */
+#mw-head{background:var(--cb);padding:0;position:sticky;top:0;z-index:200;box-shadow:var(--sh)}
+.mw-head-inner{max-width:1200px;margin:0 auto;padding:0 16px;display:flex;align-items:center;height:50px;gap:12px;flex-wrap:wrap}
+.mw-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.mw-logo-icon{width:30px;height:30px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='23' fill='none' stroke='%23a2a9b1' stroke-width='2'/%3E%3Cpath d='M12 18h4l5 14 5-14h4l5 14 5-14h4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.mw-logo-text{font-family:var(--ffh);color:#fff;font-size:1.05rem;font-weight:normal}
+.mw-logo-sub{font-size:.68rem;color:rgba(255,255,255,.45);display:block;line-height:1}
+.mw-head-nav{margin-left:auto;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.uilb{background:transparent;border:1px solid rgba(255,255,255,.28);color:#fff;padding:3px 11px;border-radius:20px;cursor:pointer;font-size:.79rem;font-family:var(--ff);transition:all .15s}
+.uilb.active,.uilb:hover{background:var(--cp);border-color:var(--cp)}
 
-/*SITE HEADER*/
-#mw-head {
-  background: var(--bg-base);
-  border-bottom: 1px solid var(--border-color);
-  padding: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: var(--shadow-card);
-}
+/* PAGE */
+.mw-page{max-width:1200px;margin:0 auto;padding:16px;display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
+@media(max-width:780px){.mw-page{grid-template-columns:1fr}}
 
-.mw-head-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  height: 50px;
-  gap: 16px;
-}
+/* SIDEBAR */
+#mw-sidebar{background:var(--bg);border:1px solid var(--bc)}
+.sb-portlet{border-bottom:1px solid var(--bc)}
+.sb-portlet:last-child{border-bottom:none}
+.sb-hdr{background:var(--bgi);border-bottom:1px solid var(--bc);padding:5px 10px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--cs)}
+.sb-portlet ul{list-style:none;padding:3px 0}
+.sb-portlet ul li a{display:block;padding:4px 10px;font-size:.8rem;color:var(--cp);text-decoration:none;cursor:pointer}
+.sb-portlet ul li a:hover{background:var(--bgs);text-decoration:underline}
+.sb-portlet ul li.active a{background:var(--bgi);color:var(--cb);font-weight:700;cursor:default;text-decoration:none}
 
-/*logo area */
-.mw-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  flex-shrink: 0;
-}
+/* CONTENT */
+#mw-content{background:var(--bg);border:1px solid var(--bc);padding:18px 22px;min-height:500px}
+.mw-h1{font-family:var(--ffh);font-size:1.9rem;font-weight:normal;border-bottom:1px solid var(--bc);padding-bottom:3px;margin-bottom:14px;line-height:1.3}
+.mw-h2{font-family:var(--ffh);font-size:1.15rem;font-weight:normal;border-bottom:1px solid var(--bc);margin:16px 0 10px;padding-bottom:2px}
+.mw-h3{font-size:.95rem;font-weight:700;margin:12px 0 7px}
 
-.mw-logo-icon {
-  width: 32px; height: 32px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='24' fill='none' stroke='%23a2a9b1' stroke-width='2'/%3E%3Cpath d='M12 18h4l5 14 5-14h4l5 14 5-14h4' fill='none' stroke='%23202122' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
-}
+/* MESSAGE BOXES */
+.mbox{border:1px solid;padding:8px 12px;margin-bottom:12px;font-size:.81rem;display:flex;gap:9px;align-items:flex-start;line-height:1.5}
+.mbox-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+.mbox.notice{background:#eaf3fb;border-color:#36c}
+.mbox.success{background:#d5fdf4;border-color:var(--cok)}
+.mbox.warning{background:#fef6e7;border-color:#fc3;color:var(--cw)}
+.mbox.error{background:#fee7e6;border-color:#d33}
+.mbox a{color:var(--cp)}
+#status-banner{display:none;margin-bottom:12px}
 
-.mw-logo-text {
-  font-family: var(--font-family-heading);
-  font-size: 1.1rem;
-  color: var(--color-base);
-  font-weight: normal;
-}
+/* ── TYPE BROWSER ── */
+.type-browser{margin-bottom:18px}
 
-.mw-logo-tagline {
-  font-size: 0.7rem;
-  color: var(--color-subtle);
-  display: block;
-  line-height: 1;
-}
+/* Cascading dropdowns */
+.cascade-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px}
+.cascade-group{flex:1;min-width:130px}
+.cascade-label{display:block;font-size:.76rem;font-weight:700;color:var(--cs);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.cascade-select{width:100%;padding:6px 26px 6px 8px;border:1px solid var(--bci);border-radius:2px;font-family:var(--ff);font-size:.85rem;background:var(--bg);color:var(--cb);outline:none;cursor:pointer;transition:border-color .15s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2372777d'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.cascade-select:focus{border-color:var(--cp);box-shadow:inset 0 0 0 1px var(--cp)}
+.cascade-select:disabled{background-color:var(--bgs);color:var(--cpla);cursor:not-allowed}
 
-/* Header nav */
-.mw-head-nav {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: auto;
-}
+/* Selected type preview card */
+.type-preview-card{border:1px solid var(--cp);background:#eaf3fb;padding:10px 12px;display:none;align-items:center;gap:10px;margin-top:8px}
+.type-preview-card.visible{display:flex}
+.tpc-em{font-size:1.6rem;flex-shrink:0}
+.tpc-info{flex:1;min-width:0}
+.tpc-name{font-weight:700;font-size:.88rem;color:var(--cb)}
+.tpc-tmpl{font-size:.75rem;color:var(--cp);font-family:monospace;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tpc-desc{font-size:.75rem;color:var(--cs);margin-top:2px}
 
-.mw-head-nav a, .mw-lang-btn {
-  font-size: 0.8rem;
-  color: var(--color-progressive);
-  text-decoration: none;
-  padding: 4px 8px;
-  border-radius: 2px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-family: var(--font-family-base);
-  transition: background 0.1s;
-}
+/* Selected type badge */
+.selected-type-badge{display:inline-flex;align-items:center;gap:6px;background:#eaf3fb;border:1px solid var(--cp);padding:4px 10px;font-size:.8rem;margin-bottom:12px}
+.selected-type-badge strong{color:var(--cp)}
+.badge-change{background:none;border:none;color:var(--cp);cursor:pointer;font-size:.78rem;margin-left:4px;text-decoration:underline;font-family:var(--ff)}
 
-.mw-head-nav a:hover, .mw-lang-btn:hover { background: var(--bg-interactive); text-decoration: none; }
-.mw-lang-btn.active { background: var(--bg-interactive); font-weight: bold; color: var(--color-base); }
+/* FORM */
+.form-sec-lbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--cs);border-bottom:1px solid var(--bcs);padding-bottom:2px;margin:13px 0 7px}
+.form-field{margin-bottom:9px}
+.form-field label{display:block;font-size:.8rem;font-weight:700;color:var(--cb);margin-bottom:2px}
+.form-field input{width:100%;padding:6px 8px;border:1px solid var(--bci);background:var(--bg);color:var(--cb);font-family:var(--ff);font-size:.85rem;border-radius:2px;outline:none;transition:border-color .15s,box-shadow .15s}
+.form-field input:focus{border-color:var(--cp);box-shadow:inset 0 0 0 1px var(--cp)}
+.form-field input::placeholder{color:var(--cpla)}
+.field-hint{font-size:.72rem;color:var(--cs);margin-top:2px}
 
-.mw-head-sep { color: var(--border-color); font-size: 0.8rem; }
+/* BUTTONS */
+.mw-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;font-family:var(--ff);font-size:.84rem;font-weight:700;border-radius:2px;cursor:pointer;border:1px solid;transition:all .12s;text-decoration:none;white-space:nowrap}
+.btn-p{background:var(--cp);color:#fff;border-color:var(--cph)}.btn-p:hover{background:var(--cph)}
+.btn-s{background:var(--bg);color:var(--cb);border-color:var(--bci)}.btn-s:hover{background:var(--bgi)}
+.btn-q{background:transparent;color:var(--cp);border-color:transparent}.btn-q:hover{background:var(--bgi);text-decoration:underline}
+.mw-btn:disabled{background:var(--bgi)!important;color:var(--cd)!important;border-color:var(--bcs)!important;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-/*PAGE LAYOUT*/
-.mw-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 20px;
-  align-items: start;
-}
+/* OUTPUT TABS */
+.out-tabs{display:flex;border-bottom:1px solid var(--bc);margin-bottom:0}
+.out-tab{padding:7px 13px;font-size:.8rem;cursor:pointer;color:var(--cp);border:1px solid transparent;border-bottom:none;background:var(--bgs);margin-bottom:-1px;white-space:nowrap;font-family:var(--ff)}
+.out-tab:hover{background:var(--bgi)}
+.out-tab.sel{background:var(--bg);border-color:var(--bc);color:var(--cb);font-weight:700}
+.out-panel{display:none;padding-top:11px}.out-panel.active{display:block}
 
-@media (max-width: 800px) { .mw-page { grid-template-columns: 1fr; } }
+/* CODE */
+.mw-code{background:var(--bgs);border:1px solid var(--bc);font-family:'Courier New',monospace;font-size:.75rem;line-height:1.65;padding:10px 12px;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.code-ph{color:var(--cpla);font-family:var(--ff);font-style:italic;text-align:center;padding:20px 0}
 
-/*SIDEBAR*/
-#mw-sidebar {
-  background: var(--bg-base);
-  border: 1px solid var(--border-color);
-}
+/* WIKI LANG */
+.wl-lbl{font-size:.77rem;font-weight:700;color:var(--cb);margin-bottom:6px}
+.wl-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:11px}
+.wl-btn{padding:3px 8px;font-size:.74rem;border:1px solid var(--bc);background:var(--bgs);cursor:pointer;color:var(--cp);border-radius:2px;font-family:var(--ff);transition:all .12s}
+.wl-btn:hover{background:var(--bgi)}
+.wl-btn.sel{background:var(--cp);color:#fff;border-color:var(--cph)}
 
-.sidebar-portlet { padding: 0; }
 
-.sidebar-portlet-header {
-  background: var(--bg-interactive);
-  border-bottom: 1px solid var(--border-color);
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--color-subtle);
-}
 
-.sidebar-portlet ul {
-  list-style: none;
-  padding: 4px 0;
-}
+/* PREVIEW */
+.infobox-preview{border:1px solid #a2a9b1;background:#f8f9fa;font-size:.8rem;line-height:1.5;float:right;clear:right;margin:0 0 1em 1em;max-width:230px;width:100%}
+.infobox-preview caption{background:#cee0f2;font-weight:700;font-size:.88rem;text-align:center;padding:5px 8px;border-bottom:1px solid #a2a9b1;display:table-caption}
+.infobox-preview th{background:#eaecf0;padding:4px 7px;text-align:right;vertical-align:top;white-space:nowrap;width:45%;font-weight:700;border-top:1px solid #a2a9b1;font-size:.77rem}
+.infobox-preview td{padding:4px 7px;border-top:1px solid #a2a9b1;vertical-align:top;font-size:.78rem}
+.pv-wrap{overflow:auto;max-height:320px}
 
-.sidebar-portlet ul li a {
-  display: block;
-  padding: 4px 12px;
-  font-size: 0.82rem;
-  color: var(--color-progressive);
-  text-decoration: none;
-  cursor: pointer;
-}
+/* HELPER */
+.mw-helper{background:#eaf3fb;border:1px solid #72a5d8;padding:10px 12px;font-size:.81rem;line-height:1.6;margin-bottom:10px}
+.mw-helper h4{font-size:.86rem;font-weight:700;margin-bottom:6px}
+.mw-helper ol{padding-left:16px}.mw-helper ol li{margin-bottom:4px}
+.mw-helper code{background:#fff;border:1px solid var(--bc);padding:1px 4px;font-size:.78rem}
 
-.sidebar-portlet ul li a:hover { background: var(--bg-subtle); text-decoration: underline; }
-.sidebar-portlet ul li.active a { background: var(--bg-interactive); color: var(--color-base); font-weight: bold; cursor: default; text-decoration: none; }
+/* LOADER */
+.mw-loader{display:inline-block;width:11px;height:11px;border:2px solid rgba(0,0,0,.12);border-top-color:var(--cp);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.sidebar-portlet + .sidebar-portlet { border-top: 1px solid var(--border-color); }
+.mw-divider{border:none;border-top:1px solid var(--bc);margin:13px 0}
+.text-muted{color:var(--cs)}.text-sm{font-size:.77rem}
+#mw-footer{background:var(--bgi);border-top:1px solid var(--bc);padding:10px 16px;font-size:.76rem;color:var(--cs);text-align:center;margin-top:20px}
+#mw-footer a{color:var(--cp);text-decoration:none}#mw-footer a:hover{text-decoration:underline}
 
-/* MAIN CONTEN */
-#mw-content {
-  background: var(--bg-base);
-  border: 1px solid var(--border-color);
-  padding: 20px 24px;
-  min-height: 600px;
-}
-
-/*  PAGE TITLE  */
-.mw-page-title-heading {
-  font-family: var(--font-family-heading);
-  font-size: 2rem;
-  font-weight: normal;
-  color: var(--color-base);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 4px;
-  margin-bottom: 16px;
-  line-height: 1.3;
-}
-
-/* CONTENT TABS */
-.mw-content-tabs {
-  display: flex;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
-  gap: 0;
-}
-
-.mw-ctab {
-  padding: 8px 14px;
-  font-size: 0.82rem;
-  cursor: pointer;
-  color: var(--color-progressive);
-  border: 1px solid transparent;
-  border-bottom: none;
-  background: var(--bg-subtle);
-  margin-bottom: -1px;
-  text-decoration: none;
-  transition: background 0.1s;
-  white-space: nowrap;
-}
-
-.mw-ctab:hover { background: var(--bg-interactive); }
-.mw-ctab.selected {
-  background: var(--bg-base);
-  border-color: var(--border-color);
-  color: var(--color-base);
-  font-weight: normal;
-  cursor: default;
-}
-
-/*  SECTION HEADINGS */
-.mw-headline {
-  font-family: var(--font-family-heading);
-  font-size: 1.2rem;
-  font-weight: normal;
-  border-bottom: 1px solid var(--border-color);
-  margin: 20px 0 10px;
-  padding-bottom: 3px;
-  color: var(--color-base);
-}
-
-.mw-headline-sub {
-  font-family: var(--font-family-base);
-  font-size: 1rem;
-  font-weight: bold;
-  margin: 14px 0 8px;
-  color: var(--color-base);
-}
-
-/*  NOTICE BOXES  */
-.mw-message-box {
-  border: 1px solid var(--border-color);
-  padding: 8px 12px;
-  margin-bottom: 14px;
-  font-size: 0.82rem;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  line-height: 1.5;
-}
-
-.mw-message-box-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
-.mw-message-box.notice { background: #eaf3fb; border-color: #36c; }
-.mw-message-box.success { background: #d5fdf4; border-color: var(--color-success); }
-.mw-message-box.warning { background: #fef6e7; border-color: #fc3; }
-.mw-message-box.error   { background: #fee7e6; border-color: var(--color-destructive); }
-.mw-message-box .mbox-text a { color: var(--color-progressive); }
-
-/* Status banner (for template check) */
-#status-banner { display: none; margin-bottom: 14px; }
-
-/* TWO-COLUMN LAYOUT FOR FORM + OUTPUT  */
-.tool-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-@media (max-width: 700px) { .tool-grid { grid-template-columns: 1fr; } }
-
-/* TYPE SELECTOR  */
-.type-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-bottom: 16px;
-}
-
-.type-card {
-  border: 1px solid var(--border-color);
-  background: var(--bg-subtle);
-  padding: 8px 6px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.1s;
-  font-size: 0.79rem;
-}
-
-.type-card:hover { background: var(--bg-interactive); border-color: var(--color-progressive); }
-.type-card.selected { background: #eaf3fb; border-color: var(--color-progressive); color: var(--color-progressive); font-weight: bold; }
-.type-card .tc-em { display: block; font-size: 1.2rem; margin-bottom: 2px; }
-
-/* FORM ELEMENTS */
-.form-field { margin-bottom: 10px; }
-
-.form-field label {
-  display: block;
-  font-size: 0.82rem;
-  color: var(--color-base);
-  margin-bottom: 3px;
-  font-weight: bold;
-}
-
-.form-field input {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--border-color-interactive);
-  background: var(--bg-base);
-  color: var(--color-base);
-  font-family: var(--font-family-base);
-  font-size: 0.85rem;
-  border-radius: 2px;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.form-field input:focus {
-  border-color: var(--color-progressive);
-  box-shadow: inset 0 0 0 1px var(--color-progressive);
-}
-
-.form-field input::placeholder { color: var(--color-placeholder); }
-
-.field-hint {
-  font-size: 0.75rem;
-  color: var(--color-subtle);
-  margin-top: 2px;
-}
-
-/* Section label inside form */
-.form-section-label {
-  font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-subtle);
-  border-bottom: 1px solid var(--border-color-subtle);
-  padding-bottom: 3px;
-  margin: 14px 0 8px;
-}
-
-/*  BUTTONS  */
-.mw-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  font-family: var(--font-family-base);
-  font-size: 0.85rem;
-  font-weight: bold;
-  border-radius: 2px;
-  cursor: pointer;
-  border: 1px solid;
-  transition: background 0.1s, color 0.1s;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.mw-btn-primary {
-  background: var(--color-progressive);
-  color: #fff;
-  border-color: var(--color-progressive-hover);
-}
-.mw-btn-primary:hover { background: var(--color-progressive-hover); }
-
-.mw-btn-secondary {
-  background: var(--bg-base);
-  color: var(--color-base);
-  border-color: var(--border-color-interactive);
-}
-.mw-btn-secondary:hover { background: var(--bg-interactive); }
-
-.mw-btn-quiet {
-  background: transparent;
-  color: var(--color-progressive);
-  border-color: transparent;
-}
-.mw-btn-quiet:hover { background: var(--bg-interactive); text-decoration: underline; }
-
-.mw-btn:disabled { background: var(--bg-interactive) !important; color: var(--color-disabled) !important; border-color: var(--border-color-subtle) !important; cursor: not-allowed; }
-
-.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-
-/*  CODE / WIKITEXT OUTPUT BOX  */
-.mw-code-output {
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-color);
-  font-family: 'Courier New', 'Lucida Console', monospace;
-  font-size: 0.77rem;
-  line-height: 1.6;
-  padding: 10px 12px;
-  max-height: 300px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
-  color: var(--color-base);
-}
-
-.code-ph { color: var(--color-placeholder); font-family: var(--font-family-base); font-style: italic; text-align: center; padding: 20px 0; }
-
-/* Syntax highlight colors  */
-.tok-bracket { color: #0645ad; font-weight: bold; }
-.tok-key     { color: #00522b; }
-.tok-tmpl    { color: #0645ad; }
-.tok-pipe    { color: #555; }
-
-/*  OUTPUT TABS */
-.output-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 0; }
-.out-tab { padding: 6px 12px; font-size: 0.81rem; cursor: pointer; color: var(--color-progressive); border: 1px solid transparent; border-bottom: none; background: var(--bg-subtle); margin-bottom: -1px; white-space: nowrap; }
-.out-tab:hover { background: var(--bg-interactive); }
-.out-tab.selected { background: var(--bg-base); border-color: var(--border-color); color: var(--color-base); cursor: default; font-weight: bold; }
-.out-panel { display: none; padding-top: 12px; }
-.out-panel.active { display: block; }
-
-/* ── WIKI OUTPUT LANGUAGE ── */
-.wiki-lang-label { font-size: 0.8rem; font-weight: bold; color: var(--color-base); margin-bottom: 6px; }
-.wiki-lang-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
-.wiki-lang-btn { padding: 3px 8px; font-size: 0.77rem; border: 1px solid var(--border-color); background: var(--bg-subtle); cursor: pointer; color: var(--color-progressive); border-radius: 2px; font-family: var(--font-family-base); transition: all 0.1s; }
-.wiki-lang-btn:hover { background: var(--bg-interactive); }
-.wiki-lang-btn.selected { background: var(--color-progressive); color: #fff; border-color: var(--color-progressive-hover); }
-   
-/* INFOBOX PREVIEW  */
-.infobox-preview {
-  border: 1px solid #a2a9b1;
-  background: #f8f9fa;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  float: right;
-  clear: right;
-  margin: 0 0 1em 1em;
-  max-width: 240px;
-  width: 100%;
-}
-
-.infobox-preview caption {
-  background: #cee0f2;
-  font-weight: bold;
-  font-size: 0.9rem;
-  text-align: center;
-  padding: 5px 8px;
-  border-bottom: 1px solid #a2a9b1;
-}
-
-.infobox-preview th {
-  background: #eaecf0;
-  padding: 4px 8px;
-  text-align: right;
-  vertical-align: top;
-  white-space: nowrap;
-  width: 45%;
-  font-weight: bold;
-  border-top: 1px solid #a2a9b1;
-  font-size: 0.78rem;
-}
-
-.infobox-preview td {
-  padding: 4px 8px;
-  border-top: 1px solid #a2a9b1;
-  vertical-align: top;
-  font-size: 0.8rem;
-}
-
-.preview-wrap { overflow: auto; max-height: 320px; }
-
-/* HELPER BOX  */
-.mw-helper {
-  background: #eaf3fb;
-  border: 1px solid #72a5d8;
-  padding: 10px 12px;
-  font-size: 0.82rem;
-  line-height: 1.6;
-  margin-bottom: 10px;
-}
-.mw-helper h4 { font-size: 0.88rem; font-weight: bold; margin-bottom: 6px; color: var(--color-base); }
-.mw-helper ol { padding-left: 18px; }
-.mw-helper ol li { margin-bottom: 4px; }
-.mw-helper code { background: #fff; border: 1px solid var(--border-color); padding: 1px 4px; font-size: 0.8rem; }
-
-/* LOADER  */
-.mw-loader { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(0,0,0,0.15); border-top-color: var(--color-progressive); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* FOOTER  */
-#mw-footer {
-  background: var(--bg-interactive);
-  border-top: 1px solid var(--border-color);
-  padding: 12px 16px;
-  font-size: 0.78rem;
-  color: var(--color-subtle);
-  text-align: center;
-  margin-top: 24px;
-}
-#mw-footer a { color: var(--color-progressive); text-decoration: none; }
-#mw-footer a:hover { text-decoration: underline; }
-
-/* SMALL UTILITIES */
-.mw-divider { border: none; border-top: 1px solid var(--border-color); margin: 14px 0; }
-.text-muted { color: var(--color-subtle); }
-.text-small { font-size: 0.78rem; }
+/* two-col layout */
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+@media(max-width:680px){.tool-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div id="mw-head">
   <div class="mw-head-inner">
     <a class="mw-logo" href="#">
       <div class="mw-logo-icon"></div>
-      <div>
-        <div class="mw-logo-text">Wikipedia</div>
-        <span class="mw-logo-tagline">Infobox Creator Tool</span>
-      </div>
+      <div><div class="mw-logo-text">Wikipedia</div><span class="mw-logo-sub">Infobox Creator Tool</span></div>
     </a>
     <div class="mw-head-nav">
-      <span class="text-muted text-small" style="margin-right:4px">Language:</span>
-      <button class="mw-lang-btn active" onclick="setUI('en')">English</button>
-      <span class="mw-head-sep">|</span>
-      <button class="mw-lang-btn" onclick="setUI('sw')">Kiswahili</button>
-      <span class="mw-head-sep">|</span>
-      <button class="mw-lang-btn" onclick="setUI('fr')">Français</button>
+      <span class="text-muted text-sm" style="margin-right:3px" id="ui-lbl">UI Language:</span>
+      <button class="uilb active" onclick="setUI('en')">English</button>
+      <button class="uilb" onclick="setUI('sw')">Kiswahili</button>
+      <button class="uilb" onclick="setUI('fr')">Français</button>
     </div>
   </div>
 </div>
 
-<!-- PAGE -->
 <div class="mw-page">
 
   <!-- SIDEBAR -->
   <div id="mw-sidebar">
-
-    <div class="sidebar-portlet">
-      <div class="sidebar-portlet-header" id="sb-nav-lbl">Navigation</div>
+    <div class="sb-portlet">
+      <div class="sb-hdr" id="sb-nav-lbl">Navigation</div>
       <ul>
         <li class="active"><a id="sb-create">Create infobox</a></li>
         <li><a onclick="goTab('tbl')" id="sb-table">Use plain table</a></li>
@@ -540,958 +178,1021 @@ body {
         <li><a onclick="checkTmpl()" id="sb-check">Check template</a></li>
       </ul>
     </div>
-
-    <div class="sidebar-portlet">
-      <div class="sidebar-portlet-header" id="sb-type-lbl">Infobox type</div>
+    <div class="sb-portlet">
+      <div class="sb-hdr" id="sb-type-lbl">Selected type</div>
       <ul id="sb-type-list"></ul>
     </div>
-
-    <div class="sidebar-portlet">
-      <div class="sidebar-portlet-header" id="sb-wiki-lbl">Target Wikipedia</div>
+    <div class="sb-portlet">
+      <div class="sb-hdr" id="sb-wiki-lbl">Target Wikipedia</div>
       <ul id="sb-wiki-list"></ul>
     </div>
-
-    <div class="sidebar-portlet">
-      <div class="sidebar-portlet-header" id="sb-help-lbl">Help</div>
+    <div class="sb-portlet">
+      <div class="sb-hdr" id="sb-help-lbl">Help</div>
       <ul>
         <li><a href="https://en.wikipedia.org/wiki/Help:Infobox" target="_blank" id="sb-doc">Infobox documentation</a></li>
+        <li><a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank" id="sb-commons">Upload image to Commons</a></li>
         <li><a href="https://www.mediawiki.org/wiki/Help:Templates" target="_blank" id="sb-tmpdoc">Template help</a></li>
       </ul>
     </div>
-
   </div>
 
   <!-- MAIN CONTENT -->
   <div id="mw-content">
+    <h1 class="mw-h1" id="page-title">Infobox Creator</h1>
 
-    <h1 class="mw-page-title-heading" id="page-title">Infobox Creator</h1>
-
-    <div class="mw-message-box notice" id="intro-msg">
-      <span class="mw-message-box-icon">ℹ️</span>
-      <div class="mbox-text" id="intro-text">
-        Fill in the form below to generate Wikipedia infobox code. The tool will check whether the template exists on your target Wikipedia, and offer alternatives if it does not.
-      </div>
+    <div class="mbox notice" id="intro-msg">
+      <span class="mbox-icon">ℹ️</span>
+      <div id="intro-text">Search or browse to find the right infobox type, fill in the details, and copy the wikitext to your article.</div>
     </div>
 
-    <!-- Status banner for template check -->
     <div id="status-banner"></div>
 
-    <!-- MAIN TOOL GRID -->
     <div class="tool-grid">
 
-      <!-- LEFT: Form -->
+      <!-- LEFT: Type browser + Form -->
       <div>
-        <h2 class="mw-headline" id="form-heading">1. Choose type &amp; fill details</h2>
+        <h2 class="mw-h2" id="form-heading">1. Choose infobox type</h2>
 
-        <div class="type-grid" id="type-grid"></div>
+        <!-- CASCADING TYPE SELECTOR (always visible) -->
+        <div class="type-browser" id="type-browser">
+          <div class="cascade-row">
+            <div class="cascade-group">
+              <span class="cascade-label" id="cat-lbl">Category</span>
+              <select class="cascade-select" id="cat-select" onchange="onCatChange(this.value)">
+                <option value="" id="cat-placeholder">— Select a category —</option>
+              </select>
+            </div>
+            <div class="cascade-group">
+              <span class="cascade-label" id="type-lbl">Infobox type</span>
+              <select class="cascade-select" id="type-select" onchange="onTypeChange(this.value)" disabled>
+                <option value="" id="type-placeholder">— Select category first —</option>
+              </select>
+            </div>
+          </div>
+          <!-- Preview card of selected type -->
+          <div class="type-preview-card" id="type-preview-card">
+            <span class="tpc-em" id="tpc-em"></span>
+            <div class="tpc-info">
+              <div class="tpc-name" id="tpc-name"></div>
+              <div class="tpc-tmpl" id="tpc-tmpl"></div>
+              <div class="tpc-desc" id="tpc-desc"></div>
+            </div>
+          </div>
+        </div>
 
-        <div id="form-area"></div>
+        <!-- Form (shown after type selected) -->
+        <div id="form-section" style="display:none">
+          <h2 class="mw-h2" id="form-detail-heading">2. Fill in details</h2>
+          <p class="text-muted text-sm" id="form-hint" style="margin-bottom:10px"></p>
+          <div id="form-area"></div>
+        </div>
       </div>
 
-      <!-- RIGHT: Output -->
+      <!-- RIGHT: Output + AI -->
       <div>
-        <h2 class="mw-headline" id="output-heading">2. Generated code</h2>
+        <h2 class="mw-h2" id="output-heading">Generated code</h2>
 
-        <div class="wiki-lang-label" id="wiki-lang-lbl">Target Wikipedia language:</div>
-        <div class="wiki-lang-row" id="wiki-lang-row"></div>
+        <div class="wl-lbl" id="wl-lbl">Target Wikipedia language:</div>
+        <div class="wl-row" id="wl-row"></div>
 
-        <!-- Output tabs -->
-        <div class="output-tabs">
-          <div class="out-tab selected" id="ot1" onclick="goTab('ib')" id="ot-ib">Infobox</div>
+        <div class="out-tabs">
+          <div class="out-tab sel" id="ot1" onclick="goTab('ib')">Infobox</div>
           <div class="out-tab" id="ot2" onclick="goTab('tbl')">Plain table</div>
           <div class="out-tab" id="ot3" onclick="goTab('tmpl')">Create template</div>
           <div class="out-tab" id="ot4" onclick="goTab('pv')">Preview</div>
         </div>
 
-        <!-- Infobox code -->
         <div class="out-panel active" id="op-ib">
-          <div class="mw-code-output" id="c-ib">
-            <div class="code-ph" id="code-ph">Fill in the form to generate wikitext…</div>
-          </div>
+          <div class="mw-code" id="c-ib"><div class="code-ph" id="code-ph">Choose a type and fill in the form…</div></div>
         </div>
-
-        <!-- Plain table -->
         <div class="out-panel" id="op-tbl">
-          <div class="mw-message-box notice" style="margin-bottom:10px">
-            <span class="mw-message-box-icon">💡</span>
-            <div class="mbox-text" id="tbl-notice">This wikitable works on <strong>any</strong> Wikipedia without needing a template.</div>
-          </div>
-          <div class="mw-code-output" id="c-tbl"></div>
+          <div class="mbox notice" style="margin-bottom:8px"><span class="mbox-icon">💡</span><div id="tbl-notice">This wikitable works on any Wikipedia without needing a template.</div></div>
+          <div class="mw-code" id="c-tbl"></div>
         </div>
-
-        <!-- Create template -->
         <div class="out-panel" id="op-tmpl">
-          <div class="mw-helper" id="tmpl-helper">
-            <h4 id="tmpl-h">How to create the template on your Wikipedia</h4>
-            <ol id="tmpl-steps"><li>Select a language first</li></ol>
-          </div>
-          <div style="font-size:0.79rem;font-weight:bold;color:var(--color-subtle);margin-bottom:5px" id="tmpl-code-lbl">Template definition (paste this when creating the template page):</div>
-          <div class="mw-code-output" id="c-tmpl"></div>
+          <div class="mw-helper"><h4 id="tmpl-h">How to create the template</h4><ol id="tmpl-steps"><li>Select a language first</li></ol></div>
+          <div class="text-sm" style="font-weight:700;color:var(--cs);margin-bottom:5px" id="tmpl-code-lbl">Template definition code:</div>
+          <div class="mw-code" id="c-tmpl"></div>
         </div>
-
-        <!-- Preview -->
         <div class="out-panel" id="op-pv">
-          <div class="preview-wrap" id="pv-wrap">
-            <div class="code-ph">Fill in the form to see a preview…</div>
-          </div>
+          <div class="pv-wrap" id="pv-wrap"><div class="code-ph">Fill in the form to see a preview…</div></div>
         </div>
 
-        <div class="btn-row" style="margin-top:10px">
-          <button class="mw-btn mw-btn-primary" id="copy-btn" onclick="doCopy()">Copy wikitext</button>
-          <button class="mw-btn mw-btn-secondary" id="chk-btn" onclick="checkTmpl()">Check if template exists</button>
+        <div class="btn-row">
+          <button class="mw-btn btn-p" id="copy-btn" onclick="doCopy()">Copy wikitext</button>
+          <button class="mw-btn btn-s" id="chk-btn" onclick="checkTmpl()">Check if template exists</button>
         </div>
-      </div>
+
+div>
+
     </div>
-
   </div>
 </div>
 
-<!-- ══ FOOTER ══ -->
 <div id="mw-footer">
-  This tool is not affiliated with the Wikimedia Foundation. It is an open-source helper for Wikipedia editors. •
-  <a href="https://www.mediawiki.org/wiki/Help:Templates" target="_blank">MediaWiki template docs</a> •
-  <a href="https://en.wikipedia.org/wiki/Help:Infobox" target="_blank">Infobox help</a>
+  Not affiliated with the Wikimedia Foundation. Open-source editor tool. •
+  <a href="https://en.wikipedia.org/wiki/Help:Infobox" target="_blank">Infobox help</a> •
+  <a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank">Upload to Commons</a> •
+  <a href="https://www.mediawiki.org/wiki/Help:Templates" target="_blank">Template docs</a>
 </div>
 
 <script>
-//Translation:
+// ════════════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ════════════════════════════════════════════════════════════════════
 const TR = {
-  en: {
-    pageTitle: "Infobox Creator",
-    introText: "Fill in the form below to generate Wikipedia infobox code. The tool will check whether the template exists on your target Wikipedia, and offer alternatives if it does not.",
-    formHeading: "1. Choose type & fill details",
-    outputHeading: "2. Generated code",
-    aiHeading: "3. Ask the AI assistant",
-    wikiLangLbl: "Target Wikipedia language:",
-    ot1:"Infobox", ot2:"Plain table", ot3:"Create template", ot4:"Preview",
-    tblNotice: "This wikitable works on <strong>any</strong> Wikipedia without needing a template.",
-    tmplH: "How to create the template on your Wikipedia",
-    tmplCodeLbl: "Template definition (paste this when creating the template page):",
-    copyBtn: "Copy wikitext", copied: "Copied!",
-    chkBtn: "Check if template exists",
-    aiHdr: "💬 Assistant (powered by Claude)",
-    afBtn: "Auto-fill ✨",
-    talkPh: "Ask anything — \"What does this field mean?\", \"How do I write a birth date?\", or just give me a name and I'll suggest values.",
-    sendBtn: "Post",
-    aiInPh: "Type your question…",
-    hint: "Fill in any fields you know. Leave others blank.",
-    sB:"Basic information", sP:"Personal details", sW:"Work & career", sE:"Additional info",
-    sbNavLbl:"Navigation", sbTypeLbl:"Infobox type", sbWikiLbl:"Target Wikipedia",
-    sbHelpLbl:"Help", sbCreate:"Create infobox", sbTable:"Use plain table",
-    sbTmpl:"Create template", sbCheck:"Check template",
-    sbDoc:"Infobox documentation", sbTmpdoc:"Template help",
-    checking: "Checking for template on",
-    ok: "Template found on",
-    missing: "Template not found on",
-    missingNote: "Switched to plain table tab. Use <strong>Create template</strong> tab to set it up once for everyone.",
-    neterr: "Could not reach Wikipedia API.",
+  en:{pageTitle:"Infobox Creator",introText:"Search or browse to find the right infobox type, fill in the details, and copy the wikitext to your article.",
+      formHeading:"1. Choose infobox type",formDetailHeading:"2. Fill in details",outputHeading:"Generated code",
+      wlLbl:"Target Wikipedia language:",ot1:"Infobox",ot2:"Plain table",ot3:"Create template",ot4:"Preview",
+      tblNotice:"This wikitable works on any Wikipedia without needing a template.",
+      tmplH:"How to create the template",tmplCodeLbl:"Template definition code:",
+      copyBtn:"Copy wikitext",copied:"Copied!",chkBtn:"Check if template exists",
+      
+      
+      hint:"Fill in any fields you know. Leave others blank.",badgeChange:"Change",
+      sbNavLbl:"Navigation",sbCreate:"Create infobox",sbTable:"Use plain table",sbTmpl:"Create template",sbCheck:"Check template",
+      sbTypeLbl:"Selected type",sbWikiLbl:"Target Wikipedia",sbHelpLbl:"Help",sbDoc:"Infobox documentation",
+      sbCommons:"Upload image to Commons",sbTmpdoc:"Template help",
+      uiLbl:"UI Language:",searchPh:"Search infobox types…",
+      sB:"Basic information",sP:"Personal details",sW:"Work & career",sE:"Additional info",sSp:"Sport details",sPo:"Political career",sMu:"Music",
+      checking:"Checking template on",ok:"Template found on",missing:"Template not found on",
+      missingNote:"Switched to plain table tab. Use Create template tab to set it up.",
+      neterr:"Could not reach Wikipedia API.",
+      catAll:"All",catPeople:"People",catPlaces:"Places",catOrgs:"Organizations",catSports:"Sports",catArts:"Arts & Media",catSci:"Science & Nature",catPolitics:"Politics",catOther:"Other",
   },
-  sw: {
-    pageTitle: "Kitengo cha Kisanduku cha Habari",
-    introText: "Jaza fomu hapa chini ili kutengeneza msimbo wa kisanduku cha habari cha Wikipedia. Chombo hiki kitakagua kama template ipo kwenye Wikipedia unayolenga.",
-    formHeading: "1. Chagua aina na ujaze maelezo",
-    outputHeading: "2. Msimbo uliotengenezwa",
-    aiHeading: "3. Uliza msaidizi wa AI",
-    wikiLangLbl: "Lugha ya Wikipedia inayolengwa:",
-    ot1:"Kisanduku", ot2:"Jedwali rahisi", ot3:"Unda template", ot4:"Hakiki",
-    tblNotice: "Jedwali hili linafanya kazi kwenye Wikipedia <strong>yoyote</strong> bila kuhitaji template.",
-    tmplH: "Jinsi ya kuunda template kwenye Wikipedia yako",
-    tmplCodeLbl: "Msimbo wa template (bandika hii unapokuunda ukurasa wa template):",
-    copyBtn: "Nakili wikitext", copied: "Imenakiliwa!",
-    chkBtn: "Angalia kama template ipo",
-    aiHdr: "💬 Msaidizi (ina nguvu na Claude)",
-    afBtn: "Jaza kiotomatiki ✨",
-    talkPh: "Uliza chochote — \"Sehemu hii inamaanisha nini?\", \"Nipishe tarehe ya kuzaliwa?\", au nipe jina nikusaidie.",
-    sendBtn: "Tuma",
-    aiInPh: "Andika swali lako…",
-    hint: "Jaza sehemu unazozijua. Nyingine unaweza kuacha.",
-    sB:"Taarifa za msingi", sP:"Maelezo binafsi", sW:"Kazi na taaluma", sE:"Taarifa za ziada",
-    sbNavLbl:"Urambazaji", sbTypeLbl:"Aina ya kisanduku", sbWikiLbl:"Wikipedia inayolengwa",
-    sbHelpLbl:"Msaada", sbCreate:"Unda kisanduku", sbTable:"Tumia jedwali rahisi",
-    sbTmpl:"Unda template", sbCheck:"Kagua template",
-    sbDoc:"Maelezo ya kisanduku cha habari", sbTmpdoc:"Msaada wa template",
-    checking: "Inakagua template kwenye",
-    ok: "Template inapatikana kwenye",
-    missing: "Template haipatikani kwenye",
-    missingNote: "Umebadilishiwa kichupo cha jedwali rahisi. Tumia kichupo cha <strong>Unda template</strong> kuianzisha mara moja kwa wote.",
-    neterr: "Haikuweza kufikia Wikipedia API.",
+  sw:{pageTitle:"Kitengo cha Kisanduku cha Habari",introText:"Tafuta au vinjari ili kupata aina sahihi ya kisanduku cha habari, jaza maelezo, na nakili wikitext kwenye makala yako.",
+      formHeading:"1. Chagua aina ya kisanduku",formDetailHeading:"2. Jaza maelezo",outputHeading:"Msimbo uliotengenezwa",
+      wlLbl:"Lugha ya Wikipedia inayolengwa:",ot1:"Kisanduku",ot2:"Jedwali rahisi",ot3:"Unda template",ot4:"Hakiki",
+      tblNotice:"Jedwali hili linafanya kazi kwenye Wikipedia yoyote bila template.",
+      tmplH:"Jinsi ya kuunda template",tmplCodeLbl:"Msimbo wa template:",
+      copyBtn:"Nakili wikitext",copied:"Imenakiliwa!",chkBtn:"Angalia kama template ipo",
+      
+      
+      hint:"Jaza sehemu unazozijua. Nyingine unaweza kuacha.",badgeChange:"Badilisha",
+      sbNavLbl:"Urambazaji",sbCreate:"Unda kisanduku",sbTable:"Tumia jedwali rahisi",sbTmpl:"Unda template",sbCheck:"Kagua template",
+      sbTypeLbl:"Aina iliyochaguliwa",sbWikiLbl:"Wikipedia inayolengwa",sbHelpLbl:"Msaada",sbDoc:"Maelezo ya kisanduku",
+      sbCommons:"Pakia picha kwenye Commons",sbTmpdoc:"Msaada wa template",
+      uiLbl:"Lugha ya UI:",searchPh:"Tafuta aina ya kisanduku…",
+      sB:"Taarifa za msingi",sP:"Maelezo binafsi",sW:"Kazi na taaluma",sE:"Taarifa za ziada",sSp:"Maelezo ya michezo",sPo:"Kazi ya kisiasa",sMu:"Muziki",
+      checking:"Inakagua template kwenye",ok:"Template ipo kwenye",missing:"Template haipatikani kwenye",
+      missingNote:"Umebadilishiwa jedwali rahisi. Tumia kichupo cha Unda template kuianzisha.",
+      neterr:"Haikuweza kufikia Wikipedia API.",
+      catAll:"Zote",catPeople:"Watu",catPlaces:"Mahali",catOrgs:"Mashirika",catSports:"Michezo",catArts:"Sanaa na Vyombo",catSci:"Sayansi na Asili",catPolitics:"Siasa",catOther:"Nyingine",
   },
-  fr: {
-    pageTitle: "Créateur d'infobox",
-    introText: "Remplissez le formulaire pour générer le wikicode d'une infobox. L'outil vérifiera si le modèle existe sur votre Wikipédia cible.",
-    formHeading: "1. Choisir le type et remplir",
-    outputHeading: "2. Code généré",
-    aiHeading: "3. Demander à l'assistant IA",
-    wikiLangLbl: "Langue Wikipédia cible :",
-    ot1:"Infobox", ot2:"Tableau simple", ot3:"Créer modèle", ot4:"Aperçu",
-    tblNotice: "Ce tableau fonctionne sur <strong>n'importe quel</strong> Wikipédia sans modèle.",
-    tmplH: "Comment créer le modèle sur votre Wikipédia",
-    tmplCodeLbl: "Code de définition du modèle (collez-le lors de la création) :",
-    copyBtn: "Copier le wikicode", copied: "Copié !",
-    chkBtn: "Vérifier si le modèle existe",
-    aiHdr: "💬 Assistant (propulsé par Claude)",
-    afBtn: "Remplissage auto ✨",
-    talkPh: "Posez n'importe quelle question sur les champs ou demandez des suggestions de valeurs.",
-    sendBtn: "Envoyer",
-    aiInPh: "Tapez votre question…",
-    hint: "Remplissez les champs que vous connaissez. Laissez les autres vides.",
-    sB:"Informations de base", sP:"Détails personnels", sW:"Travail", sE:"Informations supplémentaires",
-    sbNavLbl:"Navigation", sbTypeLbl:"Type d'infobox", sbWikiLbl:"Wikipédia cible",
-    sbHelpLbl:"Aide", sbCreate:"Créer infobox", sbTable:"Utiliser tableau simple",
-    sbTmpl:"Créer modèle", sbCheck:"Vérifier modèle",
-    sbDoc:"Documentation des infobox", sbTmpdoc:"Aide modèles",
-    checking: "Vérification du modèle sur",
-    ok: "Modèle trouvé sur",
-    missing: "Modèle introuvable sur",
-    missingNote: "Basculé vers le tableau simple. Utilisez <strong>Créer modèle</strong> pour l'installer une fois pour tous.",
-    neterr: "Impossible d'accéder à l'API Wikipedia.",
+  fr:{pageTitle:"Créateur d'infobox",introText:"Recherchez ou parcourez pour trouver le bon type d'infobox, remplissez les détails et copiez le wikicode dans votre article.",
+      formHeading:"1. Choisir le type d'infobox",formDetailHeading:"2. Remplir les détails",outputHeading:"Code généré",
+      wlLbl:"Langue Wikipédia cible :",ot1:"Infobox",ot2:"Tableau simple",ot3:"Créer modèle",ot4:"Aperçu",
+      tblNotice:"Ce tableau fonctionne sur n'importe quel Wikipédia sans modèle.",
+      tmplH:"Comment créer le modèle",tmplCodeLbl:"Code de définition du modèle :",
+      copyBtn:"Copier le wikicode",copied:"Copié !",chkBtn:"Vérifier si le modèle existe",
+      
+      
+      hint:"Remplissez les champs que vous connaissez. Laissez les autres vides.",badgeChange:"Changer",
+      sbNavLbl:"Navigation",sbCreate:"Créer infobox",sbTable:"Tableau simple",sbTmpl:"Créer modèle",sbCheck:"Vérifier modèle",
+      sbTypeLbl:"Type sélectionné",sbWikiLbl:"Wikipédia cible",sbHelpLbl:"Aide",sbDoc:"Documentation infobox",
+      sbCommons:"Téléverser image sur Commons",sbTmpdoc:"Aide modèles",
+      uiLbl:"Langue UI :",searchPh:"Rechercher un type d'infobox…",
+      sB:"Informations de base",sP:"Détails personnels",sW:"Travail",sE:"Informations supplémentaires",sSp:"Détails sportifs",sPo:"Carrière politique",sMu:"Musique",
+      checking:"Vérification du modèle sur",ok:"Modèle trouvé sur",missing:"Modèle introuvable sur",
+      missingNote:"Basculé vers le tableau simple. Utilisez Créer modèle pour l'installer.",
+      neterr:"Impossible d'accéder à l'API Wikipedia.",
+      catAll:"Tout",catPeople:"Personnes",catPlaces:"Lieux",catOrgs:"Organisations",catSports:"Sports",catArts:"Arts & Médias",catSci:"Science & Nature",catPolitics:"Politique",catOther:"Autre",
   }
 };
 
-//Language:
-const WLANGS = [
-  {id:"en", lbl:"English",    flag:"🇬🇧", host:"en.wikipedia.org"},
-  {id:"sw", lbl:"Kiswahili",  flag:"🇹🇿", host:"sw.wikipedia.org"},
-  {id:"fr", lbl:"Français",   flag:"🇫🇷", host:"fr.wikipedia.org"},
-  {id:"ar", lbl:"العربية",    flag:"🇸🇦", host:"ar.wikipedia.org"},
-  {id:"pt", lbl:"Português",  flag:"🇵🇹", host:"pt.wikipedia.org"},
-  {id:"am", lbl:"አማርኛ",      flag:"🇪🇹", host:"am.wikipedia.org"},
-  {id:"ha", lbl:"Hausa",      flag:"🇳🇬", host:"ha.wikipedia.org"},
-  {id:"yo", lbl:"Yorùbá",     flag:"🇳🇬", host:"yo.wikipedia.org"},
-  {id:"zu", lbl:"isiZulu",    flag:"🇿🇦", host:"zu.wikipedia.org"},
-  {id:"mg", lbl:"Malagasy",   flag:"🇲🇬", host:"mg.wikipedia.org"},
+// ════════════════════════════════════════════════════════════════════
+// INFOBOX TYPE CATALOGUE
+// Each type: id, cat(egory), em(oji), l(abels), tmpl(ate names per wiki lang), fields[]
+// fields: k=internal key, kw=localized param keys, l=display labels, s=section, h=hint
+// ════════════════════════════════════════════════════════════════════
+const CATS = [
+  {id:'all',   lk:'catAll'},
+  {id:'people',lk:'catPeople'},
+  {id:'sports',lk:'catSports'},
+  {id:'politics',lk:'catPolitics'},
+  {id:'places',lk:'catPlaces'},
+  {id:'orgs',  lk:'catOrgs'},
+  {id:'arts',  lk:'catArts'},
+  {id:'sci',   lk:'catSci'},
+  {id:'other', lk:'catOther'},
 ];
-
-const TNAMES = {
-  person: {en:"Infobox person",sw:"Kisanduku cha mtu",fr:"Infobox Personne",ar:"معلومات شخص",pt:"Info/Biografia",am:"Infobox person",ha:"Infobox person",yo:"Infobox eniyan",zu:"Infobox person",mg:"Infobox person"},
-  place:  {en:"Infobox settlement",sw:"Kisanduku cha makazi",fr:"Infobox Commune",ar:"معلومات تقسيم إداري",pt:"Info/Município",am:"Infobox settlement",ha:"Infobox settlement",yo:"Infobox ipinle",zu:"Infobox settlement",mg:"Infobox settlement"},
-  org:    {en:"Infobox organization",sw:"Kisanduku cha shirika",fr:"Infobox Organisation",ar:"معلومات منظمة",pt:"Info/Organização",am:"Infobox organization",ha:"Infobox organization",yo:"Infobox agbari",zu:"Infobox organization",mg:"Infobox organization"},
-  animal: {en:"Speciesbox",sw:"Kisanduku cha spishi",fr:"Taxobox",ar:"معلومات نوع",pt:"Tabela biológica",am:"Speciesbox",ha:"Speciesbox",yo:"Speciesbox",zu:"Speciesbox",mg:"Speciesbox"},
-  book:   {en:"Infobox book",sw:"Kisanduku cha kitabu",fr:"Infobox Œuvre",ar:"معلومات كتاب",pt:"Info/Livro",am:"Infobox book",ha:"Infobox book",yo:"Infobox iwe",zu:"Infobox book",mg:"Infobox book"},
-  country:{en:"Infobox country",sw:"Kisanduku cha nchi",fr:"Infobox Pays",ar:"معلومات دولة",pt:"Info/País",am:"Infobox country",ha:"Infobox country",yo:"Infobox orilẹ-èdè",zu:"Infobox country",mg:"Infobox country"},
-};
 
 const TYPES = [
-  {id:"person", em:"👤", l:{en:"Person",      sw:"Mtu",       fr:"Personne"}},
-  {id:"place",  em:"📍", l:{en:"Place",       sw:"Mahali",    fr:"Lieu"}},
-  {id:"org",    em:"🏢", l:{en:"Organization",sw:"Shirika",   fr:"Organisation"}},
-  {id:"animal", em:"🐾", l:{en:"Animal",      sw:"Mnyama",    fr:"Animal"}},
-  {id:"book",   em:"📚", l:{en:"Book / Film", sw:"Kitabu",    fr:"Livre/Film"}},
-  {id:"country",em:"🌍", l:{en:"Country",     sw:"Nchi",      fr:"Pays"}},
+
+  // ── PEOPLE ──────────────────────────────────────────────────────
+  { id:'person', cat:'people', em:'👤',
+    l:{en:'Person (general)',sw:'Mtu (kawaida)',fr:'Personne (général)'},
+    tmpl:{en:'Infobox person',sw:'Kisanduku cha mtu',fr:'Infobox Personne',ar:'معلومات شخص',pt:'Info/Biografia',default:'Infobox person'},
+    fields:[
+      {k:'name',       kw:{en:'name',       sw:'jina',                fr:'nom'},             l:{en:'Full name',       sw:'Jina kamili',        fr:'Nom complet'},       s:'B',h:{en:'e.g. Amina Juma Seif',sw:'mfano: Amina Juma Seif'}},
+      {k:'image',      kw:{en:'image',      sw:'picha',               fr:'image'},            l:{en:'Image filename',  sw:'Jina la picha',      fr:'Fichier image'},      s:'B',h:{en:'Example.jpg',sw:'Mfano.jpg'}},
+      {k:'caption',    kw:{en:'caption',    sw:'maelezo',             fr:'legende'},          l:{en:'Image caption',   sw:'Maelezo ya picha',   fr:'Légende'},           s:'B'},
+      {k:'birth_date', kw:{en:'birth_date', sw:'tarehe_ya_kuzaliwa',  fr:'date_naissance'},   l:{en:'Date of birth',   sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P',h:{en:'15 March 1990',sw:'15 Machi 1990'}},
+      {k:'birth_place',kw:{en:'birth_place',sw:'mahali_pa_kuzaliwa',  fr:'lieu_naissance'},   l:{en:'Place of birth',  sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'death_date', kw:{en:'death_date', sw:'tarehe_ya_kifo',      fr:'date_deces'},       l:{en:'Date of death',   sw:'Tarehe ya kifo',     fr:'Date de décès'},     s:'P'},
+      {k:'death_place',kw:{en:'death_place',sw:'mahali_pa_kifo',      fr:'lieu_deces'},       l:{en:'Place of death',  sw:'Mahali pa kifo',     fr:'Lieu de décès'},     s:'P'},
+      {k:'nationality',kw:{en:'nationality',sw:'utaifa',              fr:'nationalite'},      l:{en:'Nationality',     sw:'Utaifa',             fr:'Nationalité'},       s:'P'},
+      {k:'occupation', kw:{en:'occupation', sw:'kazi',                fr:'profession'},       l:{en:'Occupation',      sw:'Kazi',               fr:'Profession'},        s:'W'},
+      {k:'years_active',kw:{en:'years_active',sw:'miaka_ya_kazi',     fr:'annees_actives'},   l:{en:'Years active',    sw:'Miaka ya kazi',      fr:'Années actives'},    s:'W',h:{en:'2010–present',sw:'2010–sasa'}},
+      {k:'spouse',     kw:{en:'spouse',     sw:'mwenzi',              fr:'conjoint'},         l:{en:'Spouse',          sw:'Mwenzi wa ndoa',     fr:'Conjoint(e)'},       s:'E'},
+      {k:'children',   kw:{en:'children',   sw:'watoto',              fr:'enfants'},          l:{en:'Children',        sw:'Watoto',             fr:'Enfants'},           s:'E'},
+      {k:'website',    kw:{en:'website',    sw:'tovuti',              fr:'site_web'},         l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'footballer', cat:'sports', em:'⚽',
+    l:{en:'Footballer / Soccer player',sw:'Mchezaji wa mpira wa miguu',fr:'Footballeur'},
+    tmpl:{en:'Infobox football biography',sw:'Kisanduku cha mchezaji wa mpira',fr:'Infobox Footballeur',default:'Infobox football biography'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},              l:{en:'Full name',       sw:'Jina kamili',        fr:'Nom complet'},       s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},            l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'birth_date',  kw:{en:'birth_date',  sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},   l:{en:'Date of birth',   sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P'},
+      {k:'birth_place', kw:{en:'birth_place', sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},   l:{en:'Place of birth',  sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'nationality', kw:{en:'nationality', sw:'utaifa',            fr:'nationalite'},      l:{en:'Nationality',     sw:'Utaifa',             fr:'Nationalité'},       s:'P'},
+      {k:'height',      kw:{en:'height',      sw:'urefu',             fr:'taille'},           l:{en:'Height',          sw:'Urefu',              fr:'Taille'},            s:'Sp',h:{en:'e.g. 1.80 m',sw:'mfano: m 1.80'}},
+      {k:'position',    kw:{en:'position',    sw:'nafasi',            fr:'poste'},            l:{en:'Playing position',sw:'Nafasi ya kucheza',   fr:'Poste'},             s:'Sp',h:{en:'e.g. Striker, Midfielder',sw:'mfano: Mshambuliaji, Katikati'}},
+      {k:'current_club',kw:{en:'currentclub', sw:'klabu_ya_sasa',     fr:'club_actuel'},      l:{en:'Current club',    sw:'Klabu ya sasa',      fr:'Club actuel'},       s:'Sp'},
+      {k:'club_number', kw:{en:'clubnumber',  sw:'nambari_ya_klabu',  fr:'numero'},           l:{en:'Shirt number',    sw:'Nambari ya jezi',    fr:'Numéro'},            s:'Sp'},
+      {k:'caps',        kw:{en:'nationalcaps',sw:'mechi_za_taifa',    fr:'selections'},       l:{en:'International caps',sw:'Mechi za timu ya taifa',fr:'Sélections'},   s:'Sp'},
+      {k:'goals',       kw:{en:'nationalgoals',sw:'magoli_ya_taifa',  fr:'buts_international'},l:{en:'International goals',sw:'Magoli ya taifa',fr:'Buts internationaux'},s:'Sp'},
+      {k:'website',     kw:{en:'website',     sw:'tovuti',            fr:'site_web'},         l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'athlete', cat:'sports', em:'🏃',
+    l:{en:'Athlete (general)',sw:'Mwanariadha',fr:'Athlète'},
+    tmpl:{en:'Infobox athlete',sw:'Kisanduku cha mwanariadha',fr:'Infobox Athlète',default:'Infobox athlete'},
+    fields:[
+      {k:'name',       kw:{en:'name',       sw:'jina',              fr:'nom'},              l:{en:'Full name',     sw:'Jina kamili',        fr:'Nom complet'},     s:'B'},
+      {k:'image',      kw:{en:'image',      sw:'picha',             fr:'image'},            l:{en:'Image',         sw:'Picha',              fr:'Image'},           s:'B'},
+      {k:'birth_date', kw:{en:'birth_date', sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},   l:{en:'Date of birth', sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'},s:'P'},
+      {k:'birth_place',kw:{en:'birth_place',sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},   l:{en:'Place of birth',sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'},s:'P'},
+      {k:'nationality',kw:{en:'nationality',sw:'utaifa',            fr:'nationalite'},      l:{en:'Nationality',   sw:'Utaifa',             fr:'Nationalité'},     s:'P'},
+      {k:'sport',      kw:{en:'sport',      sw:'mchezo',            fr:'sport'},            l:{en:'Sport',         sw:'Mchezo',             fr:'Sport'},           s:'Sp'},
+      {k:'event',      kw:{en:'event',      sw:'tukio',             fr:'epreuve'},          l:{en:'Event',         sw:'Tukio',              fr:'Épreuve'},         s:'Sp'},
+      {k:'club',       kw:{en:'club',       sw:'klabu',             fr:'club'},             l:{en:'Club / Team',   sw:'Klabu / Timu',       fr:'Club / Équipe'},   s:'Sp'},
+      {k:'pb',         kw:{en:'pb',         sw:'rekodi_ya_binafsi',  fr:'record_perso'},     l:{en:'Personal best', sw:'Rekodi ya binafsi',  fr:'Record personnel'},s:'Sp'},
+      {k:'medals',     kw:{en:'medaltemplates',sw:'medali',         fr:'medailles'},        l:{en:'Medals / Titles',sw:'Medali / Vyeo',     fr:'Médailles / Titres'},s:'Sp'},
+    ]
+  },
+
+  { id:'basketball', cat:'sports', em:'🏀',
+    l:{en:'Basketball player',sw:'Mchezaji wa mpira wa kikapu',fr:'Basketteur'},
+    tmpl:{en:'Infobox basketball biography',sw:'Kisanduku cha mchezaji wa kikapu',fr:'Infobox Basketteur',default:'Infobox basketball biography'},
+    fields:[
+      {k:'name',       kw:{en:'name',       sw:'jina',              fr:'nom'},             l:{en:'Full name',     sw:'Jina kamili',        fr:'Nom complet'},     s:'B'},
+      {k:'image',      kw:{en:'image',      sw:'picha',             fr:'image'},           l:{en:'Image',         sw:'Picha',              fr:'Image'},           s:'B'},
+      {k:'birth_date', kw:{en:'birth_date', sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},  l:{en:'Date of birth', sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'},s:'P'},
+      {k:'birth_place',kw:{en:'birth_place',sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},  l:{en:'Place of birth',sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'},s:'P'},
+      {k:'nationality',kw:{en:'nationality',sw:'utaifa',            fr:'nationalite'},     l:{en:'Nationality',   sw:'Utaifa',             fr:'Nationalité'},     s:'P'},
+      {k:'height_ft',  kw:{en:'height_ft',  sw:'urefu_futi',        fr:'taille'},          l:{en:'Height',        sw:'Urefu',              fr:'Taille'},          s:'Sp',h:{en:'e.g. 6 ft 7 in',sw:'mfano: 2.01 m'}},
+      {k:'position',   kw:{en:'position',   sw:'nafasi',            fr:'poste'},           l:{en:'Position',      sw:'Nafasi',             fr:'Poste'},           s:'Sp',h:{en:'e.g. Point guard, Center',sw:'mfano: Kinga, Katikati'}},
+      {k:'number',     kw:{en:'number',     sw:'nambari',           fr:'numero'},          l:{en:'Jersey number', sw:'Nambari ya jezi',    fr:'Numéro'},          s:'Sp'},
+      {k:'current_team',kw:{en:'team',      sw:'timu_ya_sasa',      fr:'equipe'},          l:{en:'Current team',  sw:'Timu ya sasa',       fr:'Équipe actuelle'}, s:'Sp'},
+    ]
+  },
+
+  { id:'boxer', cat:'sports', em:'🥊',
+    l:{en:'Boxer',sw:'Mwanaboksi',fr:'Boxeur'},
+    tmpl:{en:'Infobox boxer',sw:'Kisanduku cha mwanaboksi',fr:'Infobox Boxeur',default:'Infobox boxer'},
+    fields:[
+      {k:'name',       kw:{en:'name',       sw:'jina',              fr:'nom'},              l:{en:'Full name',     sw:'Jina kamili',        fr:'Nom complet'},     s:'B'},
+      {k:'image',      kw:{en:'image',      sw:'picha',             fr:'image'},            l:{en:'Image',         sw:'Picha',              fr:'Image'},           s:'B'},
+      {k:'birth_date', kw:{en:'birth_date', sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},   l:{en:'Date of birth', sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'},s:'P'},
+      {k:'birth_place',kw:{en:'birth_place',sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},   l:{en:'Place of birth',sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'},s:'P'},
+      {k:'nationality',kw:{en:'nationality',sw:'utaifa',            fr:'nationalite'},      l:{en:'Nationality',   sw:'Utaifa',             fr:'Nationalité'},     s:'P'},
+      {k:'weight',     kw:{en:'weight',     sw:'uzito',             fr:'categorie'},        l:{en:'Weight class',  sw:'Darasa la uzito',    fr:'Catégorie'},       s:'Sp',h:{en:'e.g. Heavyweight',sw:'mfano: Mizigo mizito'}},
+      {k:'stance',     kw:{en:'stance',     sw:'mkao',              fr:'garde'},            l:{en:'Stance',        sw:'Mkao',               fr:'Garde'},           s:'Sp',h:{en:'Orthodox / Southpaw',sw:'Orthodox / Southpaw'}},
+      {k:'record',     kw:{en:'record',     sw:'rekodi',            fr:'bilan'},            l:{en:'Boxing record', sw:'Rekodi ya masumbano',fr:'Bilan boxe'},      s:'Sp',h:{en:'Wins–Losses–Draws',sw:'Ushindi–Kushindwa–Sare'}},
+    ]
+  },
+
+  // ── POLITICS ─────────────────────────────────────────────────────
+  { id:'politician', cat:'politics', em:'🏛️',
+    l:{en:'Politician',sw:'Mwanasiasa',fr:'Homme politique'},
+    tmpl:{en:'Infobox politician',sw:'Kisanduku cha mwanasiasa',fr:'Infobox Politicien',default:'Infobox politician'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},              l:{en:'Full name',       sw:'Jina kamili',        fr:'Nom complet'},       s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},            l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'birth_date',  kw:{en:'birth_date',  sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},   l:{en:'Date of birth',   sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P'},
+      {k:'birth_place', kw:{en:'birth_place', sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},   l:{en:'Place of birth',  sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'nationality', kw:{en:'nationality', sw:'utaifa',            fr:'nationalite'},      l:{en:'Nationality',     sw:'Utaifa',             fr:'Nationalité'},       s:'P'},
+      {k:'office',      kw:{en:'office',      sw:'ofisi',             fr:'fonction'},         l:{en:'Office held',     sw:'Ofisi aliyoshikilia', fr:'Fonction exercée'},  s:'Po',h:{en:'e.g. President of Kenya',sw:'mfano: Rais wa Kenya'}},
+      {k:'term_start',  kw:{en:'term_start',  sw:'mwanzo_wa_muhula',  fr:'debut_mandat'},     l:{en:'Term start',      sw:'Mwanzo wa muhula',   fr:'Début du mandat'},   s:'Po'},
+      {k:'term_end',    kw:{en:'term_end',    sw:'mwisho_wa_muhula',  fr:'fin_mandat'},       l:{en:'Term end',        sw:'Mwisho wa muhula',   fr:'Fin du mandat'},     s:'Po'},
+      {k:'party',       kw:{en:'party',       sw:'chama',             fr:'parti'},            l:{en:'Political party', sw:'Chama cha siasa',    fr:'Parti politique'},   s:'Po'},
+      {k:'constituency',kw:{en:'constituency',sw:'jimbo',             fr:'circonscription'},  l:{en:'Constituency',    sw:'Jimbo',              fr:'Circonscription'},   s:'Po'},
+      {k:'predecessor', kw:{en:'predecessor', sw:'mtangulizi',        fr:'predecesseur'},     l:{en:'Preceded by',     sw:'Mtangulizi wake',    fr:'Précédé par'},       s:'Po'},
+      {k:'successor',   kw:{en:'successor',   sw:'mrithi',            fr:'successeur'},       l:{en:'Succeeded by',    sw:'Mrithi wake',        fr:'Succédé par'},       s:'Po'},
+      {k:'education',   kw:{en:'alma_mater',  sw:'elimu',             fr:'education'},        l:{en:'Education',       sw:'Elimu',              fr:'Éducation'},         s:'P'},
+      {k:'spouse',      kw:{en:'spouse',      sw:'mwenzi',            fr:'conjoint'},         l:{en:'Spouse',          sw:'Mwenzi wa ndoa',     fr:'Conjoint(e)'},       s:'E'},
+    ]
+  },
+
+  { id:'royalty', cat:'politics', em:'👑',
+    l:{en:'Royalty / Monarch',sw:'Mfalme / Mtawala',fr:'Personnalité royale'},
+    tmpl:{en:'Infobox royalty',sw:'Kisanduku cha mfalme',fr:'Infobox Personnalité royale',default:'Infobox royalty'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Name',              sw:'Jina',               fr:'Nom'},               s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',             sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'birth_date',  kw:{en:'birth_date',  sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},  l:{en:'Date of birth',     sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P'},
+      {k:'birth_place', kw:{en:'birth_place', sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},  l:{en:'Place of birth',    sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'reign',       kw:{en:'reign',       sw:'utawala',           fr:'regne'},           l:{en:'Reign',             sw:'Utawala',            fr:'Règne'},             s:'Po'},
+      {k:'coronation',  kw:{en:'coronation',  sw:'utawazaji',         fr:'couronnement'},    l:{en:'Coronation',        sw:'Utawazaji',          fr:'Couronnement'},      s:'Po'},
+      {k:'predecessor', kw:{en:'predecessor', sw:'mtangulizi',        fr:'predecesseur'},    l:{en:'Predecessor',       sw:'Mtangulizi',         fr:'Prédécesseur'},      s:'Po'},
+      {k:'successor',   kw:{en:'successor',   sw:'mrithi',            fr:'successeur'},      l:{en:'Successor',         sw:'Mrithi',             fr:'Successeur'},        s:'Po'},
+      {k:'royal_house', kw:{en:'royal_house', sw:'ukoo_wa_kifalme',   fr:'maison'},          l:{en:'Royal house',       sw:'Ukoo wa kifalme',    fr:'Maison royale'},     s:'Po'},
+      {k:'spouse',      kw:{en:'spouse',      sw:'mwenzi',            fr:'conjoint'},        l:{en:'Spouse',            sw:'Mwenzi',             fr:'Conjoint(e)'},       s:'E'},
+    ]
+  },
+
+  // ── ARTS & MEDIA ─────────────────────────────────────────────────
+  { id:'musician', cat:'arts', em:'🎵',
+    l:{en:'Musician / Singer',sw:'Mwimbaji / Msanii',fr:'Musicien / Chanteur'},
+    tmpl:{en:'Infobox musical artist',sw:'Kisanduku cha msanii wa muziki',fr:'Infobox Artiste musical',default:'Infobox musical artist'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Name',            sw:'Jina',               fr:'Nom'},               s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'birth_name',  kw:{en:'birth_name',  sw:'jina_la_kuzaliwa',  fr:'nom_naissance'},   l:{en:'Birth name',      sw:'Jina la kuzaliwa',   fr:'Nom de naissance'},  s:'P'},
+      {k:'birth_date',  kw:{en:'birth_date',  sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},  l:{en:'Date of birth',   sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P'},
+      {k:'birth_place', kw:{en:'birth_place', sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},  l:{en:'Place of birth',  sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'origin',      kw:{en:'origin',      sw:'asili',             fr:'origine'},         l:{en:'Origin',          sw:'Asili',              fr:'Origine'},           s:'P'},
+      {k:'genre',       kw:{en:'genre',       sw:'aina',              fr:'genre'},           l:{en:'Genre(s)',        sw:'Aina ya muziki',     fr:'Genre(s)'},          s:'Mu',h:{en:'e.g. Afrobeats, Hip hop',sw:'mfano: Bongo Flava, Hip hop'}},
+      {k:'instrument',  kw:{en:'instrument',  sw:'ala_ya_muziki',     fr:'instrument'},      l:{en:'Instrument(s)',   sw:'Ala ya muziki',      fr:'Instrument(s)'},     s:'Mu'},
+      {k:'years_active',kw:{en:'years_active',sw:'miaka_ya_kazi',     fr:'annees_actives'},  l:{en:'Years active',    sw:'Miaka ya kazi',      fr:'Années actives'},    s:'Mu'},
+      {k:'label',       kw:{en:'label',       sw:'kampuni_ya_muziki', fr:'label'},           l:{en:'Record label',    sw:'Kampuni ya muziki',  fr:'Label discographique'},s:'Mu'},
+      {k:'website',     kw:{en:'website',     sw:'tovuti',            fr:'site_web'},        l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'actor', cat:'arts', em:'🎬',
+    l:{en:'Actor / Actress',sw:'Mwigizaji',fr:'Acteur / Actrice'},
+    tmpl:{en:'Infobox person',sw:'Kisanduku cha mwigizaji',fr:'Infobox Acteur',default:'Infobox person'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Name',            sw:'Jina',               fr:'Nom'},               s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'birth_date',  kw:{en:'birth_date',  sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},  l:{en:'Date of birth',   sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P'},
+      {k:'birth_place', kw:{en:'birth_place', sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},  l:{en:'Place of birth',  sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'nationality', kw:{en:'nationality', sw:'utaifa',            fr:'nationalite'},     l:{en:'Nationality',     sw:'Utaifa',             fr:'Nationalité'},       s:'P'},
+      {k:'occupation',  kw:{en:'occupation',  sw:'kazi',              fr:'profession'},      l:{en:'Occupation',      sw:'Kazi',               fr:'Profession'},        s:'W',h:{en:'Actor, Voice actor',sw:'Mwigizaji, Mwigizaji wa sauti'}},
+      {k:'years_active',kw:{en:'years_active',sw:'miaka_ya_kazi',     fr:'annees_actives'},  l:{en:'Years active',    sw:'Miaka ya kazi',      fr:'Années actives'},    s:'W'},
+      {k:'notable_works',kw:{en:'notable_works',sw:'kazi_mashuhuri',  fr:'oeuvres'},         l:{en:'Notable works',   sw:'Kazi mashuhuri',     fr:'Œuvres notables'},   s:'W'},
+      {k:'spouse',      kw:{en:'spouse',      sw:'mwenzi',            fr:'conjoint'},        l:{en:'Spouse',          sw:'Mwenzi wa ndoa',     fr:'Conjoint(e)'},       s:'E'},
+      {k:'website',     kw:{en:'website',     sw:'tovuti',            fr:'site_web'},        l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'writer', cat:'arts', em:'✍️',
+    l:{en:'Writer / Author',sw:'Mwandishi',fr:'Écrivain / Auteur'},
+    tmpl:{en:'Infobox writer',sw:'Kisanduku cha mwandishi',fr:'Infobox Écrivain',default:'Infobox writer'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Name',            sw:'Jina',               fr:'Nom'},               s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'birth_date',  kw:{en:'birth_date',  sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},  l:{en:'Date of birth',   sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P'},
+      {k:'birth_place', kw:{en:'birth_place', sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},  l:{en:'Place of birth',  sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'nationality', kw:{en:'nationality', sw:'utaifa',            fr:'nationalite'},     l:{en:'Nationality',     sw:'Utaifa',             fr:'Nationalité'},       s:'P'},
+      {k:'occupation',  kw:{en:'occupation',  sw:'kazi',              fr:'profession'},      l:{en:'Occupation',      sw:'Kazi',               fr:'Profession'},        s:'W',h:{en:'Novelist, Poet, Journalist',sw:'Mwandishi wa riwaya, Mshairi'}},
+      {k:'genre',       kw:{en:'genre',       sw:'aina',              fr:'genre'},           l:{en:'Genre',           sw:'Aina',               fr:'Genre'},             s:'W'},
+      {k:'notable_works',kw:{en:'notable_works',sw:'kazi_mashuhuri',  fr:'oeuvres'},         l:{en:'Notable works',   sw:'Kazi mashuhuri',     fr:'Œuvres notables'},   s:'W'},
+      {k:'awards',      kw:{en:'awards',      sw:'tuzo',              fr:'prix'},            l:{en:'Awards',          sw:'Tuzo',               fr:'Prix'},              s:'E'},
+      {k:'website',     kw:{en:'website',     sw:'tovuti',            fr:'site_web'},        l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'book', cat:'arts', em:'📚',
+    l:{en:'Book',sw:'Kitabu',fr:'Livre'},
+    tmpl:{en:'Infobox book',sw:'Kisanduku cha kitabu',fr:'Infobox Œuvre littéraire',ar:'معلومات كتاب',pt:'Info/Livro',default:'Infobox book'},
+    fields:[
+      {k:'name',      kw:{en:'name',      sw:'jina',                  fr:'titre'},           l:{en:'Title',             sw:'Jina',               fr:'Titre'},             s:'B'},
+      {k:'image',     kw:{en:'image',     sw:'picha',                 fr:'image'},           l:{en:'Cover image',       sw:'Picha ya jalada',    fr:'Image de couverture'},s:'B',h:{en:'Cover.jpg',sw:'Jalada.jpg'}},
+      {k:'caption',   kw:{en:'caption',   sw:'maelezo',               fr:'legende'},         l:{en:'Caption',           sw:'Maelezo',            fr:'Légende'},           s:'B'},
+      {k:'author',    kw:{en:'author',    sw:'mwandishi',             fr:'auteur'},          l:{en:'Author',            sw:'Mwandishi',          fr:'Auteur'},            s:'B'},
+      {k:'genre',     kw:{en:'genre',     sw:'aina',                  fr:'genre'},           l:{en:'Genre',             sw:'Aina',               fr:'Genre'},             s:'B'},
+      {k:'language',  kw:{en:'language',  sw:'lugha',                 fr:'langue'},          l:{en:'Language',          sw:'Lugha',              fr:'Langue'},            s:'B'},
+      {k:'pub_date',  kw:{en:'pub_date',  sw:'tarehe_ya_kuchapishwa', fr:'date_parution'},   l:{en:'Published',         sw:'Ilipochapishwa',     fr:'Publication'},       s:'B'},
+      {k:'publisher', kw:{en:'publisher', sw:'mchapishaji',           fr:'editeur'},         l:{en:'Publisher',         sw:'Mchapishaji',        fr:'Éditeur'},           s:'B'},
+      {k:'pages',     kw:{en:'pages',     sw:'kurasa',                fr:'pages'},           l:{en:'Pages',             sw:'Kurasa',             fr:'Pages'},             s:'B'},
+      {k:'isbn',      kw:{en:'isbn',      sw:'isbn',                  fr:'isbn'},            l:{en:'ISBN',              sw:'ISBN',               fr:'ISBN'},              s:'B'},
+      {k:'website',   kw:{en:'website',   sw:'tovuti',                fr:'site_web'},        l:{en:'Website',           sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'film', cat:'arts', em:'🎥',
+    l:{en:'Film / Movie',sw:'Filamu',fr:'Film'},
+    tmpl:{en:'Infobox film',sw:'Kisanduku cha filamu',fr:'Infobox Cinéma',default:'Infobox film'},
+    fields:[
+      {k:'name',       kw:{en:'name',       sw:'jina',              fr:'titre'},            l:{en:'Title',           sw:'Jina',               fr:'Titre'},             s:'B'},
+      {k:'image',      kw:{en:'image',      sw:'picha',             fr:'image'},            l:{en:'Poster image',    sw:'Picha ya bango',     fr:'Affiche'},           s:'B'},
+      {k:'director',   kw:{en:'director',   sw:'mkurugenzi',        fr:'realisateur'},      l:{en:'Director',        sw:'Mkurugenzi',         fr:'Réalisateur'},       s:'B'},
+      {k:'producer',   kw:{en:'producer',   sw:'mzalishaji',        fr:'producteur'},       l:{en:'Producer',        sw:'Mzalishaji',         fr:'Producteur'},        s:'B'},
+      {k:'writer',     kw:{en:'writer',     sw:'mwandishi',         fr:'scenariste'},       l:{en:'Writer',          sw:'Mwandishi',          fr:'Scénariste'},        s:'B'},
+      {k:'starring',   kw:{en:'starring',   sw:'waigizaji',         fr:'acteurs'},          l:{en:'Starring',        sw:'Waigizaji wakuu',    fr:'Acteurs principaux'},s:'B'},
+      {k:'language',   kw:{en:'language',   sw:'lugha',             fr:'langue'},           l:{en:'Language',        sw:'Lugha',              fr:'Langue'},            s:'B'},
+      {k:'released',   kw:{en:'released',   sw:'ilitolewa',         fr:'sortie'},           l:{en:'Release date',    sw:'Tarehe ya kutolewa', fr:'Date de sortie'},    s:'B'},
+      {k:'runtime',    kw:{en:'runtime',    sw:'muda',              fr:'duree'},            l:{en:'Running time',    sw:'Muda wa filamu',     fr:'Durée'},             s:'B',h:{en:'e.g. 120 minutes',sw:'mfano: Dakika 120'}},
+      {k:'country',    kw:{en:'country',    sw:'nchi',              fr:'pays'},             l:{en:'Country',         sw:'Nchi',               fr:'Pays'},              s:'B'},
+      {k:'budget',     kw:{en:'budget',     sw:'bajeti',            fr:'budget'},           l:{en:'Budget',          sw:'Bajeti',             fr:'Budget'},            s:'E'},
+      {k:'gross',      kw:{en:'gross',      sw:'mapato',            fr:'recettes'},         l:{en:'Box office',      sw:'Mapato ya sinema',   fr:'Recettes'},          s:'E'},
+    ]
+  },
+
+  // ── PLACES ───────────────────────────────────────────────────────
+  { id:'place', cat:'places', em:'📍',
+    l:{en:'Place / Settlement',sw:'Mahali / Makazi',fr:'Lieu / Commune'},
+    tmpl:{en:'Infobox settlement',sw:'Kisanduku cha makazi',fr:'Infobox Commune',ar:'معلومات تقسيم إداري',pt:'Info/Município',default:'Infobox settlement'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Name',            sw:'Jina',               fr:'Nom'},               s:'B'},
+      {k:'image',       kw:{en:'image_skyline',sw:'picha',            fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'country',     kw:{en:'subdivision_name',sw:'nchi',          fr:'pays'},            l:{en:'Country',         sw:'Nchi',               fr:'Pays'},              s:'B'},
+      {k:'region',      kw:{en:'subdivision_name1',sw:'mkoa',         fr:'region'},          l:{en:'Region / Province',sw:'Mkoa',              fr:'Région'},            s:'B'},
+      {k:'population',  kw:{en:'population_total',sw:'idadi_ya_watu', fr:'population'},      l:{en:'Population',      sw:'Idadi ya watu',      fr:'Population'},        s:'B'},
+      {k:'area_km2',    kw:{en:'area_total_km2',sw:'eneo_km2',        fr:'superficie'},      l:{en:'Area (km²)',      sw:'Eneo (km²)',         fr:'Superficie km²'},    s:'B'},
+      {k:'elevation_m', kw:{en:'elevation_m',  sw:'mwinuko_m',        fr:'altitude'},        l:{en:'Elevation (m)',   sw:'Mwinuko (m)',        fr:'Altitude (m)'},      s:'B'},
+      {k:'timezone',    kw:{en:'timezone',     sw:'ukanda_wa_saa',    fr:'fuseau_horaire'},  l:{en:'Time zone',       sw:'Ukanda wa saa',      fr:'Fuseau horaire'},    s:'B'},
+      {k:'coordinates', kw:{en:'coordinates',  sw:'kuratibu',         fr:'coordonnees'},     l:{en:'Coordinates',     sw:'Kuratibu',           fr:'Coordonnées'},       s:'B'},
+      {k:'website',     kw:{en:'website',      sw:'tovuti',           fr:'site_officiel'},   l:{en:'Official website',sw:'Tovuti rasmi',       fr:'Site officiel'},     s:'E'},
+    ]
+  },
+
+  { id:'country', cat:'places', em:'🌍',
+    l:{en:'Country',sw:'Nchi',fr:'Pays'},
+    tmpl:{en:'Infobox country',sw:'Kisanduku cha nchi',fr:'Infobox Pays',ar:'معلومات دولة',pt:'Info/País',default:'Infobox country'},
+    fields:[
+      {k:'common_name',          kw:{en:'common_name',          sw:'jina',              fr:'nom_commun'},        l:{en:'Country name',        sw:'Jina la nchi',       fr:'Nom du pays'},          s:'B'},
+      {k:'image_flag',           kw:{en:'image_flag',           sw:'picha_bendera',     fr:'image_drapeau'},     l:{en:'Flag image',          sw:'Picha ya bendera',   fr:'Image du drapeau'},     s:'B'},
+      {k:'image_coat',           kw:{en:'image_coat',           sw:'picha_nembo',       fr:'image_armoiries'},   l:{en:'Coat of arms image',  sw:'Picha ya nembo',     fr:'Image des armoiries'},  s:'B'},
+      {k:'capital',              kw:{en:'capital',              sw:'mji_mkuu',          fr:'capitale'},          l:{en:'Capital city',        sw:'Mji mkuu',           fr:'Capitale'},             s:'B'},
+      {k:'official_languages',   kw:{en:'official_languages',   sw:'lugha_rasmi',       fr:'langues_officielles'},l:{en:'Official languages',  sw:'Lugha rasmi',        fr:'Langues officielles'},  s:'B'},
+      {k:'population_census',    kw:{en:'population_census',    sw:'idadi_ya_watu',     fr:'population'},        l:{en:'Population',          sw:'Idadi ya watu',      fr:'Population'},           s:'B'},
+      {k:'area_km2',             kw:{en:'area_km2',             sw:'eneo_km2',          fr:'superficie_km2'},    l:{en:'Area (km²)',          sw:'Eneo (km²)',         fr:'Superficie km²'},       s:'B'},
+      {k:'currency',             kw:{en:'currency',             sw:'sarafu',            fr:'monnaie'},           l:{en:'Currency',            sw:'Sarafu',             fr:'Monnaie'},              s:'B'},
+      {k:'government_type',      kw:{en:'government_type',      sw:'aina_ya_serikali',  fr:'regime'},            l:{en:'Government type',     sw:'Aina ya serikali',   fr:'Régime politique'},     s:'B'},
+      {k:'leader_name1',         kw:{en:'leader_name1',         sw:'mkuu_wa_nchi',      fr:'chef_etat'},         l:{en:'Head of state',       sw:'Mkuu wa nchi',       fr:"Chef d'État"},          s:'B'},
+      {k:'website',              kw:{en:'website',              sw:'tovuti_rasmi',      fr:'site_officiel'},     l:{en:'Official website',    sw:'Tovuti rasmi',       fr:'Site officiel'},        s:'E'},
+    ]
+  },
+
+  // ── ORGANIZATIONS ─────────────────────────────────────────────────
+  { id:'org', cat:'orgs', em:'🏢',
+    l:{en:'Organization / Company',sw:'Shirika / Kampuni',fr:'Organisation / Entreprise'},
+    tmpl:{en:'Infobox organization',sw:'Kisanduku cha shirika',fr:'Infobox Organisation',default:'Infobox organization'},
+    fields:[
+      {k:'name',          kw:{en:'name',          sw:'jina',          fr:'nom'},             l:{en:'Name',              sw:'Jina',           fr:'Nom'},             s:'B'},
+      {k:'image',         kw:{en:'image',         sw:'nembo',         fr:'logo'},            l:{en:'Logo / Image',      sw:'Nembo / Picha',  fr:'Logo'},            s:'B'},
+      {k:'founded',       kw:{en:'founded',       sw:'ilianzishwa',   fr:'fondee'},          l:{en:'Founded',           sw:'Ilianzishwa',    fr:'Fondée'},          s:'B'},
+      {k:'headquarters',  kw:{en:'headquarters',  sw:'makao_makuu',   fr:'siege'},           l:{en:'Headquarters',      sw:'Makao makuu',    fr:'Siège social'},    s:'B'},
+      {k:'type',          kw:{en:'type',          sw:'aina',          fr:'type'},            l:{en:'Type',              sw:'Aina',           fr:'Type'},            s:'B'},
+      {k:'industry',      kw:{en:'industry',      sw:'sekta',         fr:'secteur'},         l:{en:'Industry',          sw:'Sekta',          fr:'Secteur'},         s:'B'},
+      {k:'num_employees', kw:{en:'num_employees', sw:'wafanyakazi',   fr:'employes'},        l:{en:'Employees',         sw:'Wafanyakazi',    fr:'Employés'},        s:'B'},
+      {k:'website',       kw:{en:'website',       sw:'tovuti',        fr:'site_web'},        l:{en:'Website',           sw:'Tovuti',         fr:'Site web'},        s:'E'},
+    ]
+  },
+
+  { id:'school', cat:'orgs', em:'🏫',
+    l:{en:'School / University',sw:'Shule / Chuo kikuu',fr:'École / Université'},
+    tmpl:{en:'Infobox university',sw:'Kisanduku cha chuo',fr:'Infobox Université',default:'Infobox university'},
+    fields:[
+      {k:'name',       kw:{en:'name',       sw:'jina',          fr:'nom'},             l:{en:'Name',            sw:'Jina',           fr:'Nom'},             s:'B'},
+      {k:'image',      kw:{en:'image',      sw:'nembo',         fr:'logo'},            l:{en:'Logo / Seal',     sw:'Nembo',          fr:'Logo'},            s:'B'},
+      {k:'type',       kw:{en:'type',       sw:'aina',          fr:'type'},            l:{en:'Type',            sw:'Aina',           fr:'Type'},            s:'B',h:{en:'Public / Private / Religious',sw:'Umma / Binafsi / Kidini'}},
+      {k:'established',kw:{en:'established',sw:'ilianzishwa',   fr:'fondee'},          l:{en:'Established',     sw:'Ilianzishwa',    fr:'Fondée'},          s:'B'},
+      {k:'location',   kw:{en:'city',       sw:'mahali',        fr:'ville'},           l:{en:'Location',        sw:'Mahali',         fr:'Lieu'},            s:'B'},
+      {k:'country',    kw:{en:'country',    sw:'nchi',          fr:'pays'},            l:{en:'Country',         sw:'Nchi',           fr:'Pays'},            s:'B'},
+      {k:'students',   kw:{en:'students',   sw:'wanafunzi',     fr:'etudiants'},       l:{en:'Students',        sw:'Wanafunzi',      fr:'Étudiants'},       s:'B'},
+      {k:'faculty',    kw:{en:'faculty',    sw:'walimu',        fr:'enseignants'},     l:{en:'Academic staff',  sw:'Walimu',         fr:'Enseignants'},     s:'B'},
+      {k:'website',    kw:{en:'website',    sw:'tovuti',        fr:'site_web'},        l:{en:'Website',         sw:'Tovuti',         fr:'Site web'},        s:'E'},
+    ]
+  },
+
+  // ── SCIENCE & NATURE ─────────────────────────────────────────────
+  { id:'animal', cat:'sci', em:'🐾',
+    l:{en:'Animal / Species',sw:'Mnyama / Spishi',fr:'Animal / Espèce'},
+    tmpl:{en:'Speciesbox',sw:'Kisanduku cha spishi',fr:'Taxobox',ar:'معلومات نوع',default:'Speciesbox'},
+    fields:[
+      {k:'taxon',   kw:{en:'taxon',   sw:'jina_la_kisayansi',fr:'taxon'},        l:{en:'Scientific name',     sw:'Jina la kisayansi',fr:'Nom scientifique'}, s:'B'},
+      {k:'name',    kw:{en:'name',    sw:'jina',             fr:'nom_commun'},   l:{en:'Common name',         sw:'Jina la kawaida',  fr:'Nom commun'},       s:'B'},
+      {k:'image',   kw:{en:'image',   sw:'picha',            fr:'image'},        l:{en:'Image',               sw:'Picha',            fr:'Image'},            s:'B'},
+      {k:'status',  kw:{en:'status',  sw:'hali_ya_uhifadhi', fr:'statut'},       l:{en:'Conservation status', sw:'Hali ya uhifadhi', fr:'Statut UICN'},      s:'B',h:{en:'LC / NT / VU / EN / CR',sw:'LC / NT / VU / EN / CR'}},
+      {k:'kingdom', kw:{en:'kingdom', sw:'ufalme',           fr:'regne'},        l:{en:'Kingdom',             sw:'Ufalme',           fr:'Règne'},            s:'B'},
+      {k:'phylum',  kw:{en:'phylum',  sw:'faila',            fr:'embranchement'},l:{en:'Phylum',              sw:'Faila',            fr:'Embranchement'},    s:'B'},
+      {k:'classis', kw:{en:'classis', sw:'darasa',           fr:'classe'},       l:{en:'Class',               sw:'Darasa',           fr:'Classe'},           s:'B'},
+      {k:'ordo',    kw:{en:'ordo',    sw:'oda',              fr:'ordre'},        l:{en:'Order',               sw:'Oda',              fr:'Ordre'},            s:'B'},
+      {k:'familia', kw:{en:'familia', sw:'familia',          fr:'famille'},      l:{en:'Family',              sw:'Familia',          fr:'Famille'},          s:'B'},
+      {k:'genus',   kw:{en:'genus',   sw:'jenasi',           fr:'genre'},        l:{en:'Genus',               sw:'Jenasi',           fr:'Genre'},            s:'B'},
+      {k:'species', kw:{en:'species', sw:'spishi',           fr:'espece'},       l:{en:'Species',             sw:'Spishi',           fr:'Espèce'},           s:'B'},
+    ]
+  },
+
+  { id:'scientist', cat:'sci', em:'🔬',
+    l:{en:'Scientist / Academic',sw:'Mwanasayansi / Msomi',fr:'Scientifique / Universitaire'},
+    tmpl:{en:'Infobox scientist',sw:'Kisanduku cha mwanasayansi',fr:'Infobox Scientifique',default:'Infobox scientist'},
+    fields:[
+      {k:'name',         kw:{en:'name',         sw:'jina',              fr:'nom'},             l:{en:'Name',             sw:'Jina',               fr:'Nom'},               s:'B'},
+      {k:'image',        kw:{en:'image',        sw:'picha',             fr:'image'},           l:{en:'Image',            sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'birth_date',   kw:{en:'birth_date',   sw:'tarehe_ya_kuzaliwa',fr:'date_naissance'},  l:{en:'Date of birth',    sw:'Tarehe ya kuzaliwa', fr:'Date de naissance'}, s:'P'},
+      {k:'birth_place',  kw:{en:'birth_place',  sw:'mahali_pa_kuzaliwa',fr:'lieu_naissance'},  l:{en:'Place of birth',   sw:'Mahali pa kuzaliwa', fr:'Lieu de naissance'}, s:'P'},
+      {k:'nationality',  kw:{en:'nationality',  sw:'utaifa',            fr:'nationalite'},     l:{en:'Nationality',      sw:'Utaifa',             fr:'Nationalité'},       s:'P'},
+      {k:'field',        kw:{en:'field',        sw:'uwanja',            fr:'domaine'},         l:{en:'Field(s)',         sw:'Uwanja wa utaalamu', fr:'Domaine(s)'},        s:'W',h:{en:'e.g. Physics, Biology',sw:'mfano: Fizikia, Bayolojia'}},
+      {k:'institutions', kw:{en:'institutions', sw:'taasisi',           fr:'institutions'},    l:{en:'Institutions',     sw:'Taasisi',            fr:'Institutions'},      s:'W'},
+      {k:'alma_mater',   kw:{en:'alma_mater',   sw:'chuo_cha_masomo',   fr:'alma_mater'},      l:{en:'Alma mater',       sw:'Chuo cha masomo',    fr:'Alma mater'},        s:'W'},
+      {k:'known_for',    kw:{en:'known_for',    sw:'maarufu_kwa',       fr:'connu_pour'},      l:{en:'Known for',        sw:'Maarufu kwa',        fr:'Connu pour'},        s:'W'},
+      {k:'awards',       kw:{en:'awards',       sw:'tuzo',              fr:'prix'},            l:{en:'Awards',           sw:'Tuzo',               fr:'Prix'},              s:'E'},
+    ]
+  },
+
+  // ── OTHER ─────────────────────────────────────────────────────────
+  { id:'award', cat:'other', em:'🏆',
+    l:{en:'Award / Prize',sw:'Tuzo',fr:'Prix / Récompense'},
+    tmpl:{en:'Infobox award',sw:'Kisanduku cha tuzo',fr:'Infobox Prix',default:'Infobox award'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Award name',      sw:'Jina la tuzo',       fr:'Nom du prix'},       s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'description', kw:{en:'description', sw:'maelezo',           fr:'description'},     l:{en:'Description',     sw:'Maelezo',            fr:'Description'},       s:'B'},
+      {k:'country',     kw:{en:'country',     sw:'nchi',              fr:'pays'},            l:{en:'Country',         sw:'Nchi',               fr:'Pays'},              s:'B'},
+      {k:'presenter',   kw:{en:'presenter',   sw:'mtoa_tuzo',         fr:'organisateur'},    l:{en:'Presented by',    sw:'Hutolewa na',         fr:'Remis par'},         s:'B'},
+      {k:'first_award', kw:{en:'first_award', sw:'tuzo_ya_kwanza',    fr:'premiere_edition'},l:{en:'First awarded',   sw:'Ilitolewa kwanza',   fr:'Première remise'},   s:'B'},
+      {k:'website',     kw:{en:'website',     sw:'tovuti',            fr:'site_web'},        l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'event', cat:'other', em:'📅',
+    l:{en:'Event / Festival',sw:'Tukio / Tamasha',fr:'Événement / Festival'},
+    tmpl:{en:'Infobox event',sw:'Kisanduku cha tukio',fr:'Infobox Événement',default:'Infobox event'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Event name',      sw:'Jina la tukio',      fr:"Nom de l'événement"},s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'date',        kw:{en:'date',        sw:'tarehe',            fr:'date'},            l:{en:'Date',            sw:'Tarehe',             fr:'Date'},              s:'B'},
+      {k:'location',    kw:{en:'location',    sw:'mahali',            fr:'lieu'},            l:{en:'Location',        sw:'Mahali',             fr:'Lieu'},              s:'B'},
+      {k:'country',     kw:{en:'country',     sw:'nchi',              fr:'pays'},            l:{en:'Country',         sw:'Nchi',               fr:'Pays'},              s:'B'},
+      {k:'organiser',   kw:{en:'organiser',   sw:'mpangaji',          fr:'organisateur'},    l:{en:'Organised by',    sw:'Imepangwa na',       fr:'Organisé par'},      s:'B'},
+      {k:'frequency',   kw:{en:'frequency',   sw:'mara_ngapi',        fr:'frequence'},       l:{en:'Frequency',       sw:'Mara ngapi',         fr:'Fréquence'},         s:'B',h:{en:'Annual / Biennial',sw:'Kila mwaka / Kila miaka miwili'}},
+      {k:'website',     kw:{en:'website',     sw:'tovuti',            fr:'site_web'},        l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'disease', cat:'other', em:'🏥',
+    l:{en:'Disease / Medical condition',sw:'Ugonjwa / Hali ya kiafya',fr:'Maladie / Condition médicale'},
+    tmpl:{en:'Infobox medical condition',sw:'Kisanduku cha ugonjwa',fr:'Infobox Maladie',default:'Infobox medical condition'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Name',            sw:'Jina',               fr:'Nom'},               s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'caption',     kw:{en:'caption',     sw:'maelezo',           fr:'legende'},         l:{en:'Caption',         sw:'Maelezo',            fr:'Légende'},           s:'B'},
+      {k:'symptoms',    kw:{en:'symptoms',    sw:'dalili',            fr:'symptomes'},       l:{en:'Symptoms',        sw:'Dalili',             fr:'Symptômes'},         s:'B'},
+      {k:'causes',      kw:{en:'causes',      sw:'sababu',            fr:'causes'},          l:{en:'Causes',          sw:'Sababu',             fr:'Causes'},            s:'B'},
+      {k:'treatment',   kw:{en:'treatment',   sw:'matibabu',          fr:'traitement'},      l:{en:'Treatment',       sw:'Matibabu',           fr:'Traitement'},        s:'B'},
+      {k:'prognosis',   kw:{en:'prognosis',   sw:'ubashiri',          fr:'pronostic'},       l:{en:'Prognosis',       sw:'Ubashiri wa ugonjwa',fr:'Pronostic'},         s:'B'},
+      {k:'frequency',   kw:{en:'frequency',   sw:'kiwango',           fr:'frequence'},       l:{en:'Frequency',       sw:'Kiwango cha maambukizi',fr:'Fréquence'},      s:'B'},
+    ]
+  },
+
+  { id:'food', cat:'other', em:'🍽️',
+    l:{en:'Food / Dish',sw:'Chakula / Sahani',fr:'Aliment / Plat'},
+    tmpl:{en:'Infobox food',sw:'Kisanduku cha chakula',fr:'Infobox Cuisine',default:'Infobox food'},
+    fields:[
+      {k:'name',          kw:{en:'name',          sw:'jina',            fr:'nom'},             l:{en:'Name',              sw:'Jina',             fr:'Nom'},               s:'B'},
+      {k:'image',         kw:{en:'image',         sw:'picha',           fr:'image'},           l:{en:'Image',             sw:'Picha',            fr:'Image'},             s:'B'},
+      {k:'caption',       kw:{en:'caption',       sw:'maelezo',         fr:'legende'},         l:{en:'Caption',           sw:'Maelezo',          fr:'Légende'},           s:'B'},
+      {k:'country',       kw:{en:'country',       sw:'nchi',            fr:'pays'},            l:{en:'Country of origin', sw:'Nchi ya asili',    fr:"Pays d'origine"},   s:'B'},
+      {k:'region',        kw:{en:'region',        sw:'mkoa',            fr:'region'},          l:{en:'Region',            sw:'Mkoa',             fr:'Région'},            s:'B'},
+      {k:'course',        kw:{en:'course',        sw:'mkondo',          fr:'type'},            l:{en:'Course',            sw:'Aina ya mlo',      fr:'Type de plat'},      s:'B',h:{en:'e.g. Main course, Dessert',sw:'mfano: Chakula kikuu, Dessert'}},
+      {k:'main_ingredient',kw:{en:'main_ingredient',sw:'viungo_vikuu',  fr:'ingredient_principal'},l:{en:'Main ingredients',sw:'Viungo vikuu',   fr:'Ingrédients principaux'},s:'B'},
+      {k:'variations',    kw:{en:'variations',    sw:'matoleo',         fr:'variantes'},       l:{en:'Variations',        sw:'Matoleo',          fr:'Variantes'},         s:'E'},
+    ]
+  },
+
+  { id:'building', cat:'other', em:'🏛️',
+    l:{en:'Building / Structure',sw:'Jengo / Muundo',fr:'Bâtiment / Structure'},
+    tmpl:{en:'Infobox building',sw:'Kisanduku cha jengo',fr:'Infobox Bâtiment',default:'Infobox building'},
+    fields:[
+      {k:'name',          kw:{en:'name',          sw:'jina',            fr:'nom'},             l:{en:'Name',              sw:'Jina',             fr:'Nom'},               s:'B'},
+      {k:'image',         kw:{en:'image',         sw:'picha',           fr:'image'},           l:{en:'Image',             sw:'Picha',            fr:'Image'},             s:'B'},
+      {k:'caption',       kw:{en:'caption',       sw:'maelezo',         fr:'legende'},         l:{en:'Caption',           sw:'Maelezo',          fr:'Légende'},           s:'B'},
+      {k:'location',      kw:{en:'location',      sw:'mahali',          fr:'lieu'},            l:{en:'Location',          sw:'Mahali',           fr:'Lieu'},              s:'B'},
+      {k:'country',       kw:{en:'country',       sw:'nchi',            fr:'pays'},            l:{en:'Country',           sw:'Nchi',             fr:'Pays'},              s:'B'},
+      {k:'built',         kw:{en:'built',         sw:'ilijengwa',       fr:'construction'},    l:{en:'Built',             sw:'Ilijengwa',        fr:'Construction'},      s:'B'},
+      {k:'architect',     kw:{en:'architect',     sw:'mbunifu',         fr:'architecte'},      l:{en:'Architect',         sw:'Mbunifu',          fr:'Architecte'},        s:'B'},
+      {k:'architectural_style',kw:{en:'architectural_style',sw:'mtindo_wa_ujenzi',fr:'style'}, l:{en:'Architectural style',sw:'Mtindo wa ujenzi',fr:'Style'},            s:'B'},
+      {k:'height',        kw:{en:'height',        sw:'urefu',           fr:'hauteur'},         l:{en:'Height',            sw:'Urefu',            fr:'Hauteur'},           s:'B'},
+      {k:'floors',        kw:{en:'floors',        sw:'ghorofa',         fr:'etages'},          l:{en:'Floors',            sw:'Idadi ya ghorofa', fr:'Étages'},            s:'B'},
+      {k:'website',       kw:{en:'website',       sw:'tovuti',          fr:'site_web'},        l:{en:'Website',           sw:'Tovuti',           fr:'Site web'},          s:'E'},
+    ]
+  },
+
+  { id:'album', cat:'other', em:'💿',
+    l:{en:'Music album',sw:'Albamu ya muziki',fr:'Album musical'},
+    tmpl:{en:'Infobox album',sw:'Kisanduku cha albamu',fr:'Infobox Album',default:'Infobox album'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'nom'},             l:{en:'Album title',     sw:'Jina la albamu',     fr:"Titre de l'album"}, s:'B'},
+      {k:'image',       kw:{en:'cover',       sw:'jalada',            fr:'pochette'},        l:{en:'Cover image',     sw:'Picha ya jalada',    fr:'Pochette'},          s:'B'},
+      {k:'artist',      kw:{en:'artist',      sw:'msanii',            fr:'artiste'},         l:{en:'Artist',          sw:'Msanii',             fr:'Artiste'},           s:'B'},
+      {k:'genre',       kw:{en:'genre',       sw:'aina',              fr:'genre'},           l:{en:'Genre',           sw:'Aina ya muziki',     fr:'Genre'},             s:'B'},
+      {k:'released',    kw:{en:'released',    sw:'ilitolewa',         fr:'sortie'},          l:{en:'Released',        sw:'Ilitolewa',          fr:'Sortie'},            s:'B'},
+      {k:'recorded',    kw:{en:'recorded',    sw:'ilirekidiwa',       fr:'enregistrement'},  l:{en:'Recorded',        sw:'Ilirekidiwa',        fr:'Enregistrement'},    s:'B'},
+      {k:'label',       kw:{en:'label',       sw:'kampuni_ya_muziki', fr:'label'},           l:{en:'Record label',    sw:'Kampuni ya muziki',  fr:'Label'},             s:'B'},
+      {k:'length',      kw:{en:'length',      sw:'muda',              fr:'duree'},           l:{en:'Running time',    sw:'Muda',               fr:'Durée'},             s:'B'},
+      {k:'tracks',      kw:{en:'tracks',      sw:'nyimbo',            fr:'pistes'},          l:{en:'Number of tracks',sw:'Idadi ya nyimbo',    fr:'Nombre de pistes'},  s:'B'},
+    ]
+  },
+
+  { id:'tv_show', cat:'other', em:'📺',
+    l:{en:'TV show / Series',sw:'Kipindi cha televisheni',fr:'Série télévisée'},
+    tmpl:{en:'Infobox television',sw:'Kisanduku cha kipindi cha TV',fr:'Infobox Série télévisée',default:'Infobox television'},
+    fields:[
+      {k:'name',        kw:{en:'name',        sw:'jina',              fr:'titre'},           l:{en:'Title',           sw:'Jina',               fr:'Titre'},             s:'B'},
+      {k:'image',       kw:{en:'image',       sw:'picha',             fr:'image'},           l:{en:'Image',           sw:'Picha',              fr:'Image'},             s:'B'},
+      {k:'genre',       kw:{en:'genre',       sw:'aina',              fr:'genre'},           l:{en:'Genre',           sw:'Aina',               fr:'Genre'},             s:'B'},
+      {k:'creator',     kw:{en:'creator',     sw:'muundaji',          fr:'createur'},        l:{en:'Created by',      sw:'Iliundwa na',        fr:'Créé par'},          s:'B'},
+      {k:'starring',    kw:{en:'starring',    sw:'waigizaji',         fr:'acteurs'},         l:{en:'Starring',        sw:'Waigizaji wakuu',    fr:'Avec'},              s:'B'},
+      {k:'country',     kw:{en:'country',     sw:'nchi',              fr:'pays'},            l:{en:'Country of origin',sw:'Nchi ya asili',     fr:"Pays d'origine"},   s:'B'},
+      {k:'language',    kw:{en:'language',    sw:'lugha',             fr:'langue'},          l:{en:'Language',        sw:'Lugha',              fr:'Langue'},            s:'B'},
+      {k:'num_seasons', kw:{en:'num_seasons', sw:'misimu',            fr:'saisons'},         l:{en:'No. of seasons',  sw:'Idadi ya misimu',    fr:'Nb de saisons'},     s:'B'},
+      {k:'num_episodes',kw:{en:'num_episodes',sw:'vipindi',           fr:'episodes'},        l:{en:'No. of episodes', sw:'Idadi ya vipindi',   fr:"Nb d'épisodes"},    s:'B'},
+      {k:'first_aired', kw:{en:'first_aired', sw:'ilianza_kutangazwa',fr:'premiere_diffusion'},l:{en:'First aired',   sw:'Ilianza kutangazwa', fr:'Première diffusion'},s:'B'},
+      {k:'network',     kw:{en:'network',     sw:'kituo',             fr:'chaine'},          l:{en:'Network / Channel',sw:'Kituo cha TV',      fr:'Chaîne'},            s:'B'},
+      {k:'website',     kw:{en:'website',     sw:'tovuti',            fr:'site_web'},        l:{en:'Website',         sw:'Tovuti',             fr:'Site web'},          s:'E'},
+    ]
+  },
 ];
 
-const FIELDS = {
-  // Each field has:
-  //   k   = internal storage key (always English, used in vals{})
-  //   kw  = localized parameter key per wiki language (what goes in the wikitext)
-  //   l   = display label shown in the form (UI language)
-  //   s   = section B/P/W/E
-  //   h   = placeholder hint
-  person:[
-    {k:"name",        kw:{en:"name",         sw:"jina",                  fr:"nom"},              l:{en:"Full name",          sw:"Jina kamili",          fr:"Nom complet"},          s:"B", h:{en:"e.g. Amina Juma Seif",sw:"mfano: Amina Juma Seif",fr:"ex. Amina Juma Seif"}},
-    {k:"image",       kw:{en:"image",        sw:"picha",                 fr:"image"},             l:{en:"Image filename",     sw:"Jina la faili la picha",fr:"Nom du fichier image"}, s:"B", h:{en:"Example.jpg",sw:"Mfano.jpg",fr:"Exemple.jpg"}},
-    {k:"caption",     kw:{en:"caption",      sw:"maelezo",               fr:"legende"},           l:{en:"Image caption",      sw:"Maelezo ya picha",     fr:"Légende image"},         s:"B"},
-    {k:"birth_date",  kw:{en:"birth_date",   sw:"tarehe_ya_kuzaliwa",    fr:"date_de_naissance"}, l:{en:"Date of birth",      sw:"Tarehe ya kuzaliwa",   fr:"Date de naissance"},     s:"P", h:{en:"15 March 1990",sw:"15 Machi 1990",fr:"15 mars 1990"}},
-    {k:"birth_place", kw:{en:"birth_place",  sw:"mahali_pa_kuzaliwa",    fr:"lieu_de_naissance"}, l:{en:"Place of birth",     sw:"Mahali pa kuzaliwa",   fr:"Lieu de naissance"},     s:"P", h:{en:"Nairobi, Kenya",sw:"Nairobi, Kenya",fr:"Nairobi, Kenya"}},
-    {k:"death_date",  kw:{en:"death_date",   sw:"tarehe_ya_kifo",        fr:"date_de_deces"},     l:{en:"Date of death",      sw:"Tarehe ya kifo",       fr:"Date de décès"},         s:"P"},
-    {k:"death_place", kw:{en:"death_place",  sw:"mahali_pa_kifo",        fr:"lieu_de_deces"},     l:{en:"Place of death",     sw:"Mahali pa kifo",       fr:"Lieu de décès"},         s:"P"},
-    {k:"nationality", kw:{en:"nationality",  sw:"utaifa",                fr:"nationalite"},        l:{en:"Nationality",        sw:"Utaifa",               fr:"Nationalité"},            s:"P"},
-    {k:"education",   kw:{en:"education",    sw:"elimu",                 fr:"education"},          l:{en:"Education",          sw:"Elimu",                fr:"Éducation"},             s:"P"},
-    {k:"occupation",  kw:{en:"occupation",   sw:"kazi",                  fr:"profession"},         l:{en:"Occupation",         sw:"Kazi",                 fr:"Profession"},            s:"W", h:{en:"Teacher, politician",sw:"Mwalimu, mwanasiasa",fr:"Enseignant, politicien"}},
-    {k:"years_active",kw:{en:"years_active", sw:"miaka_ya_kazi",         fr:"annees_actives"},     l:{en:"Years active",       sw:"Miaka ya kazi",        fr:"Années actives"},        s:"W", h:{en:"2010–present",sw:"2010–sasa",fr:"2010–présent"}},
-    {k:"title",       kw:{en:"title",        sw:"cheo",                  fr:"titre"},              l:{en:"Title / Position",   sw:"Cheo / Wadhifa",       fr:"Titre / Poste"},         s:"W"},
-    {k:"employer",    kw:{en:"employer",     sw:"mwajiri",               fr:"employeur"},          l:{en:"Employer",           sw:"Mwajiri",              fr:"Employeur"},             s:"W"},
-    {k:"spouse",      kw:{en:"spouse",       sw:"mwenzi",                fr:"conjoint"},           l:{en:"Spouse",             sw:"Mwenzi wa ndoa",       fr:"Conjoint(e)"},           s:"E"},
-    {k:"children",    kw:{en:"children",     sw:"watoto",                fr:"enfants"},            l:{en:"Children",           sw:"Watoto",               fr:"Enfants"},               s:"E"},
-    {k:"awards",      kw:{en:"awards",       sw:"tuzo",                  fr:"prix"},               l:{en:"Awards",             sw:"Tuzo",                 fr:"Prix"},                  s:"E"},
-    {k:"website",     kw:{en:"website",      sw:"tovuti",                fr:"site_web"},           l:{en:"Website",            sw:"Tovuti",               fr:"Site web"},              s:"E"},
-  ],
-  place:[
-    {k:"name",        kw:{en:"name",         sw:"jina",                  fr:"nom"},              l:{en:"Place name",          sw:"Jina la mahali",  fr:"Nom du lieu"},    s:"B"},
-    {k:"image",       kw:{en:"image",        sw:"picha",                 fr:"image"},            l:{en:"Image",               sw:"Picha",           fr:"Image"},          s:"B"},
-    {k:"country",     kw:{en:"country",      sw:"nchi",                  fr:"pays"},             l:{en:"Country",             sw:"Nchi",            fr:"Pays"},           s:"B"},
-    {k:"region",      kw:{en:"region",       sw:"mkoa",                  fr:"region"},           l:{en:"Region / County",     sw:"Mkoa",            fr:"Région"},         s:"B"},
-    {k:"population",  kw:{en:"population",   sw:"idadi_ya_watu",         fr:"population"},       l:{en:"Population",          sw:"Idadi ya watu",   fr:"Population"},     s:"B"},
-    {k:"area_km2",    kw:{en:"area_km2",     sw:"eneo_km2",              fr:"superficie_km2"},   l:{en:"Area (km²)",          sw:"Eneo (km²)",      fr:"Superficie km²"}, s:"B"},
-    {k:"elevation_m", kw:{en:"elevation_m",  sw:"mwinuko_m",             fr:"altitude_m"},       l:{en:"Elevation (m)",       sw:"Mwinuko (m)",     fr:"Altitude (m)"},   s:"B"},
-    {k:"timezone",    kw:{en:"timezone",     sw:"ukanda_wa_saa",         fr:"fuseau_horaire"},   l:{en:"Time zone",           sw:"Ukanda wa saa",   fr:"Fuseau horaire"}, s:"B"},
-    {k:"coordinates", kw:{en:"coordinates",  sw:"kuratibu",              fr:"coordonnees"},      l:{en:"Coordinates",         sw:"Kuratibu",        fr:"Coordonnées"},    s:"B"},
-    {k:"website",     kw:{en:"website",      sw:"tovuti",                fr:"site_officiel"},    l:{en:"Official website",    sw:"Tovuti rasmi",    fr:"Site officiel"},  s:"B"},
-  ],
-  org:[
-    {k:"name",          kw:{en:"name",         sw:"jina",              fr:"nom"},             l:{en:"Name",              sw:"Jina",           fr:"Nom"},             s:"B"},
-    {k:"image",         kw:{en:"image",        sw:"nembo",             fr:"logo"},            l:{en:"Logo",              sw:"Nembo",          fr:"Logo"},            s:"B"},
-    {k:"founded",       kw:{en:"founded",      sw:"ilianzishwa",       fr:"fondee"},          l:{en:"Founded",           sw:"Ilianzishwa",    fr:"Fondée"},          s:"B"},
-    {k:"headquarters",  kw:{en:"headquarters", sw:"makao_makuu",       fr:"siege_social"},    l:{en:"Headquarters",      sw:"Makao makuu",    fr:"Siège social"},    s:"B"},
-    {k:"type",          kw:{en:"type",         sw:"aina",              fr:"type"},            l:{en:"Type",              sw:"Aina",           fr:"Type"},            s:"B"},
-    {k:"industry",      kw:{en:"industry",     sw:"sekta",             fr:"secteur"},         l:{en:"Industry / Sector", sw:"Sekta",          fr:"Secteur"},         s:"B"},
-    {k:"products",      kw:{en:"products",     sw:"bidhaa",            fr:"produits"},        l:{en:"Products / Services",sw:"Bidhaa/Huduma", fr:"Produits"},        s:"B"},
-    {k:"num_employees", kw:{en:"num_employees",sw:"wafanyakazi",       fr:"employes"},        l:{en:"Employees",         sw:"Wafanyakazi",    fr:"Employés"},        s:"B"},
-    {k:"website",       kw:{en:"website",      sw:"tovuti",            fr:"site_web"},        l:{en:"Website",           sw:"Tovuti",         fr:"Site web"},        s:"B"},
-  ],
-  animal:[
-    {k:"taxon",   kw:{en:"taxon",   sw:"jina_la_kisayansi", fr:"taxon"},      l:{en:"Scientific name",    sw:"Jina la kisayansi", fr:"Nom scientifique"}, s:"B"},
-    {k:"name",    kw:{en:"name",    sw:"jina",              fr:"nom_commun"},  l:{en:"Common name",        sw:"Jina la kawaida",   fr:"Nom commun"},       s:"B"},
-    {k:"image",   kw:{en:"image",   sw:"picha",             fr:"image"},       l:{en:"Image",              sw:"Picha",             fr:"Image"},            s:"B"},
-    {k:"status",  kw:{en:"status",  sw:"hali_ya_uhifadhi",  fr:"statut"},      l:{en:"Conservation status",sw:"Hali ya uhifadhi",  fr:"Statut UICN"},      s:"B", h:{en:"LC / NT / VU / EN / CR",sw:"LC / NT / VU / EN / CR",fr:"LC / NT / VU / EN / CR"}},
-    {k:"kingdom", kw:{en:"kingdom", sw:"ufalme",            fr:"regne"},       l:{en:"Kingdom",            sw:"Ufalme",            fr:"Règne"},            s:"B"},
-    {k:"phylum",  kw:{en:"phylum",  sw:"faila",             fr:"embranchement"},l:{en:"Phylum",            sw:"Faila",             fr:"Embranchement"},    s:"B"},
-    {k:"classis", kw:{en:"classis", sw:"darasa",            fr:"classe"},      l:{en:"Class",              sw:"Darasa",            fr:"Classe"},           s:"B"},
-    {k:"ordo",    kw:{en:"ordo",    sw:"oda",               fr:"ordre"},       l:{en:"Order",              sw:"Oda",               fr:"Ordre"},            s:"B"},
-    {k:"familia", kw:{en:"familia", sw:"familia",           fr:"famille"},     l:{en:"Family",             sw:"Familia",           fr:"Famille"},          s:"B"},
-    {k:"genus",   kw:{en:"genus",   sw:"jenasi",            fr:"genre"},       l:{en:"Genus",              sw:"Jenasi",            fr:"Genre"},            s:"B"},
-    {k:"species", kw:{en:"species", sw:"spishi",            fr:"espece"},      l:{en:"Species",            sw:"Spishi",            fr:"Espèce"},           s:"B"},
-  ],
-  book:[
-    {k:"name",      kw:{en:"name",      sw:"jina",                    fr:"titre"},             l:{en:"Title",              sw:"Jina",               fr:"Titre"},            s:"B"},
-    {k:"image",     kw:{en:"image",     sw:"picha",                   fr:"image"},             l:{en:"Cover image",        sw:"Picha ya jalada",    fr:"Image de couverture"},s:"B"},
-    {k:"author",    kw:{en:"author",    sw:"mwandishi",               fr:"auteur"},            l:{en:"Author / Director",  sw:"Mwandishi",          fr:"Auteur / Réalisateur"},s:"B"},
-    {k:"genre",     kw:{en:"genre",     sw:"aina",                    fr:"genre"},             l:{en:"Genre",              sw:"Aina",               fr:"Genre"},            s:"B"},
-    {k:"language",  kw:{en:"language",  sw:"lugha",                   fr:"langue"},            l:{en:"Language",           sw:"Lugha",              fr:"Langue"},           s:"B"},
-    {k:"pub_date",  kw:{en:"pub_date",  sw:"tarehe_ya_kuchapishwa",   fr:"date_de_parution"},  l:{en:"Published / Released",sw:"Ilipochapishwa",    fr:"Publication"},      s:"B"},
-    {k:"publisher", kw:{en:"publisher", sw:"mchapishaji",             fr:"editeur"},           l:{en:"Publisher / Studio", sw:"Mchapishaji",        fr:"Éditeur"},          s:"B"},
-    {k:"pages",     kw:{en:"pages",     sw:"kurasa",                  fr:"pages"},             l:{en:"Pages",              sw:"Kurasa",             fr:"Pages"},            s:"B"},
-    {k:"isbn",      kw:{en:"isbn",      sw:"isbn",                    fr:"isbn"},              l:{en:"ISBN",               sw:"ISBN",               fr:"ISBN"},             s:"B"},
-    {k:"website",   kw:{en:"website",   sw:"tovuti",                  fr:"site_web"},          l:{en:"Website",            sw:"Tovuti",             fr:"Site web"},         s:"B"},
-  ],
-  country:[
-    {k:"common_name",        kw:{en:"common_name",        sw:"jina",                  fr:"nom_commun"},        l:{en:"Country name",       sw:"Jina la nchi",       fr:"Nom du pays"},          s:"B"},
-    {k:"image_flag",         kw:{en:"image_flag",         sw:"picha_bendera",         fr:"image_drapeau"},     l:{en:"Flag image",         sw:"Picha ya bendera",   fr:"Image du drapeau"},     s:"B"},
-    {k:"image_coat",         kw:{en:"image_coat",         sw:"picha_nembo",           fr:"image_armoiries"},   l:{en:"Coat of arms image", sw:"Picha ya nembo",     fr:"Image des armoiries"},  s:"B"},
-    {k:"capital",            kw:{en:"capital",            sw:"mji_mkuu",              fr:"capitale"},          l:{en:"Capital city",       sw:"Mji mkuu",           fr:"Capitale"},             s:"B"},
-    {k:"official_languages", kw:{en:"official_languages", sw:"lugha_rasmi",           fr:"langues_officielles"},l:{en:"Official languages", sw:"Lugha rasmi",        fr:"Langues officielles"},  s:"B"},
-    {k:"population_census",  kw:{en:"population_census",  sw:"idadi_ya_watu",         fr:"population"},        l:{en:"Population",         sw:"Idadi ya watu",      fr:"Population"},           s:"B"},
-    {k:"area_km2",           kw:{en:"area_km2",           sw:"eneo_km2",              fr:"superficie_km2"},    l:{en:"Area (km²)",         sw:"Eneo (km²)",         fr:"Superficie km²"},       s:"B"},
-    {k:"currency",           kw:{en:"currency",           sw:"sarafu",                fr:"monnaie"},           l:{en:"Currency",           sw:"Sarafu",             fr:"Monnaie"},              s:"B"},
-    {k:"government_type",    kw:{en:"government_type",    sw:"aina_ya_serikali",      fr:"regime_politique"},  l:{en:"Government type",    sw:"Aina ya serikali",   fr:"Régime politique"},     s:"B"},
-    {k:"leader_name1",       kw:{en:"leader_name1",       sw:"mkuu_wa_nchi",          fr:"chef_etat"},         l:{en:"Head of state",      sw:"Mkuu wa nchi",       fr:"Chef d'État"},          s:"B"},
-    {k:"website",            kw:{en:"website",            sw:"tovuti_rasmi",          fr:"site_officiel"},     l:{en:"Official website",   sw:"Tovuti rasmi",       fr:"Site officiel"},        s:"B"},
-  ],
-}
-const SEC_ORDER = ["B","P","W","E"];
+// Section headings
+const SEC_HEADS = { B:'sB',P:'sP',W:'sW',E:'sE',Sp:'sSp',Po:'sPo',Mu:'sMu' };
+const SEC_ORDER = ['B','P','W','Sp','Po','Mu','E'];
 
-//State:
-let uiL = "en", outL = "en", sType = "person", vals = {}, aiH = [], aTab = "ib";
-const g = id => document.getElementById(id);
-const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// Wikipedia language targets
+const WLANGS = [
+  {id:'en',lbl:'English',   flag:'🇬🇧',host:'en.wikipedia.org'},
+  {id:'sw',lbl:'Kiswahili', flag:'🇹🇿',host:'sw.wikipedia.org'},
+  {id:'fr',lbl:'Français',  flag:'🇫🇷',host:'fr.wikipedia.org'},
+  {id:'ar',lbl:'العربية',   flag:'🇸🇦',host:'ar.wikipedia.org'},
+  {id:'pt',lbl:'Português', flag:'🇵🇹',host:'pt.wikipedia.org'},
+  {id:'am',lbl:'አማርኛ',     flag:'🇪🇹',host:'am.wikipedia.org'},
+  {id:'ha',lbl:'Hausa',     flag:'🇳🇬',host:'ha.wikipedia.org'},
+  {id:'yo',lbl:'Yorùbá',    flag:'🇳🇬',host:'yo.wikipedia.org'},
+  {id:'zu',lbl:'isiZulu',   flag:'🇿🇦',host:'zu.wikipedia.org'},
+  {id:'mg',lbl:'Malagasy',  flag:'🇲🇬',host:'mg.wikipedia.org'},
+];
 
-// fkey: returns the localized parameter key for the TARGET wiki language
-// e.g. book field "author" → sw:"mwandishi", fr:"auteur", ha:"author" (fallback)
-const fkey = f => (f.kw && (f.kw[outL] || f.kw.en)) || f.k;
+const VILLAGE_PUMP = {en:'Wikipedia:Village pump (proposals)',sw:'Wikipedia:Mkutano wa kijiji',fr:'Wikipédia:Le Bistro',default:'Wikipedia:Village pump'};
+const TMPL_STEPS_TEXT = {
+  en:(host,tmpl,pump)=>[`Go to <a href="https://${host}" target="_blank">${host}</a>`,`Search for: <code>Template:${tmpl}</code>`,`If the link is <span style="color:red">red</span> (page doesn't exist), click it to create it`,`Paste the code below into the editor and click <strong>Save page</strong>`,`Done! Return to your article and paste the infobox code.`,`<em>Tip: Ask on <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a> for admin help if needed.</em>`],
+  sw:(host,tmpl,pump)=>[`Nenda kwenye <a href="https://${host}" target="_blank">${host}</a>`,`Tafuta: <code>Kielezo:${tmpl}</code>`,`Ikiwa kiungo ni <span style="color:red">nyekundu</span>, bonyeza ili kuunda ukurasa`,`Bandika msimbo hapa chini na ubonyeze <strong>Hifadhi ukurasa</strong>`,`Imemaliza! Rudi kwenye makala na ubandike msimbo wa kisanduku.`,`<em>Kidokezo: Omba msaada kwenye <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a>.</em>`],
+  fr:(host,tmpl,pump)=>[`Allez sur <a href="https://${host}" target="_blank">${host}</a>`,`Recherchez : <code>Modèle:${tmpl}</code>`,`Si le lien est <span style="color:red">rouge</span>, cliquez pour créer la page`,`Collez le code ci-dessous et cliquez sur <strong>Publier les modifications</strong>`,`Terminé ! Revenez à votre article et collez le code infobox.`,`<em>Conseil : Demandez de l'aide sur <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a>.</em>`],
+};
 
-// flabel: returns the field label in the TARGET wiki language (for inside template code)
-const flabel = f => { const ll = ['en','sw','fr'].includes(outL) ? outL : 'en'; return f.l[ll] || f.l.en; };
+// ════════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════════
+let uiL='en', outL='en', selType=null, vals={}, aiH=[], aTab='ib', activeCat='all', searchQ='';
+const g=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fkey=f=>(f.kw&&(f.kw[outL]||f.kw.en))||f.k;
+const flabel=f=>{const ll=['en','sw','fr'].includes(outL)?outL:'en';return f.l[ll]||f.l.en;};
+const getTmpl=()=>{if(!selType)return'';const t=selType.tmpl;return t[outL]||t.default||t.en||'Infobox';};
+const getHost=()=>(WLANGS.find(l=>l.id===outL)||WLANGS[0]).host;
+const getLangLbl=()=>(WLANGS.find(l=>l.id===outL)||WLANGS[0]).lbl;
+const t=()=>TR[uiL];
 
-//Init function:
-function init() {
-  renderSidebar();
-  renderTypeGrid();
-  renderForm();
-  renderWikiLangs();
-  applyTR();
+// ════════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════════
+function init(){renderSidebar();populateCatSelect();renderWikiLangs();applyTR();genAll();}
+
+function setUI(l){
+  uiL=l;
+  document.querySelectorAll('.uilb').forEach((b,i)=>b.classList.toggle('active',['en','sw','fr'][i]===l));
+  renderSidebar();populateCatSelect();applyTR();
+  if(selType){updateTypePreview();renderForm();}
   genAll();
 }
 
-function setUI(l) {
-  uiL = l;
-  document.querySelectorAll('.mw-lang-btn').forEach((b,i) => b.classList.toggle('active', ['en','sw','fr'][i] === l));
-  renderSidebar();
-  renderTypeGrid();
-  renderForm();
-  applyTR();
-  genAll();
-}
-
-function applyTR() {
-  const t = TR[uiL];
-  const map = {
-    'page-title':'pageTitle','intro-text':'introText','form-heading':'formHeading',
-    'output-heading':'outputHeading','ai-heading':'aiHeading',
-    'wiki-lang-lbl':'wikiLangLbl','tbl-notice':'tblNotice',
+function applyTR(){
+  const tr=t();
+  const m={'page-title':'pageTitle','intro-text':'introText','form-heading':'formHeading','form-detail-heading':'formDetailHeading',
+    'output-heading':'outputHeading','wl-lbl':'wlLbl',
+    'ot1':'ot1','ot2':'ot2','ot3':'ot3','ot4':'ot4','tbl-notice':'tblNotice',
     'tmpl-h':'tmplH','tmpl-code-lbl':'tmplCodeLbl',
-    'ot1':'ot1','ot2':'ot2','ot3':'ot3','ot4':'ot4',
     'copy-btn':'copyBtn','chk-btn':'chkBtn',
-    'ai-hdr-lbl':'aiHdr','af-btn':'afBtn','send-btn':'sendBtn',
+    'form-hint':'hint',
+    'sb-nav-lbl':'sbNavLbl','sb-create':'sbCreate','sb-table':'sbTable','sb-tmpl':'sbTmpl','sb-check':'sbCheck',
+    'sb-type-lbl':'sbTypeLbl','sb-wiki-lbl':'sbWikiLbl','sb-help-lbl':'sbHelpLbl',
+    'sb-doc':'sbDoc','sb-commons':'sbCommons','sb-tmpdoc':'sbTmpdoc','ui-lbl':'uiLbl',
   };
-  for (const [id, key] of Object.entries(map)) {
-    const el = g(id);
-    if (el && t[key] !== undefined) {
-      if (key === 'tblNotice') el.innerHTML = t[key];
-      else el.textContent = t[key];
-    }
-  }
-  const aiin = g('ai-in'); if (aiin) aiin.placeholder = t.aiInPh;
-  const tph = g('talk-ph'); if (tph) tph.textContent = t.talkPh;
+  for(const[id,key]of Object.entries(m)){const el=g(id);if(el&&tr[key]!==undefined)el.textContent=tr[key];}
+
+  // Update dropdown labels
+  const cl=g('cat-lbl'); if(cl) cl.textContent=uiL==='sw'?'Jamii':uiL==='fr'?'Catégorie':'Category';
+  const tyl=g('type-lbl'); if(tyl) tyl.textContent=uiL==='sw'?'Aina ya kisanduku':uiL==='fr'?"Type d'infobox":'Infobox type';
+  const cpp=g('cat-placeholder'); if(cpp) cpp.textContent=uiL==='sw'?'— Chagua jamii —':uiL==='fr'?'— Choisir une catégorie —':'— Select a category —';
+  const tpp=g('type-placeholder'); if(tpp) tpp.textContent=uiL==='sw'?'— Chagua jamii kwanza —':uiL==='fr'?'— Sélectionner catégorie —':'— Select category first —';
 }
 
-//Slider:
-function renderSidebar() {
-  const t = TR[uiL];
-  // Type list
-  const tl = g('sb-type-list'); if (!tl) return;
-  tl.innerHTML = TYPES.map(tp =>
-    `<li class="${tp.id===sType?'active':''}">
-      <a onclick="selType('${tp.id}')">${tp.em} ${tp.l[uiL]||tp.l.en}</a>
-    </li>`
-  ).join('');
+// ════════════════════════════════════════════════════════════════════
+// SIDEBAR
+// ════════════════════════════════════════════════════════════════════
+function renderSidebar(){
+  const tr=t();
+  // Selected type
+  const tl=g('sb-type-list');
+  tl.innerHTML=selType
+    ?`<li class="active"><a>${selType.em} ${selType.l[uiL]||selType.l.en}</a></li>`
+    :`<li><a style="color:var(--cpla);font-style:italic">${uiL==='sw'?'Haijatwaliwa bado':uiL==='fr'?'Non sélectionné':'Not selected yet'}</a></li>`;
   // Wiki list
-  g('sb-wiki-list').innerHTML = WLANGS.map(l =>
-    `<li class="${l.id===outL?'active':''}">
-      <a onclick="selWikiLang('${l.id}')">${l.flag} ${l.lbl}</a>
-    </li>`
-  ).join('');
-  // Labels
-  ['sb-nav-lbl','sb-type-lbl','sb-wiki-lbl','sb-help-lbl',
-   'sb-create','sb-table','sb-tmpl','sb-check','sb-doc','sb-tmpdoc'].forEach(id => {
-    const el = g(id); if (el && t[id.replace('sb-','sb').replace(/-/g,'').replace('sbnav','sbNavLbl').replace('sbtype','sbTypeLbl').replace('sbwiki','sbWikiLbl').replace('sbhelp','sbHelpLbl').replace('sbcreate','sbCreate').replace('sbtable','sbTable').replace('sbtmpl','sbTmpl').replace('sbcheck','sbCheck').replace('sbdoc','sbDoc').replace('sbtmpdoc','sbTmpdoc')]) {
-      // simplified key mapping
-    }
-  });
-  // just set text directly
-  const pairs = [
-    ['sb-nav-lbl','sbNavLbl'],['sb-type-lbl','sbTypeLbl'],['sb-wiki-lbl','sbWikiLbl'],
-    ['sb-help-lbl','sbHelpLbl'],['sb-create','sbCreate'],['sb-table','sbTable'],
-    ['sb-tmpl','sbTmpl'],['sb-check','sbCheck'],['sb-doc','sbDoc'],['sb-tmpdoc','sbTmpdoc'],
-  ];
-  pairs.forEach(([id, key]) => { const el = g(id); if (el && t[key]) el.textContent = t[key]; });
+  g('sb-wiki-list').innerHTML=WLANGS.map(l=>`<li class="${l.id===outL?'active':''}"><a onclick="selWikiLang('${l.id}')">${l.flag} ${l.lbl}</a></li>`).join('');
+  // Other labels
+  [['sb-nav-lbl','sbNavLbl'],['sb-type-lbl','sbTypeLbl'],['sb-wiki-lbl','sbWikiLbl'],['sb-help-lbl','sbHelpLbl'],
+   ['sb-create','sbCreate'],['sb-table','sbTable'],['sb-tmpl','sbTmpl'],['sb-check','sbCheck'],
+   ['sb-doc','sbDoc'],['sb-commons','sbCommons'],['sb-tmpdoc','sbTmpdoc']].forEach(([id,k])=>{const el=g(id);if(el&&tr[k])el.textContent=tr[k];});
 }
 
-function selType(id) { sType = id; vals = {}; renderSidebar(); renderTypeGrid(); renderForm(); genAll(); hideBanner(); }
-function selWikiLang(id) { outL = id; renderSidebar(); renderWikiLangs(); genAll(); hideBanner(); }
-
-// ═══════════════════════════════════════════════════════════
-// TYPE GRID
-// ═══════════════════════════════════════════════════════════
-function renderTypeGrid() {
-  const grid = g('type-grid'); grid.innerHTML = '';
-  TYPES.forEach(tp => {
-    const d = document.createElement('div');
-    d.className = 'type-card' + (tp.id === sType ? ' selected' : '');
-    d.innerHTML = `<span class="tc-em">${tp.em}</span>${tp.l[uiL]||tp.l.en}`;
-    d.onclick = () => selType(tp.id);
-    grid.appendChild(d);
-  });
+function selWikiLang(id){
+  outL=id;
+  renderSidebar();
+  renderWikiLangs();
+  // Refresh type dropdown to show updated template names for new wiki language
+  if(activeCat) populateTypeSelect(activeCat);
+  if(selType) updateTypePreview();
+  genAll();
+  hideBanner();
 }
 
-//Form:
-function renderForm() {
-  const t = TR[uiL];
-  const fields = FIELDS[sType] || [];
-  const secNames = { B: t.sB, P: t.sP, W: t.sW, E: t.sE };
-  const secs = {};
-  fields.forEach(f => (secs[f.s] = secs[f.s] || []).push(f));
+// ════════════════════════════════════════════════════════════════════
+// TYPE BROWSER
+// ════════════════════════════════════════════════════════════════════
+// ── Cascading dropdown logic ──────────────────────────────────────
 
-  let h = `<p class="text-muted text-small" style="margin-bottom:10px">${t.hint}</p>`;
-  SEC_ORDER.forEach(s => {
-    if (!secs[s] || !secs[s].length) return;
-    h += `<div class="form-section-label">${secNames[s]||s}</div>`;
-    secs[s].forEach(f => {
-      const lbl = f.l[uiL] || f.l.en;
-      const hint = f.h ? (f.h[uiL] || f.h.en) : '';
-      const isImg = f.k === 'image' || f.k === 'image_flag' || f.k === 'image_coat';
-      const imgCheck = isImg ? ` onchange="checkImage(this.value,'${f.k}')"` : '';
-      const imgNotice = isImg ? `<div id="img-notice-${f.k}" style="display:none"></div>` : '';
-      h += `<div class="form-field">
+function populateCatSelect(){
+  const sel=g('cat-select');
+  // Save current value
+  const prev=sel.value;
+  // Rebuild options (skip 'all' category — that's implicit)
+  const cats=CATS.filter(c=>c.id!=='all');
+  sel.innerHTML=`<option value="" id="cat-placeholder">— ${uiL==='sw'?'Chagua jamii':uiL==='fr'?'Choisir une catégorie':'Select a category'} —</option>`
+    +cats.map(c=>`<option value="${c.id}" ${c.id===activeCat?'selected':''}>${t()[c.lk]||c.id}</option>`).join('');
+  // If there was a previous selection, restore it
+  if(prev&&prev!=='') sel.value=prev;
+  // Populate the type select too
+  if(sel.value) populateTypeSelect(sel.value);
+  else resetTypeSelect();
+}
+
+function populateTypeSelect(catId){
+  const sel=g('type-select');
+  const types=TYPES.filter(tp=>tp.cat===catId);
+  sel.disabled=false;
+  if(!types.length){
+    sel.innerHTML=`<option value="">— ${uiL==='sw'?'Hakuna aina katika jamii hii':uiL==='fr'?'Aucun type dans cette catégorie':'No types in this category'} —</option>`;
+    sel.disabled=true;
+    return;
+  }
+  sel.innerHTML=`<option value="">— ${uiL==='sw'?'Chagua aina':uiL==='fr'?"Choisir le type":'Select type'} —</option>`
+    +types.map(tp=>{
+      const name=tp.l[uiL]||tp.l.en;
+      const tmpl=tp.tmpl[outL]||tp.tmpl.default||'';
+      return `<option value="${tp.id}" ${selType&&selType.id===tp.id?'selected':''}>${tp.em} ${name} — {{${tmpl}}}</option>`;
+    }).join('');
+  // Restore selection if we have one in this category
+  if(selType&&selType.cat===catId) sel.value=selType.id;
+}
+
+function resetTypeSelect(){
+  const sel=g('type-select');
+  sel.disabled=true;
+  sel.innerHTML=`<option value="">— ${uiL==='sw'?'Chagua jamii kwanza':uiL==='fr'?"Sélectionner catégorie —":'Select category first'} —</option>`;
+}
+
+function onCatChange(catId){
+  activeCat=catId;
+  if(!catId){resetTypeSelect();return;}
+  populateTypeSelect(catId);
+  // If current selType is in this category, keep it; otherwise clear
+  if(selType&&selType.cat!==catId){
+    selType=null;vals={};
+    g('form-section').style.display='none';
+    hideTypePreview();
+    genAll();
+  }
+}
+
+function onTypeChange(typeId){
+  if(!typeId) return;
+  selType=TYPES.find(tp=>tp.id===typeId);
+  if(!selType) return;
+  vals={};
+  updateTypePreview();
+  g('form-section').style.display='block';
+  renderForm();
+  renderSidebar();
+  genAll();
+}
+
+function updateTypePreview(){
+  if(!selType){hideTypePreview();return;}
+  const card=g('type-preview-card');
+  const tmplName='{{'+getTmpl()+'}}';
+  const fieldCount=selType.fields.length;
+  g('tpc-em').textContent=selType.em;
+  g('tpc-name').textContent=selType.l[uiL]||selType.l.en;
+  g('tpc-tmpl').textContent=tmplName;
+  g('tpc-desc').textContent=fieldCount+' '+(uiL==='sw'?'sehemu':'fields');
+  card.classList.add('visible');
+}
+
+function hideTypePreview(){
+  g('type-preview-card').classList.remove('visible');
+}
+
+// ════════════════════════════════════════════════════════════════════
+// FORM
+// ════════════════════════════════════════════════════════════════════
+function renderForm(){
+  if(!selType)return;
+  const tr=t();
+  const secNames={B:tr.sB,P:tr.sP,W:tr.sW,E:tr.sE,Sp:tr.sSp,Po:tr.sPo,Mu:tr.sMu};
+  const secs={};
+  selType.fields.forEach(f=>(secs[f.s]=secs[f.s]||[]).push(f));
+  let h='';
+  SEC_ORDER.forEach(s=>{
+    if(!secs[s]||!secs[s].length)return;
+    h+=`<div class="form-sec-lbl">${secNames[s]||s}</div>`;
+    secs[s].forEach(f=>{
+      const lbl=f.l[uiL]||f.l.en;
+      const hint=f.h?(f.h[uiL]||f.h.en):'';
+;
+      h+=`<div class="form-field">
         <label for="f_${f.k}">${esc(lbl)}</label>
         <input type="text" id="f_${f.k}" value="${esc(vals[f.k]||'')}" placeholder="${esc(hint)}"
-          oninput="vals['${f.k}']=this.value;genAll()"${imgCheck}/>
-        ${hint ? `<div class="field-hint">${esc(hint)}</div>` : ''}
-        ${imgNotice}
+          oninput="vals['${f.k}']=this.value;genAll()"/>
+        ${hint?`<div class="field-hint">${esc(hint)}</div>`:''}
       </div>`;
     });
   });
-  g('form-area').innerHTML = h;
+  g('form-area').innerHTML=h;
 }
 
-//Language row
-function renderWikiLangs() {
-  g('wiki-lang-row').innerHTML = WLANGS.map(l =>
-    `<button class="wiki-lang-btn ${l.id===outL?'selected':''}" onclick="selWikiLang('${l.id}')">${l.flag} ${l.lbl}</button>`
-  ).join('');
+// ════════════════════════════════════════════════════════════════════
+// WIKI LANG ROW
+// ════════════════════════════════════════════════════════════════════
+function renderWikiLangs(){
+  g('wl-row').innerHTML=WLANGS.map(l=>`<button class="wl-btn ${l.id===outL?'sel':''}" onclick="selWikiLang('${l.id}')">${l.flag} ${l.lbl}</button>`).join('');
 }
 
-//Info generator
-function getTmpl()  { return (TNAMES[sType]||{})[outL] || (TNAMES[sType]||{}).en || 'Infobox person'; }
-function getFields(){ return FIELDS[sType] || []; }
-function getHost()  { return (WLANGS.find(l => l.id === outL) || WLANGS[0]).host; }
-function getLangLbl(){ return (WLANGS.find(l => l.id === outL) || WLANGS[0]).lbl; }
+// ════════════════════════════════════════════════════════════════════
+// GENERATE ALL OUTPUT TABS
+// ════════════════════════════════════════════════════════════════════
+function genAll(){genIB();genTbl();genTmplCode();genPreview();}
 
-function genAll() { genIB(); genTbl(); genTmplCode(); genPreview(); }
+function getFields(){return selType?selType.fields:[];}
 
-function genIB() {
-  const fields = getFields(), tmpl = getTmpl();
-  // fkey(f) = localized parameter name; vals[f.k] = value stored by internal English key
-  const lines = fields.map(f => `| ${fkey(f).padEnd(24)} = ${vals[f.k]||''}`);
-  const code = `{{${tmpl}\n${lines.join('\n')}\n}}`;
-  g('c-ib').innerHTML = shl(code);
+function genIB(){
+  const fields=getFields(),tmpl=getTmpl();
+  if(!selType){g('c-ib').innerHTML=`<div class="code-ph" id="code-ph">${t().hint}</div>`;return;}
+  const lines=fields.map(f=>`| ${fkey(f).padEnd(24)} = ${vals[f.k]||''}`);
+  g('c-ib').innerHTML=shl(`{{${tmpl}\n${lines.join('\n')}\n}}`);
 }
 
-function genTbl() {
-  const fields = getFields();
-  const name = vals.name || vals.common_name || vals.taxon || 'Subject';
-  const imgFields = fields.filter(f => f.k.startsWith('image') && vals[f.k]);
-  const imgLines = imgFields.map(f => `|-\n| colspan="2" style="text-align:center" | [[File:${vals[f.k]}|200px]]\n`).join('');
-  let rows = '';
-  fields.forEach(f => {
-    const v = vals[f.k];
-    if (!v || f.k.startsWith('image')) return;
-    const lbl = flabel(f); // use target wiki language for table headers
-    rows += `|-\n! ${lbl}\n| ${v}\n`;
-  });
-  const code = `{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgLines}${rows}|}`;
-  g('c-tbl').innerHTML = shl(code);
+function genTbl(){
+  if(!selType){g('c-tbl').innerHTML='';return;}
+  const fields=getFields();
+  const name=vals.name||vals.common_name||vals.taxon||'Subject';
+  const imgFields=fields.filter(f=>f.k.startsWith('image')&&vals[f.k]);
+  const imgLines=imgFields.map(f=>`|-\n| colspan="2" style="text-align:center" | [[File:${vals[f.k]}|200px]]\n`).join('');
+  let rows='';
+  fields.forEach(f=>{const v=vals[f.k];if(!v||f.k.startsWith('image'))return;rows+=`|-\n! ${flabel(f)}\n| ${v}\n`;});
+  g('c-tbl').innerHTML=shl(`{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgLines}${rows}|}`);
 }
 
-// Map of Wikipedia language code, which field label language to use.
-// If we have a direct translation, use it. Otherwise, fall back to English.
-// This ensures sw.wikipedia.org gets Kiswahili labels, fr.wikipedia.org gets French, etc.
-function tmplLabelLang() {
-  // outL is the target wiki language. We use it as the label language if we have
-  // translations for it in our FIELDS data; otherwise, fall back to English.
-  const supported = ['en','sw','fr'];
-  return supported.includes(outL) ? outL : 'en';
-}
+function genTmplCode(){
+  if(!selType){g('c-tmpl').innerHTML='';return;}
+  const fields=getFields(),tmpl=getTmpl(),host=getHost();
+  const pump=VILLAGE_PUMP[outL]||VILLAGE_PUMP.default;
+  const stepsFn=TMPL_STEPS_TEXT[uiL]||TMPL_STEPS_TEXT.en;
+  g('tmpl-steps').innerHTML=stepsFn(host,tmpl,pump).map(s=>`<li>${s}</li>`).join('');
 
-// Village pump page names per wiki language (where editors ask admins for help)
-const VILLAGE_PUMP = {
-  en: "Wikipedia:Village pump (proposals)",
-  sw: "Wikipedia:Mkutano wa kijiji",
-  fr: "Wikipédia:Le Bistro",
-  ar: "ويكيبيديا:مستودع",
-  pt: "Wikipédia:Esplanada",
-  default: "Wikipedia:Village pump",
-};
+  const imgField=fields.find(f=>f.k==='image'||f.k==='image_flag');
+  const captField=fields.find(f=>f.k==='caption');
+  const imgPk=imgField?fkey(imgField):null;
+  const captPk=captField?fkey(captField):(outL==='sw'?'maelezo':outL==='fr'?'legende':'caption');
+  // Correct: wrap whole row in {{#if:}}, use {{!}} only for TABLE pipes, plain | inside [[File:]]
+  const imgRow=imgPk
+    ?`{{#if:{{{${imgPk}|}}}|{{!}}-\n{{!}} colspan="2" style="text-align:center; padding:6px;" {{!}} [[File:{{{${imgPk}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`
+    :'';
 
-// Step instructions in the target wiki's language
-const TMPL_STEPS_TEXT = {
-  en: (host, tmpl, pump) => [
-    `Go to <a href="https://${host}" target="_blank">${host}</a>`,
-    `In the search box, enter: <code>Template:${tmpl}</code>`,
-    `If the page shows as a <span style="color:red">red link</span> (does not exist), click to create it`,
-    `Paste the code below into the editor and click <strong>Save page</strong>`,
-    `The template is now installed. Return to your article and use the infobox code.`,
-    `<em>Tip: You can also post a request on <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a> asking an admin to create it.</em>`,
-  ],
-  sw: (host, tmpl, pump) => [
-    `Nenda kwenye <a href="https://${host}" target="_blank">${host}</a>`,
-    `Katika sanduku la utafutaji, andika: <code>Kielezo:${tmpl}</code>`,
-    `Ikiwa ukurasa unaonekana kama <span style="color:red">kiungo nyekundu</span> (haupo), bonyeza kuunda`,
-    `Bandika msimbo hapa chini kwenye kihariri na ubonyeze <strong>Hifadhi ukurasa</strong>`,
-    `Kiolezo kimewekwa sasa. Rudi kwenye makala yako na utumie msimbo wa kisanduku.`,
-    `<em>Kidokezo: Unaweza pia kutuma ombi kwenye <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a> kuomba msimamizi kuunda.</em>`,
-  ],
-  fr: (host, tmpl, pump) => [
-    `Allez sur <a href="https://${host}" target="_blank">${host}</a>`,
-    `Dans la barre de recherche, entrez : <code>Modèle:${tmpl}</code>`,
-    `Si la page apparaît comme un <span style="color:red">lien rouge</span> (inexistante), cliquez pour la créer`,
-    `Collez le code ci-dessous dans l'éditeur et cliquez sur <strong>Publier les modifications</strong>`,
-    `Le modèle est maintenant installé. Revenez à votre article et utilisez le code d'infobox.`,
-    `<em>Conseil : Vous pouvez aussi demander à un administrateur sur <a href="https://${host}/wiki/${encodeURIComponent(pump)}" target="_blank">${pump}</a>.</em>`,
-  ],
-};
-
-function genTmplCode() {
-  const fields  = getFields();
-  const tmpl    = getTmpl();
-  const host    = getHost();
-  const lblLang = tmplLabelLang();           // language for the labels INSIDE the template
-  const pump    = VILLAGE_PUMP[outL] || VILLAGE_PUMP.default;
-
-  // ── Helper steps in the UI language (what the user reads) ──
-  const stepsFn = TMPL_STEPS_TEXT[uiL] || TMPL_STEPS_TEXT.en;
-  g('tmpl-steps').innerHTML = stepsFn(host, tmpl, pump)
-    .map(s => `<li>${s}</li>`).join('');
-
-    // ── Template definition: fully self-contained wikitable, ZERO dependencies ──
-  // Rules for a reliable MediaWiki template:
-  // 1. Never call {{Infobox}} — causes template loop on wikis where it doesn't exist
-  // 2. Never use {{#if:}} + {{!}} for table rows — {{!}} may not exist on small wikis
-  // 3. Simple unconditional rows are fine: empty params just show empty cells
-  // 4. ONLY the image needs {{#if:}} — an empty [[File:]] would break the page visually
-  // 5. {{#if:}} alone (without {{!}}) works fine OUTSIDE table cells
-
-  const imgField  = fields.find(f => f.k === 'image' || f.k === 'image_flag');
-  const captField = fields.find(f => f.k === 'caption');
-  const imgPk     = imgField  ? fkey(imgField)  : null;
-  const captPk    = captField ? fkey(captField) : (outL==='sw'?'maelezo':outL==='fr'?'legende':'caption');
-
-  // Image row: only render [[File:...]] when the image param is not empty
-  // {{#if:}} here is OUTSIDE any table cell so no {{!}} needed — plain | works
-  const imgRow = imgPk
-    ? `{{#if:{{{${imgPk}|}}}|{{!}}-\n{{!}} colspan="2" style="text-align:center; padding:6px;" {{!}} [[File:{{{${imgPk}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`
-    : '';
-
-  // All other rows — unconditional, simple wikitable syntax
-  // Editors leave unused fields blank; empty cells are invisible to readers
-  const dataRows = fields
-    .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
-    .map(f => {
-      const pk  = fkey(f);
-      const lbl = flabel(f);
-      return `|-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap; width:40%;" | ${lbl}\n| style="padding:4px 6px; font-size:88%;" | {{{${pk}|}}}`;
+  const dataRows=fields.filter(f=>f.k!=='image'&&f.k!=='image_flag'&&f.k!=='image_coat'&&f.k!=='caption')
+    .map(f=>{const pk=fkey(f),lbl=flabel(f);
+      return `|-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; width:40%;" | ${lbl}\n| style="padding:4px 6px; font-size:88%;" | {{{${pk}|}}}`;
     }).join('\n');
 
-  // Title parameter: use localized key for the name/title field
-  const titleField  = fields.find(f => f.k==='name'||f.k==='common_name'||f.k==='taxon');
-  const titlePk     = titleField ? fkey(titleField) : 'jina';
-  const title2Field = fields.find(f => f.k==='common_name');
-  const title3Field = fields.find(f => f.k==='taxon');
-  const title2Pk    = title2Field ? fkey(title2Field) : titlePk;
-  const title3Pk    = title3Field ? fkey(title3Field) : titlePk;
-
-  const categoryName = outL==='sw' ? 'Violezo vya kisanduku cha habari'
-    : outL==='fr' ? "Modèles d'infobox"
-    : 'Infobox templates';
-  const usageHeading = outL==='sw' ? 'Matumizi' : outL==='fr' ? 'Utilisation' : 'Usage';
-  const usagePre = fields.map(f => `| ${fkey(f).padEnd(24)} = `).join('\n');
-
-  const code =
-`<includeonly>{| class="infobox" style="border:1px solid #a2a9b1; background:#f8f9fa; width:22em; float:right; clear:right; margin:0 0 1em 1em; border-collapse:collapse; font-size:88%;"
-|+ style="background:#cee0f2; font-weight:bold; font-size:110%; padding:6px; text-align:center;" | {{{${titlePk}|{{{${title2Pk}|{{{${title3Pk}|}}}}}}}}}
-${imgRow}${dataRows}
-|}</includeonly><noinclude>
-== ${usageHeading} ==
-<pre>\n{{${tmpl}\n${usagePre}\n}}</pre>
-
-[[Category:${categoryName}]]
-</noinclude>`;
-
-  g('c-tmpl').innerHTML = shl(code);
+  const titleField=fields.find(f=>f.k==='name'||f.k==='common_name'||f.k==='taxon');
+  const titlePk=titleField?fkey(titleField):(outL==='sw'?'jina':'name');
+  const t2=fields.find(f=>f.k==='common_name'),t3=fields.find(f=>f.k==='taxon');
+  const t2pk=t2?fkey(t2):titlePk,t3pk=t3?fkey(t3):titlePk;
+  const cat=outL==='sw'?'Violezo vya kisanduku cha habari':outL==='fr'?"Modèles d'infobox":'Infobox templates';
+  const uh=outL==='sw'?'Matumizi':outL==='fr'?'Utilisation':'Usage';
+  const usagePre=fields.map(f=>`| ${fkey(f).padEnd(24)} = `).join('\n');
+  const code=`<includeonly>{| class="infobox" style="border:1px solid #a2a9b1; background:#f8f9fa; width:22em; float:right; clear:right; margin:0 0 1em 1em; border-collapse:collapse; font-size:88%;"\n|+ style="background:#cee0f2; font-weight:bold; font-size:110%; padding:6px; text-align:center;" | {{{${titlePk}|{{{${t2pk}|{{{${t3pk}|}}}}}}}}}}\n${imgRow}${dataRows}\n|}</includeonly><noinclude>\n== ${uh} ==\n<pre>\n{{${tmpl}\n${usagePre}\n}}</pre>\n\n[[Category:${cat}]]\n</noinclude>`;
+  g('c-tmpl').innerHTML=shl(code);
 }
 
-function genPreview() {
-  const fields = getFields();
-  const name = vals.name || vals.common_name || vals.taxon || '—';
-  const imgFields = fields.filter(f => f.k.startsWith('image') && vals[f.k]);
-  const imgRows = imgFields.map(f =>
-    `<tr><td colspan="2" style="text-align:center;padding:6px"><div style="background:#eaecf0;height:80px;display:flex;align-items:center;justify-content:center;font-size:0.77rem;color:#72777d">📷 ${esc(vals[f.k])}</div></td></tr>`
-  ).join('');
-  let dataRows = '';
-  fields.forEach(f => {
-    const v = vals[f.k];
-    if (!v || f.k.startsWith('image')) return;
-    const lbl = f.l[uiL] || f.l.en;
-    dataRows += `<tr><th>${esc(lbl)}</th><td>${esc(v)}</td></tr>`;
-  });
-  g('pv-wrap').innerHTML = (dataRows || imgRows)
-    ? `<table class="infobox-preview"><caption>${esc(name)}</caption>${imgRows}${dataRows}</table><div style="clear:both"></div>`
-    : '<div class="code-ph">Fill in the form to see a preview…</div>';
+function genPreview(){
+  if(!selType){g('pv-wrap').innerHTML='<div class="code-ph">Choose a type first…</div>';return;}
+  const fields=getFields();
+  const name=vals.name||vals.common_name||vals.taxon||'—';
+  const imgFields=fields.filter(f=>f.k.startsWith('image')&&vals[f.k]);
+  const imgRows=imgFields.map(f=>`<tr><td colspan="2" style="text-align:center;padding:6px"><div style="background:#eaecf0;height:70px;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#72777d">📷 ${esc(vals[f.k])}</div></td></tr>`).join('');
+  let dataRows='';
+  fields.forEach(f=>{const v=vals[f.k];if(!v||f.k.startsWith('image'))return;dataRows+=`<tr><th>${esc(flabel(f))}</th><td>${esc(v)}</td></tr>`;});
+  g('pv-wrap').innerHTML=(dataRows||imgRows)
+    ?`<table class="infobox-preview"><caption>${esc(name)}</caption>${imgRows}${dataRows}</table><div style="clear:both"></div>`
+    :'<div class="code-ph">Fill in the form to see a preview…</div>';
 }
 
-function shl(code) {
+function shl(code){
   return esc(code)
-    .replace(/(\{\{|\}\})/g, '<span class="tok-bracket">$1</span>')
-    .replace(/(\[\[|\]\])/g, '<span style="color:#0645ad">$1</span>')
-    .replace(/\|(\s*[\w_]+\s*)=/g, '<span class="tok-pipe">|</span><span class="tok-key">$1</span>=');
+    .replace(/(\{\{|\}\})/g,'<span style="color:#0645ad;font-weight:700">$1</span>')
+    .replace(/(\[\[|\]\])/g,'<span style="color:#0645ad">$1</span>')
+    .replace(/\|(\s*[\w_]+\s*)=/g,'<span style="color:#555">|</span><span style="color:#006400">$1</span>=');
 }
 
-// ═══════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════
 // TABS
-// ═══════════════════════════════════════════════════════════
-const TAB_MAP = { ib:'ot1', tbl:'ot2', tmpl:'ot3', pv:'ot4' };
-
-function goTab(id) {
-  aTab = id;
-  ['ib','tbl','tmpl','pv'].forEach(t => {
-    g('op-'+t).classList.toggle('active', t === id);
-    g(TAB_MAP[t]).classList.toggle('selected', t === id);
+// ════════════════════════════════════════════════════════════════════
+const TAB_MAP={ib:'ot1',tbl:'ot2',tmpl:'ot3',pv:'ot4'};
+function goTab(id){
+  aTab=id;
+  ['ib','tbl','tmpl','pv'].forEach(t=>{
+    g('op-'+t).classList.toggle('active',t===id);
+    g(TAB_MAP[t]).classList.toggle('sel',t===id);
   });
 }
 
-// ═══════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════
 // COPY
-// ═══════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════
-// IMAGE EXISTENCE CHECK
-// ═══════════════════════════════════════════════════════════
-// Checks both Wikimedia Commons and the target wiki for the image file.
-// Book covers, movie posters etc. are copyrighted — Commons won't have them.
-// They must be uploaded directly to the target wiki under fair use.
-
-const IMG_MSGS = {
-  checking: { en: "⏳ Checking image…",                        sw: "⏳ Inakagua picha…",                       fr: "⏳ Vérification de l'image…" },
-  commons:  { en: "✅ Found on Wikimedia Commons — will display on any Wikipedia.",
-              sw: "✅ Inapatikana kwenye Wikimedia Commons — itaonyeshwa kwenye Wikipedia yoyote.",
-              fr: "✅ Trouvée sur Wikimedia Commons — s'affichera sur tous les Wikipédias." },
-  targetok: { en: "✅ Found on {wiki} — will display on that wiki.",
-              sw: "✅ Inapatikana kwenye {wiki} — itaonyeshwa huko.",
-              fr: "✅ Trouvée sur {wiki} — s'affichera sur ce wiki." },
-  missing:  { en: "⚠️ Image not found on Wikimedia Commons or {wiki}.",
-              sw: "⚠️ Picha haipatikani kwenye Wikimedia Commons wala {wiki}.",
-              fr: "⚠️ Image introuvable sur Wikimedia Commons ou {wiki}." },
-  upload_free: {
-    en: `<strong>This looks like a free image.</strong> Upload it to <a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank">Wikimedia Commons</a> and it will work on every Wikipedia automatically.`,
-    sw: `<strong>Picha hii inaonekana huru.</strong> Ipakia kwenye <a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank">Wikimedia Commons</a> na itafanya kazi kwenye Wikipedia zote moja kwa moja.`,
-    fr: `<strong>Cette image semble libre.</strong> Téléversez-la sur <a href="https://commons.wikimedia.org/wiki/Special:UploadWizard" target="_blank">Wikimedia Commons</a> et elle fonctionnera sur tous les Wikipédias.`,
-  },
-  upload_fairuse: {
-    en: `<strong>Copyrighted images (book covers, movie posters, logos)</strong> cannot go on Wikimedia Commons — Commons only accepts freely licensed content.<br><br>
-         You must upload it <strong>directly to {wiki}</strong> with a fair-use rationale:<br>
-         👉 <a href="https://{host}/wiki/Special:Upload" target="_blank">Upload to {wiki}</a><br><br>
-         When uploading, choose a <strong>fair use</strong> license and explain why the image is needed (e.g. "Book cover used for identification in the article about the book").`,
-    sw: `<strong>Picha zenye hakimiliki (jalada la kitabu, bango la filamu, nembo)</strong> haziruhusiwi kwenye Wikimedia Commons — Commons inakubali tu maudhui ya leseni huru.<br><br>
-         Lazima uipakiee <strong>moja kwa moja kwenye {wiki}</strong> na sababu ya matumizi ya haki:<br>
-         👉 <a href="https://{host}/wiki/Special:Upload" target="_blank">Pakia kwenye {wiki}</a><br><br>
-         Unapopakia, chagua leseni ya <strong>matumizi ya haki</strong> na eleza kwa nini picha inahitajika.`,
-    fr: `<strong>Les images protégées par le droit d'auteur (couvertures, affiches, logos)</strong> ne peuvent pas aller sur Wikimedia Commons — Commons n'accepte que les contenus libres.<br><br>
-         Vous devez la téléverser <strong>directement sur {wiki}</strong> avec une justification d'usage loyal :<br>
-         👉 <a href="https://{host}/wiki/Special:Upload" target="_blank">Téléverser sur {wiki}</a>`,
-  },
-};
-
-// Simple heuristic: if filename contains words like "cover", "poster", "logo",
-// or common book/film extensions, flag as likely copyrighted.
-function likelyCopyrighted(filename) {
-  const f = filename.toLowerCase();
-  return /cover|poster|logo|jacket|sleeve|front|album|dvd|blu.?ray|box.?art|official/.test(f);
-}
-
-async function checkImage(filename, fieldKey) {
-  const noticeEl = document.getElementById('img-notice-' + fieldKey);
-  if (!noticeEl) return;
-  filename = filename.trim();
-  if (!filename) { noticeEl.style.display = 'none'; return; }
-
-  const host = getHost();
-  const wikiName = getLangLbl();
-  const t = uiL;
-  const msg = m => (IMG_MSGS[m][t] || IMG_MSGS[m].en).replace(/{wiki}/g, wikiName).replace(/{host}/g, host);
-
-  noticeEl.style.display = 'block';
-  noticeEl.className = 'mw-message-box notice';
-  noticeEl.innerHTML = `<span class="mw-message-box-icon">⏳</span><div class="mbox-text">${msg('checking')}</div>`;
-
-  // Normalise: prepend "File:" if not present
-  const fileTitle = filename.startsWith('File:') ? filename : 'File:' + filename;
-
-  try {
-    // Check Wikimedia Commons first
-    const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&format=json&origin=*`;
-    const commonsRes = await fetch(commonsUrl);
-    const commonsData = await commonsRes.json();
-    const commonsPage = commonsData.query.pages[Object.keys(commonsData.query.pages)[0]];
-    const onCommons = commonsPage.missing === undefined;
-
-    if (onCommons) {
-      noticeEl.className = 'mw-message-box success';
-      noticeEl.innerHTML = `<span class="mw-message-box-icon">✅</span><div class="mbox-text">${msg('commons')}</div>`;
-      return;
-    }
-
-    // Not on Commons — check the target wiki
-    const targetUrl = `https://${host}/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&format=json&origin=*`;
-    const targetRes = await fetch(targetUrl);
-    const targetData = await targetRes.json();
-    const targetPage = targetData.query.pages[Object.keys(targetData.query.pages)[0]];
-    const onTarget = targetPage.missing === undefined;
-
-    if (onTarget) {
-      noticeEl.className = 'mw-message-box success';
-      noticeEl.innerHTML = `<span class="mw-message-box-icon">✅</span><div class="mbox-text">${msg('targetok')}</div>`;
-      return;
-    }
-
-    // Not found anywhere — give upload guidance
-    const isCR = likelyCopyrighted(filename);
-    noticeEl.className = 'mw-message-box warning';
-    noticeEl.innerHTML = `
-      <span class="mw-message-box-icon">⚠️</span>
-      <div class="mbox-text">
-        <strong>${msg('missing')}</strong><br><br>
-        ${isCR ? msg('upload_fairuse') : msg('upload_free')}
-        <br><br>
-        <span style="font-size:0.8rem;color:var(--color-subtle)">
-          Not sure? Book covers and movie posters are almost always copyrighted → upload to ${wikiName} directly.
-          Nature photos, maps, and historical images are often free → upload to Commons.
-        </span>
-      </div>`;
-  } catch(e) {
-    noticeEl.className = 'mw-message-box notice';
-    noticeEl.innerHTML = `<span class="mw-message-box-icon">ℹ️</span><div class="mbox-text">Could not check image. Paste the filename and verify manually on <a href="https://commons.wikimedia.org/wiki/${encodeURIComponent(fileTitle)}" target="_blank">Commons</a>.</div>`;
+// ════════════════════════════════════════════════════════════════════
+function getRaw(){
+  const fields=getFields(),tmpl=getTmpl();
+  if(aTab==='ib'){return `{{${tmpl}\n${fields.map(f=>`| ${fkey(f).padEnd(24)} = ${vals[f.k]||''}`).join('\n')}\n}}`;}
+  if(aTab==='tbl'){
+    const name=vals.name||vals.common_name||'Subject';
+    let rows='';fields.forEach(f=>{const v=vals[f.k];if(!v||f.k.startsWith('image'))return;rows+=`|-\n! ${flabel(f)}\n| ${v}\n`;});
+    const imgs=fields.filter(f=>f.k.startsWith('image')&&vals[f.k]).map(f=>`|-\n| colspan="2" | [[File:${vals[f.k]}|200px]]\n`).join('');
+    return `{| class="wikitable" style="float:right;clear:right;margin:0 0 1em 1em;font-size:90%"\n|+ '''${name}'''\n${imgs}${rows}|}`;
   }
-}
-
-function getRaw() {
-  const fields = getFields(), tmpl = getTmpl();
-  if (aTab === 'ib') {
-    return `{{${tmpl}\n${fields.map(f => `| ${fkey(f).padEnd(24)} = ${vals[f.k]||''}`).join('\n')}\n}}`;
-  }
-  if (aTab === 'tbl') {
-    const name = vals.name || vals.common_name || 'Subject';
-    let rows = '';
-    fields.forEach(f => { const v = vals[f.k]; if (!v || f.k.startsWith('image')) return; rows += `|-\n! ${flabel(f)}\n| ${v}\n`; });
-    const imgs = fields.filter(f => f.k.startsWith('image') && vals[f.k]).map(f => `|-\n| colspan="2" style="text-align:center" | [[File:${vals[f.k]}|200px]]\n`).join('');
-    return `{| class="wikitable" style="float:right; clear:right; margin:0 0 1em 1em; font-size:90%"\n|+ '''${name}'''\n${imgs}${rows}|}`;
-  }
-  if (aTab === 'tmpl') {
-    // Mirrors genTmplCode exactly — simple unconditional rows, {{#if:}} only for image
-    const imgField  = fields.find(f => f.k === 'image' || f.k === 'image_flag');
-    const captField = fields.find(f => f.k === 'caption');
-    const imgPk     = imgField  ? fkey(imgField)  : null;
-    const captPk    = captField ? fkey(captField) : (outL==='sw'?'maelezo':outL==='fr'?'legende':'caption');
-    const imgRow    = imgPk
-      ? `{{#if:{{{${imgPk}|}}}|{{!}}-\n{{!}} colspan="2" style="text-align:center; padding:6px;" {{!}} [[File:{{{${imgPk}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`
-      : '';
-    const dataRows = fields
-      .filter(f => f.k !== 'image' && f.k !== 'image_flag' && f.k !== 'image_coat' && f.k !== 'caption')
-      .map(f => {
-        const pk = fkey(f); const lbl = flabel(f);
-        return `|-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; white-space:nowrap; width:40%;" | ${lbl}\n| style="padding:4px 6px; font-size:88%;" | {{{${pk}|}}}`;
-      }).join('\n');
-    const titleField = fields.find(f => f.k==='name'||f.k==='common_name'||f.k==='taxon');
-    const titlePk    = titleField ? fkey(titleField) : 'jina';
-    const t2 = fields.find(f=>f.k==='common_name'); const t3 = fields.find(f=>f.k==='taxon');
-    const t2pk = t2 ? fkey(t2) : titlePk; const t3pk = t3 ? fkey(t3) : titlePk;
-    const cat  = outL==='sw' ? 'Violezo vya kisanduku cha habari' : outL==='fr' ? "Modèles d'infobox" : 'Infobox templates';
-    const uh   = outL==='sw' ? 'Matumizi' : outL==='fr' ? 'Utilisation' : 'Usage';
-    const up   = fields.map(f => `| ${fkey(f).padEnd(24)} = `).join('\n');
-    return `<includeonly>{| class="infobox" style="border:1px solid #a2a9b1; background:#f8f9fa; width:22em; float:right; clear:right; margin:0 0 1em 1em; border-collapse:collapse; font-size:88%;"\n|+ style="background:#cee0f2; font-weight:bold; font-size:110%; padding:6px; text-align:center;" | {{{${titlePk}|{{{${t2pk}|{{{${t3pk}|}}}}}}}}}\n${imgRow}${dataRows}\n|}</includeonly><noinclude>\n== ${uh} ==\n<pre>\n{{${tmpl}\n${up}\n}}</pre>\n\n[[Category:${cat}]]\n</noinclude>`;
+  if(aTab==='tmpl'){
+    const imgField=fields.find(f=>f.k==='image'||f.k==='image_flag');
+    const captField=fields.find(f=>f.k==='caption');
+    const imgPk=imgField?fkey(imgField):null;
+    const captPk=captField?fkey(captField):(outL==='sw'?'maelezo':outL==='fr'?'legende':'caption');
+    const imgRow=imgPk?`{{#if:{{{${imgPk}|}}}|{{!}}-\n{{!}} colspan="2" style="text-align:center; padding:6px;" {{!}} [[File:{{{${imgPk}|}}}|220px|center|{{{${captPk}|}}}]]}}\n`:'';
+    const dataRows=fields.filter(f=>f.k!=='image'&&f.k!=='image_flag'&&f.k!=='image_coat'&&f.k!=='caption')
+      .map(f=>`|-\n! style="background:#eaecf0; text-align:right; font-size:88%; padding:4px 6px; width:40%;" | ${flabel(f)}\n| style="padding:4px 6px; font-size:88%;" | {{{${fkey(f)}|}}}`).join('\n');
+    const titleField=fields.find(f=>f.k==='name'||f.k==='common_name'||f.k==='taxon');
+    const tp=titleField?fkey(titleField):(outL==='sw'?'jina':'name');
+    const t2=fields.find(f=>f.k==='common_name'),t3=fields.find(f=>f.k==='taxon');
+    const t2p=t2?fkey(t2):tp,t3p=t3?fkey(t3):tp;
+    const cat=outL==='sw'?'Violezo vya kisanduku cha habari':outL==='fr'?"Modèles d'infobox":'Infobox templates';
+    const uh=outL==='sw'?'Matumizi':outL==='fr'?'Utilisation':'Usage';
+    const up=fields.map(f=>`| ${fkey(f).padEnd(24)} = `).join('\n');
+    return `<includeonly>{| class="infobox" style="border:1px solid #a2a9b1; background:#f8f9fa; width:22em; float:right; clear:right; margin:0 0 1em 1em; border-collapse:collapse; font-size:88%;"\n|+ style="background:#cee0f2; font-weight:bold; font-size:110%; padding:6px; text-align:center;" | {{{${tp}|{{{${t2p}|{{{${t3p}|}}}}}}}}}}\n${imgRow}${dataRows}\n|}</includeonly><noinclude>\n== ${uh} ==\n<pre>\n{{${tmpl}\n${up}\n}}</pre>\n\n[[Category:${cat}]]\n</noinclude>`;
   }
   return '';
 }
 
-function doCopy() {
-  const code = getRaw(); if (!code) return;
-  navigator.clipboard.writeText(code).then(() => {
-    const btn = g('copy-btn'), t = TR[uiL];
-    btn.textContent = t.copied;
-    setTimeout(() => { btn.textContent = t.copyBtn; }, 2200);
+function doCopy(){
+  const code=getRaw();if(!code)return;
+  navigator.clipboard.writeText(code).then(()=>{
+    const btn=g('copy-btn');btn.textContent=t().copied;
+    setTimeout(()=>{btn.textContent=t().copyBtn;},2200);
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-// TEMPLATE EXISTENCE CHECK
-// ═══════════════════════════════════════════════════════════
-async function checkTmpl() {
-  const host = getHost(), tmpl = getTmpl(), lbl = getLangLbl(), t = TR[uiL];
-  showBanner('notice', `<span class="mw-message-box-icon"><span class="mw-loader"></span></span><div class="mbox-text">${t.checking} <strong>${lbl}</strong> (${host})…</div>`);
-  g('chk-btn').disabled = true;
-
-  try {
-    const url = `https://${host}/w/api.php?action=query&titles=Template:${encodeURIComponent(tmpl)}&format=json&origin=*`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    const page = data.query.pages[Object.keys(data.query.pages)[0]];
-
-    if (page.missing !== undefined) {
-      showBanner('warning',
-        `<span class="mw-message-box-icon">⚠️</span>
-         <div class="mbox-text">
-           <strong>${t.missing} ${lbl}</strong> — <code>Template:${tmpl}</code> does not exist.<br>
-           <span class="text-small">${t.missingNote}</span>
-         </div>`);
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE CHECK
+// ════════════════════════════════════════════════════════════════════
+async function checkTmpl(){
+  if(!selType){alert(uiL==='sw'?'Chagua aina ya kisanduku kwanza.':'Choose an infobox type first.');return;}
+  const host=getHost(),tmpl=getTmpl(),lbl=getLangLbl(),tr=t();
+  showBanner('notice',`<span class="mbox-icon"><span class="mw-loader"></span></span><div>${tr.checking} <strong>${lbl}</strong>…</div>`);
+  g('chk-btn').disabled=true;
+  try{
+    const url=`https://${host}/w/api.php?action=query&titles=Template:${encodeURIComponent(tmpl)}&format=json&origin=*`;
+    const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const page=data.query.pages[Object.keys(data.query.pages)[0]];
+    if(page.missing!==undefined){
+      showBanner('warning',`<span class="mbox-icon">⚠️</span><div><strong>${tr.missing} ${lbl}</strong> — <code>Template:${tmpl}</code><br><span class="text-sm">${tr.missingNote}</span></div>`);
       goTab('tbl');
-      renderSidebar();
-    } else {
-      showBanner('success',
-        `<span class="mw-message-box-icon">✅</span>
-         <div class="mbox-text">
-           <strong>${t.ok} ${lbl}</strong> — <code>Template:${tmpl}</code><br>
-           <span class="text-small">Copy the wikitext from the <strong>Infobox</strong> tab and paste it into your article.</span>
-         </div>`);
+    }else{
+      showBanner('success',`<span class="mbox-icon">✅</span><div><strong>${tr.ok} ${lbl}</strong> — <code>Template:${tmpl}</code> ✓<br><span class="text-sm">Copy the wikitext from the Infobox tab and paste into your article.</span></div>`);
       goTab('ib');
     }
-  } catch(e) {
-    showBanner('error', `<span class="mw-message-box-icon">❌</span><div class="mbox-text">${t.neterr} <span class="text-small">(${e.message})</span></div>`);
-  }
-
-  g('chk-btn').disabled = false;
-  g('chk-btn').textContent = TR[uiL].chkBtn;
+  }catch(e){showBanner('error',`<span class="mbox-icon">❌</span><div>${tr.neterr} (${e.message})</div>`);}
+  g('chk-btn').disabled=false;g('chk-btn').textContent=t().chkBtn;
 }
+function showBanner(cls,html){const b=g('status-banner');b.className='mbox '+cls;b.innerHTML=html;b.style.display='flex';}
+function hideBanner(){const b=g('status-banner');b.style.display='none';b.className='';}
 
-function showBanner(type, html) {
-  const b = g('status-banner');
-  b.className = 'mw-message-box ' + type;
-  b.innerHTML = html;
-  b.style.display = 'flex';
-}
 
-function hideBanner() {
-  const b = g('status-banner');
-  b.style.display = 'none';
-  b.className = '';
-}
-
-// ═══════════════════════════════════════════════════════════
-// AI ASSISTANT
-// ═══════════════════════════════════════════════════════════
-function talkAppend(role, text) {
-  const thread = g('talk-thread');
-  const ph = g('talk-ph'); if (ph) ph.style.display = 'none';
-  const d = document.createElement('div');
-  d.className = 'talk-msg ' + role;
-  const sig = role === 'user'
-    ? `<div class="talk-sig"><a>You</a></div>`
-    : `<div class="talk-sig"><a>AI assistant</a> (Claude)</div>`;
-  d.innerHTML = sig + `<div>${esc(text).replace(/\n/g,'<br>')}</div>`;
-  thread.appendChild(d);
-  thread.scrollTop = thread.scrollHeight;
-}
-
-function sysPrompt() {
-  return `You are a helpful Wikipedia infobox editor assistant.
-Current infobox type: ${sType}. UI language: ${uiL}. Target Wikipedia: ${outL} (${getHost()}).
-Template name: ${getTmpl()}. Current field values: ${JSON.stringify(vals)}.
-Help the user understand fields, suggest values, and explain template issues.
-Respond in the same language the user uses. Keep answers concise and practical.`;
-}
-
-async function sendAI() {
-  const inp = g('ai-in'), msg = inp.value.trim(); if (!msg) return;
-  inp.value = '';
-  talkAppend('user', msg);
-  aiH.push({ role: 'user', content: msg });
-  const btn = g('send-btn'); btn.disabled = true; btn.innerHTML = '<span class="mw-loader"></span>';
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: sysPrompt(), messages: aiH })
-    });
-    const data = await res.json();
-    const reply = data.content?.[0]?.text || "Sorry, no response received.";
-    aiH.push({ role: 'assistant', content: reply });
-    talkAppend('ai', reply);
-  } catch(e) {
-    talkAppend('ai', 'Connection error. Please check your internet connection.');
-  }
-  btn.disabled = false;
-  btn.textContent = TR[uiL].sendBtn;
-}
-
-async function autoFill() {
-  const btn = g('af-btn'); btn.disabled = true; btn.innerHTML = '<span class="mw-loader"></span>';
-  const fields = getFields();
-  const existing = Object.entries(vals).filter(([k,v]) => v).map(([k,v]) => `${k}: ${v}`).join('; ');
-  const prompt = `Suggest realistic Wikipedia infobox values for a ${sType}.
-${existing ? 'Known data: ' + existing : 'No data provided — create a realistic example from an African country.'}
-Field keys to fill: ${fields.map(f => f.k).join(', ')}.
-Return ONLY a flat JSON object. Skip any keys containing "image". Values must be short strings.`;
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 800,
-        system: "Return ONLY valid JSON. No markdown, no backticks, no explanation.",
-        messages: [{ role: "user", content: prompt }] })
-    });
-    const data = await res.json();
-    const text = (data.content?.[0]?.text || '{}').replace(/```json|```/g, '').trim();
-    const sugg = JSON.parse(text);
-    Object.entries(sugg).forEach(([k, v]) => {
-      if (!vals[k]) { vals[k] = String(v); const inp = g('f_' + k); if (inp) inp.value = vals[k]; }
-    });
-    genAll();
-    talkAppend('ai', uiL === 'sw' ? 'Nimejaza maelezo ya mfano. Badilisha na taarifa halisi ya mtu/mahali halisi.' :
-      uiL === 'fr' ? 'Exemples remplis. Modifiez avec les vraies informations.' :
-      'Example values filled in. Please replace them with the real information about the subject.');
-  } catch(e) {
-    talkAppend('ai', 'Could not auto-fill. Try asking me a question instead.');
-  }
-  btn.disabled = false; btn.textContent = TR[uiL].afBtn;
-}
-
-// ═══════════════════════════════════════════════════════════
+// START
 init();
 </script>
 </body>
